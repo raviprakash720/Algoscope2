@@ -19,6 +19,10 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/algoscope')
   .then(() => console.log('MongoDB Connected'))
   .catch(err => console.error('MongoDB Connection Error:', err));
 
+app.get("/api/health", (req, res) => {
+  res.json({ status: "Backend working 🚀" });
+});
+
 // Routes
 const progressRoutes = require('./routes/progress');
 app.use('/api/progress', progressRoutes);
