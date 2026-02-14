@@ -73,7 +73,7 @@ const App: React.FC = () => {
     }, [problems])
 
     return (
-        <Router>
+        <Router basename={(import.meta as any).env.BASE_URL}>
             <MainLayout>
                 <AnimatedRoutes />
             </MainLayout>
