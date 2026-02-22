@@ -2,7 +2,19 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
-const { generateTwoSumSteps, generateSlidingWindowSteps } = require('./utils/stepGenerator');
+const {
+  generateTwoSumSteps,
+  generateSlidingWindowSteps,
+  generateLinkedListSteps,
+  generateMedianSteps,
+  generatePalindromeSteps,
+  generateZigzagSteps,
+  generateReverseIntegerSteps,
+  generateAtoiSteps,
+  generatePalindromeNumberSteps,
+  generateRegexSteps,
+  generateContainerSteps
+} = require('./utils/stepGenerator');
 require('dotenv').config();
 
 const app = express();
@@ -66,10 +78,67 @@ app.post('/api/problems/:id/steps', (req, res) => {
       return res.json({ bruteForceSteps, optimalSteps });
     }
 
+    if (id === 2) {
+      const l1 = JSON.parse(input);
+      const l2 = JSON.parse(target); // target used for l2 in this case
+      const { bruteForceSteps, optimalSteps } = generateLinkedListSteps(l1, l2);
+      return res.json({ bruteForceSteps, optimalSteps });
+    }
+
     if (id === 3) {
-      // Input for Problem 3 is a string
       const s = typeof input === 'string' ? input : JSON.stringify(input).replace(/^"|"$/g, '');
       const { bruteForceSteps, optimalSteps } = generateSlidingWindowSteps(s, target);
+      return res.json({ bruteForceSteps, optimalSteps });
+    }
+
+    if (id === 4) {
+      const nums1 = JSON.parse(input);
+      const nums2 = JSON.parse(target);
+      const { bruteForceSteps, optimalSteps } = generateMedianSteps(nums1, nums2);
+      return res.json({ bruteForceSteps, optimalSteps });
+    }
+
+    if (id === 5) {
+      const s = typeof input === 'string' ? input : JSON.stringify(input).replace(/^"|"$/g, '');
+      const { bruteForceSteps, optimalSteps } = generatePalindromeSteps(s);
+      return res.json({ bruteForceSteps, optimalSteps });
+    }
+
+    if (id === 6) {
+      const s = typeof input === 'string' ? input : JSON.stringify(input).replace(/^"|"$/g, '');
+      const numRows = parseInt(target);
+      const { bruteForceSteps, optimalSteps } = generateZigzagSteps(s, numRows);
+      return res.json({ bruteForceSteps, optimalSteps });
+    }
+
+    if (id === 7) {
+      const x = parseInt(input);
+      const { bruteForceSteps, optimalSteps } = generateReverseIntegerSteps(x);
+      return res.json({ bruteForceSteps, optimalSteps });
+    }
+
+    if (id === 8) {
+      const s = typeof input === 'string' ? input : JSON.stringify(input).replace(/^"|"$/g, '');
+      const { bruteForceSteps, optimalSteps } = generateAtoiSteps(s);
+      return res.json({ bruteForceSteps, optimalSteps });
+    }
+
+    if (id === 9) {
+      const x = parseInt(input);
+      const { bruteForceSteps, optimalSteps } = generatePalindromeNumberSteps(x);
+      return res.json({ bruteForceSteps, optimalSteps });
+    }
+
+    if (id === 10) {
+      const s = typeof input === 'string' ? input : JSON.stringify(input).replace(/^"|"$/g, '');
+      const p = typeof target === 'string' ? target : JSON.stringify(target).replace(/^"|"$/g, '');
+      const { bruteForceSteps, optimalSteps } = generateRegexSteps(s, p);
+      return res.json({ bruteForceSteps, optimalSteps });
+    }
+
+    if (id === 11) {
+      const heights = JSON.parse(input);
+      const { bruteForceSteps, optimalSteps } = generateContainerSteps(heights);
       return res.json({ bruteForceSteps, optimalSteps });
     }
 

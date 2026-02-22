@@ -37,7 +37,7 @@ const Home: React.FC = () => {
                             <span>Open Laboratory</span>
                             <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
                         </Link>
-                        <Link to="/problems/two-sum" className="btn-secondary">
+                        <Link to="/problems" className="btn-secondary">
                             <span>View All Patterns</span>
                         </Link>
                     </div>

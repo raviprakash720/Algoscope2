@@ -12,18 +12,9 @@ const Header: React.FC = () => {
             </div>
             <div className="flex items-center gap-6">
                 <nav className="flex items-center gap-6 text-sm font-medium text-white/60">
-                    <button
-                        onClick={() => window.dispatchEvent(new CustomEvent('switch-problem', { detail: 1 }))}
-                        className="hover:text-white transition-colors uppercase tracking-widest text-[10px] font-bold"
-                    >
-                        Two Sum
-                    </button>
-                    <button
-                        onClick={() => window.dispatchEvent(new CustomEvent('switch-problem', { detail: 3 }))}
-                        className="hover:text-white transition-colors uppercase tracking-widest text-[10px] font-bold"
-                    >
-                        Longest Substring
-                    </button>
+                    <span className="text-[10px] uppercase tracking-[0.3em] font-black text-accent-blue/40 border-r border-white/10 pr-6 mr-2">
+                        Lab Environment
+                    </span>
                 </nav>
                 <div className="h-6 w-[1px] bg-white/10" />
                 <button className="bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2 rounded-md text-sm transition-all h-10">

@@ -3,28 +3,16 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
     ArrowLeft,
-    Target,
-    Trophy,
-    Box,
-    Layers,
-    Code,
     AlertTriangle
 } from 'lucide-react'
 import foundationsData from '../../data/foundations.json'
 import { FoundationCategory, FoundationModule as FoundationModuleType } from '../../types/foundation'
-import { MentalModelTab } from './MentalModelTab'
-import { SubPatternTab } from './SubPatternTab'
-import { EnhancedCodeTemplateTab } from './EnhancedCodeTemplateTab'
-import { EnhancedEdgeCasesTab } from './EnhancedEdgeCasesTab'
-import { EnhancedMicroDrillsTab } from './EnhancedMicroDrillsTab'
+import { FoundationHero } from './FoundationHero'
+import { ProgressionTabs } from './ProgressionTabs'
+import { ProgressionContent } from './ProgressionContent'
+import { ComparisonMode } from './ComparisonMode'
 import { CorePatternLayout } from './CorePatternLayout'
 
-// Define Tab Interface
-interface TabDef {
-    id: string
-    label: string
-    icon: React.ElementType
-}
 
 const breadcrumbMap: Record<string, { parentRoute: string; parentLabel: string }> = {
     "two_pointers": { parentRoute: "/foundations/core_patterns", parentLabel: "Core Patterns" },
@@ -53,9 +41,7 @@ const FoundationModule = () => {
     // Resolve the actual ID we are working with
     const resolvedId = patternId || moduleId
 
-    // For legacy/basic patterns, we still use internal state if no route param
-    const [legacyTab, setLegacyTab] = useState<string>('mental_model')
-    const [internalSubId, setInternalSubId] = useState<string | null>(null)
+    const [progressionLevel, setProgressionLevel] = useState<'fundamentals' | 'patterns' | 'advanced'>('fundamentals')
 
     // Load module from foundations data
     const categories = foundationsData as any as FoundationCategory[]
@@ -147,112 +133,51 @@ const FoundationModule = () => {
         )
     }
 
-    // Default Layout for non-core patterns (Legacy/Basic)
-    const tabs: TabDef[] = [
-        { id: 'mental_model', label: 'Mental Model', icon: Target },
-        { id: 'sub_patterns', label: 'Sub-Patterns', icon: Layers },
-        { id: 'code', label: 'Code Templates', icon: Code },
-        { id: 'edge_cases', label: 'Edge Cases', icon: AlertTriangle },
-        { id: 'drill', label: 'Micro Drills', icon: Trophy }
-    ]
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#0a0118] via-[#0f0322] to-[#0a0118] text-white">
+        <div className="min-h-screen bg-[#0a0118] text-white">
             <div className="max-w-7xl mx-auto px-6 py-12">
-                {/* Header */}
+                {/* Header / Breadcrumbs */}
                 <div className="mb-12">
                     <button
                         onClick={() => navigate(parentRoute)}
-                        className="flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-6 group"
+                        className="flex items-center gap-2 text-white/40 hover:text-white transition-colors mb-6 group"
                     >
                         <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                        <span className="text-sm">Back to {parentLabel}</span>
+                        <span className="text-sm font-medium tracking-wide">Back to {parentLabel}</span>
                     </button>
-                    <div className="flex items-center gap-4 mb-4">
-                        <Box size={32} className="text-accent-blue" />
-                        <div>
-                            <div className="text-xs font-bold text-accent-blue uppercase tracking-widest mb-1">{parentLabel}</div>
-                            <h1 className="text-4xl font-bold">{module.title}</h1>
-                        </div>
-                    </div>
-                    <p className="text-white/60 text-lg">{module.description}</p>
                 </div>
 
-                {/* Legacy Tabs */}
-                <div className="flex flex-wrap gap-2 mb-12 border-b border-white/10 pb-4">
-                    {tabs.map(tab => {
-                        const Icon = tab.icon
-                        return (
-                            <button
-                                key={tab.id}
-                                onClick={() => setLegacyTab(tab.id)}
-                                className={`
-                                    flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors
-                                    ${legacyTab === tab.id
-                                        ? 'bg-accent-blue/20 text-accent-blue border border-accent-blue/30'
-                                        : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/10'
-                                    }
-                                `}
-                            >
-                                <Icon size={16} />
-                                {tab.label}
-                            </button>
-                        )
-                    })}
+                {/* Phase 2: Hero Section */}
+                <FoundationHero module={module} />
+
+                {/* Phase 2: Progression Tabs */}
+                <ProgressionTabs
+                    activeLevel={progressionLevel}
+                    onLevelChange={setProgressionLevel}
+                />
+
+                {/* Progression Content */}
+                <div className="mt-12 min-h-[600px]">
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={progressionLevel}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            <ProgressionContent
+                                module={module}
+                                level={progressionLevel}
+                                onVisualize={() => console.log('Launch Visualizer')}
+                            />
+                        </motion.div>
+                    </AnimatePresence>
                 </div>
 
-                {/* Tab Content */}
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        key={legacyTab}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.3 }}
-                    >
-                        <div className="space-y-12">
-                            {legacyTab === 'mental_model' && (
-                                <MentalModelTab
-                                    moduleId={resolvedId}
-                                    module={module}
-                                    activeSubPatternId={internalSubId}
-                                    setActiveSubPatternId={setInternalSubId}
-                                />
-                            )}
-                            {legacyTab === 'sub_patterns' && (
-                                <SubPatternTab
-                                    moduleId={resolvedId}
-                                    module={module}
-                                    activeSubPatternId={internalSubId}
-                                    setActiveSubPatternId={setInternalSubId}
-                                />
-                            )}
-                            {legacyTab === 'code' && (
-                                <EnhancedCodeTemplateTab
-                                    moduleId={resolvedId}
-                                    module={module}
-                                    activeSubPatternId={internalSubId}
-                                    setActiveSubPatternId={setInternalSubId}
-                                />
-                            )}
-                            {legacyTab === 'edge_cases' && (
-                                <EnhancedEdgeCasesTab
-                                    moduleId={resolvedId}
-                                    module={module}
-                                    activeSubPatternId={internalSubId}
-                                />
-                            )}
-                            {legacyTab === 'drill' && (
-                                <EnhancedMicroDrillsTab
-                                    moduleId={resolvedId}
-                                    module={module}
-                                    activeSubPatternId={internalSubId}
-                                    setActiveSubPatternId={setInternalSubId}
-                                />
-                            )}
-                        </div>
-                    </motion.div>
-                </AnimatePresence>
+                {/* Phase 2: Comparison Mode */}
+                <ComparisonMode comparisons={module.comparisons} />
             </div>
         </div>
     )

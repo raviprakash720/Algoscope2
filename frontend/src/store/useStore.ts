@@ -100,6 +100,7 @@ interface AlgoScopeState {
     getPatternDependencies: (pattern: string) => { basePattern: string, confidence: number, isMet: boolean, message?: string } | null
     saveDrillProgress: (moduleId: string, subPatternId: string, answeredId: string, isCorrect: boolean) => void
     initializeStore: () => Promise<void>
+    setSimulationMode: (mode: 'brute' | 'optimal' | 'compare') => void
 }
 
 interface AdaptiveBehavior {
@@ -291,7 +292,7 @@ export const useStore = create<AlgoScopeState>((set, get) => ({
                 drillScore: 0, visualizerScore: 0, templateScore: 0, recognitionScore: 0, edgeCaseScore: 0
             } as PatternStats
 
-            let newStats = { ...stats }
+            const newStats = { ...stats }
 
             // Update specific component score if provided
             const scoresToUpdate: any = {}
@@ -543,16 +544,8 @@ export const useStore = create<AlgoScopeState>((set, get) => ({
     },
 
     setProblem: (problem: Problem) => {
-        let defaultInput = ''
-        let defaultTarget = ''
-
-        if (problem.id === 1) {
-            defaultInput = '[2, 7, 11, 15]'
-            defaultTarget = '9'
-        } else if (problem.id === 3) {
-            defaultInput = 'abcabcbb'
-            defaultTarget = ''
-        }
+        const defaultInput = problem.input_settings?.input1.placeholder || ''
+        const defaultTarget = problem.input_settings?.input2.placeholder || ''
 
         set({
             currentProblem: problem,
@@ -677,7 +670,7 @@ export const useStore = create<AlgoScopeState>((set, get) => ({
 
             get().setProblem(data!)
 
-            if (data?.status === 'complete') {
+            if (data?.status === 'complete' || slug === 'add-two-numbers' || slug === 'longest-substring-without-repeating-characters') {
                 await get().refreshSteps()
             }
             set({ isEngineInitialized: true })
@@ -689,17 +682,29 @@ export const useStore = create<AlgoScopeState>((set, get) => ({
     },
 
     setStep: (index: number) => set({ currentStepIndex: index }),
-    toggleApproach: () => set((state) => {
-        if (!state.isBruteForce && state.currentProblem) {
-            get().trackActivity(state.currentProblem.slug, 'bruteFirstCount')
-        }
-        return { isBruteForce: !state.isBruteForce, currentStepIndex: 0, compareMode: false, isPlaying: false }
-    }),
+    toggleApproach: () => {
+        const currentMode = get().compareMode ? 'compare' : get().isBruteForce ? 'brute' : 'optimal'
+        const nextMode = currentMode === 'brute' ? 'optimal' : 'brute'
+        get().setSimulationMode(nextMode)
+    },
     setCompareMode: (compare: boolean) => {
-        if (compare && get().currentProblem) {
-            get().trackActivity(get().currentProblem!.slug, 'compareModeUsage')
+        get().setSimulationMode(compare ? 'compare' : 'optimal')
+    },
+    setSimulationMode: (mode: 'brute' | 'optimal' | 'compare') => {
+        const { currentProblem } = get()
+        if (currentProblem) {
+            if (mode === 'brute') get().trackActivity(currentProblem.slug, 'bruteFirstCount')
+            if (mode === 'compare') get().trackActivity(currentProblem.slug, 'compareModeUsage')
         }
-        set({ compareMode: compare, isBruteForce: false, currentStepIndex: 0, isPlaying: false })
+
+        set({
+            isBruteForce: mode === 'brute',
+            compareMode: mode === 'compare',
+            currentStepIndex: 0,
+            isPlaying: false
+        })
+
+        // Ensure engine is re-initialized if needed (already handled by currentStepIndex: 0 and re-render)
     },
     setPlaying: (playing: boolean) => set({ isPlaying: playing }),
     setSpeed: (speed: number) => set({ playbackSpeed: speed }),
@@ -719,22 +724,43 @@ export const useStore = create<AlgoScopeState>((set, get) => ({
             // Priority 1: Local Strategy Registry (Strict Master Fix)
             const strategyPair = getStrategyForProblem(currentProblem.slug)
 
-            // Parse input safely
-            let parsedInput: any = {}
-            try {
-                if (currentProblem.algorithmType === 'two_pointer' || currentProblem.algorithmType === 'array') {
-                    parsedInput = {
-                        nums: JSON.parse(customInput || '[2, 7, 11, 15]'),
-                        target: parseInt(customTarget || '9')
+            // Robust Input Parsing (Phase 6 Master Fix)
+            const parseArray = (input: string): any[] => {
+                if (!input) return [2, 7, 11, 15]
+                try {
+                    // Try JSON first
+                    const cleaned = input.trim()
+                    if (cleaned.startsWith('[') && cleaned.endsWith(']')) {
+                        return JSON.parse(cleaned)
                     }
-                } else if (currentProblem.algorithmType === 'sliding_window') {
-                    parsedInput = customInput || "abcabcbb"
-                } else {
-                    parsedInput = customInput || ""
+                    // Try comma-separated if not JSON
+                    return cleaned.split(',').map(s => {
+                        const val = s.trim()
+                        return isNaN(Number(val)) ? val : Number(val)
+                    })
+                } catch (e) {
+                    console.warn("Input parsing fallback triggered", e)
+                    return [2, 7, 11, 15]
                 }
-            } catch (e) {
-                console.warn("Input parsing failed, using defaults", e)
-                parsedInput = { nums: [2, 7, 11, 15], target: 9 }
+            }
+
+            let parsedInput: any = {}
+            const algorithm = currentProblem.algorithmType
+
+            if (algorithm?.includes('two_pointer') || algorithm === 'array') {
+                parsedInput = {
+                    nums: parseArray(customInput),
+                    target: parseInt(customTarget || '9')
+                }
+            } else if (algorithm === 'sliding_window') {
+                parsedInput = customInput || "abcabcbb"
+            } else if (algorithm === 'linked_list') {
+                parsedInput = {
+                    l1: parseArray(customInput),
+                    l2: parseArray(customTarget)
+                }
+            } else {
+                parsedInput = customInput || ""
             }
 
             const bruteSteps = strategyPair.brute(parsedInput)
@@ -788,13 +814,22 @@ export const useStore = create<AlgoScopeState>((set, get) => ({
                 isEngineInitialized: true
             })
 
-        } catch (e) {
-            console.error("Strategy execution failed, falling back to basic traversal:", e)
+        } catch (e: any) {
+            console.error(`[Algorithmic Error] Generation failed for ${currentProblem.slug}:`, e)
 
             // Safe manual fallback to prevent "No implementation Found"
             let fallbackItems: any[] = []
             try {
-                fallbackItems = JSON.parse(customInput || '[1, 2, 3, 4, 5]')
+                // We use the helper defined inside refreshSteps scope
+                // but since we are in the catch block we need to be careful
+                // For simplicity, let's use a basic split if parseArray fails
+                const cleaned = (customInput || '').trim()
+                if (cleaned.startsWith('[') && cleaned.endsWith(']')) {
+                    fallbackItems = JSON.parse(cleaned)
+                } else {
+                    fallbackItems = cleaned.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n))
+                }
+                if (fallbackItems.length === 0) fallbackItems = [1, 2, 3, 4, 5]
             } catch {
                 fallbackItems = [1, 2, 3, 4, 5]
             }

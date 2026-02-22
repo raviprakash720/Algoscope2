@@ -29,9 +29,14 @@
     "brute_force_steps": [],
     "optimal_steps": [],
     "complexity": {
-      "brute": "O(n\u00c2\u00b2)",
-      "optimal": "O(n)",
-      "space": "O(n)"
+      "brute": {
+        "time": "O(N²)",
+        "space": "O(1)"
+      },
+      "optimal": {
+        "time": "O(N)",
+        "space": "O(N)"
+      }
     },
     "pattern_capsule": {
       "invariant": "For any x, we need (target - x) to exist.",
@@ -89,39 +94,79 @@
     "slug": "add-two-numbers",
     "difficulty": "Medium",
     "algorithmType": "linked_list",
-    "status": "coming_soon",
+    "status": "complete",
     "tags": [
       "Linked List",
       "Math",
       "Recursion"
     ],
-    "problem_statement": "You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order, and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list.",
+    "primaryPattern": "Linked List",
+    "shortPatternReason": "Simulating manual digit-by-digit addition with carry handling.",
+    "time_complexity": "O(max(m, n))",
+    "space_complexity": "O(max(m, n))",
+    "problem_statement": "You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order, and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list.\n\nYou may assume the two numbers do not contain any leading zero, except the number 0 itself. The core challenge is managing the 'carry' value that propagates from one digit to the next, much like manual elementary addition.",
     "constraints": [
       "The number of nodes in each linked list is in the range [1, 100].",
       "0 <= Node.val <= 9",
       "It is guaranteed that the list represents a number that does not have leading zeros."
     ],
-    "examples": [],
-    "brute_force_explanation": "",
-    "optimal_explanation": "",
-    "brute_force_steps": [],
-    "optimal_steps": [],
+    "examples": [
+      {
+        "input": "l1 = [2,4,3], l2 = [5,6,4]",
+        "output": "[7,0,8]",
+        "explanation": "342 + 465 = 807. We add the units (2+5=7), then the tens (4+6=10, carry 1), then the hundreds (3+4+1=8)."
+      }
+    ],
+    "brute_force_explanation": "A common mistake is attempting to convert the entire linked list into a large integer, adding them, and then converting back to a list. While intuitive, this approach is fundamentally flawed for high-fidelity systems: standard 64-bit integers overflow quickly (around 20 digits). For a problem that guarantees lists up to 100 nodes, conversion to a native integer will result in catastrophic precision loss.",
+    "optimal_explanation": "The optimal approach simulates manual 'column-by-column' addition from the least significant digit (LSD) to the most significant. Because the problem reverse-stores the digits (Head = Units, Next = Tens), we traverse from Head to Tail. We maintain a 'carry' state that propagates to the next pair of nodes. This ensures O(max(M, N)) efficiency and handles numbers of infinite length.",
+    "intuition": "LSD-FIRST TRAVERSAL. By storing digits in reverse, the problem creators simplified the logic: the Head is always the starting point for addition. We simulate a hardware adder, where each node pair produces a digit and a carry for the next stage.",
+    "scenarios": [
+      "Large number arithmetic",
+      "Arbitrary precision calculators",
+      "Data stream merging"
+    ],
     "complexity": {
-      "brute": "O(m+n)",
-      "optimal": "O(max(m,n))",
-      "space": "O(max(m,n))"
+      "brute": {
+        "time": "O(N)",
+        "space": "O(N)"
+      },
+      "optimal": {
+        "time": "O(N)",
+        "space": "O(N)"
+      }
     },
-    "strategyShift": "",
-    "naiveApproach": "",
-    "optimalApproach": "",
-    "simpleExplanation": "Explore this fundamental computational pattern.",
-    "patternSignals": [],
-    "edgeCases": [],
-    "time_complexity": "O(max(m,n))",
-    "space_complexity": "O(max(m,n))",
-    "subPattern": "same_direction",
-    "patternLevel": "core_patterns",
-    "primaryPattern": "two_pointer"
+    "pseudocode": {
+      "brute": "// Naive: Convert to int (Limited by precision)\nn1 = list_to_int(l1)\nn2 = list_to_int(l2)\nreturn int_to_list(n1 + n2)",
+      "optimal": "carry = 0\nwhile l1 or l2 or carry:\n    v1 = l1.val if l1 else 0\n    v2 = l2.val if l2 else 0\n    sum = v1 + v2 + carry\n    carry = sum // 10\n    append(sum % 10) to result"
+    },
+    "external_links": {
+      "leetcode": "https://leetcode.com/problems/add-two-numbers/"
+    },
+    "input_settings": {
+      "input1": {
+        "label": "List 1 (Digits Reversed)",
+        "placeholder": "[2, 4, 3]"
+      },
+      "input2": {
+        "label": "List 2 (Digits Reversed)",
+        "placeholder": "[5, 6, 4]"
+      }
+    },
+    "efficiencyGain": "Direct traversal avoids integer overflow and scales to arbitrary lengths (O(N) vs O(N) but memory-safe).",
+    "real_time_applications": [
+      {
+        "title": "BigInt Architectures",
+        "description": "How modern engines (V8, Python) handle numbers larger than 64 bits using 'limb' arrays (similar to linked lists)."
+      },
+      {
+        "title": "Financial Ledger Systems",
+        "description": "Ensuring zero precision loss when calculating large-scale transactions (e.g., national debts or micro-cent rounding)."
+      },
+      {
+        "title": "Cryptography",
+        "description": "Large prime number arithmetic used in RSA and Elliptic Curve encryption where keys exceed 2048 bits."
+      }
+    ]
   },
   {
     "id": 3,
@@ -157,59 +202,47 @@
     "brute_force_steps": [],
     "optimal_steps": [],
     "complexity": {
-      "brute": "O(n\u00c2\u00b2)",
-      "optimal": "O(n)",
-      "space": "O(min(m, n))"
+      "brute": {
+        "time": "O(N³)",
+        "space": "O(N)"
+      },
+      "optimal": {
+        "time": "O(N)",
+        "space": "O(min(M, N))"
+      }
     },
-    "pattern_capsule": {
-      "invariant": "A substring is valid only if all characters are unique.",
-      "trigger": "Longest/Shortest substring with condition.",
-      "mistake": "Resetting the left pointer completely instead of sliding it."
+    "pseudocode": {
+      "brute": "for i from 0 to n-1:\n    for j from i to n-1:\n        if isUnique(s[i:j+1]):\n            maxLen = max(maxLen, j-i+1)",
+      "optimal": "l = 0, maxLen = 0, map = {}\nfor r from 0 to n-1:\n    if s[r] in map:\n        l = max(l, map[s[r]] + 1)\n    map[s[r]] = r\n    maxLen = max(maxLen, r-l+1)"
     },
-    "thinking_guide": {
-      "first_principles": [
-        "Input: A single string `s` containing characters, digits, and symbols.",
-        "Output: The length of the longest substring with all unique characters.",
-        "Constraints: String length can be up to 5 * 10^4, requiring linear time complexity."
-      ],
-      "pattern_signals": [
-        "Keywords: 'Longest Substring', 'Unique Characters'.",
-        "Structural Clue: We need to analyze a continuous segment (window) of a string.",
-        "Why this fits: Sliding Window allows us to maintain a valid range and adjust its bounds dynamically."
-      ],
-      "naive_approach": [
-        "What beginners try: Generating all possible substrings (O(n^3)) and checking each for uniqueness.",
-        "Why it works: It checks every possibility.",
-        "Why it's inefficient: Most work is redundant. If 'abc' is unique, checking 'a', 'ab', and 'bc' individually is wasteful."
-      ],
-      "approach_blueprint": [
-        "1. Use two pointers, `left` and `right`, set to the start of the string.",
-        "2. Use a Set to track characters currently within the window.",
-        "3. Move the `right` pointer to expand the window and add characters to the Set.",
-        "4. If a duplicate character is encountered, move the `left` pointer until the duplicate is removed.",
-        "5. At each step, update the maximum length (`right - left + 1`).",
-        "6. Return the maximum length found."
-      ]
+    "external_links": {
+      "leetcode": "https://leetcode.com/problems/longest-substring-without-repeating-characters/"
     },
-    "primaryPattern": "sliding_window",
-    "shortPatternReason": "Contiguous segment check for uniqueness.",
-    "time_complexity": "O(n)",
-    "space_complexity": "O(min(m, n))",
-    "patternSignals": [
-      "Contiguous segment check for uniqueness.",
-      "Uses Sliding Window logic."
-    ],
-    "edgeCases": [
-      "Empty input",
-      "Single element",
-      "Maximum constraints"
-    ],
-    "strategyShift": "Use the sliding window technique with two pointers (left and right). Expand the right pointer to include characters and shrink the left pointer when a duplicate is found.",
-    "naiveApproach": "Check every possible substring and verify if it has repeating characters. Keep track of the maximum length found.",
-    "optimalApproach": "Use the sliding window technique with two pointers (left and right). Expand the right pointer to include characters and shrink the left pointer when a duplicate is found.",
-    "simpleExplanation": "Contiguous segment check for uniqueness.",
-    "subPattern": "variable_window",
-    "patternLevel": "core_patterns"
+    "input_settings": {
+      "input1": {
+        "label": "Input Sequence (String)",
+        "placeholder": "\"abcabcbb\""
+      },
+      "input2": {
+        "label": "Unique Constraint Type",
+        "placeholder": "All ASCII"
+      }
+    },
+    "efficiencyGain": "Sliding Window reduces redundant checks, achieving O(N) linear time versus O(N³) cubic time.",
+    "real_time_applications": [
+      {
+        "title": "Network Congestion Control",
+        "description": "TCP uses sliding windows to manage data flow and detect packet loss without re-calculating the entire stream."
+      },
+      {
+        "title": "Autocomplete Engines",
+        "description": "Identifying the longest valid prefix in massive dictionaries as users type in real-time."
+      },
+      {
+        "title": "Genomic Sequencing",
+        "description": "Finding non-repetitive DNA sequences in billions of base pairs to identify unique genetic markers."
+      }
+    ]
   },
   {
     "id": 4,
@@ -238,46 +271,56 @@
         "explanation": "merged array = [1,2,3] and median is 2."
       }
     ],
-    "brute_force_explanation": "Merge the two sorted arrays into one large sorted array and Find the middle element.",
-    "optimal_explanation": "Use binary search to find the correct partition point between the two arrays such that all elements on the left are smaller than all elements on the right.",
-    "brute_force_steps": [
-      {
-        "id": 1,
-        "description": "Initialize pointers for both arrays.",
-        "state": {
-          "p1": 0,
-          "p2": 0,
-          "merged": []
-        }
-      },
-      {
-        "id": 2,
-        "description": "Compare elements and add smaller to merged.",
-        "state": {
-          "p1": 1,
-          "p2": 0,
-          "merged": [
-            1
-          ]
-        }
-      }
-    ],
-    "optimal_steps": [
-      {
-        "id": 1,
-        "description": "Check which array is smaller.",
-        "state": {
-          "low": 0,
-          "high": 2,
-          "partitionX": 0
-        }
-      }
+    "brute_force_explanation": "Merge both arrays into a single sorted array and pick the middle element. While O(M+N) time is acceptable for small arrays, it fails the O(log(M+N)) requirement for truly large-scale datasets.",
+    "optimal_explanation": "Leverage Binary Search to partition the two arrays simultaneously. By ensuring the elements on the left side of the partitions are always smaller than those on the right, we can find the median in logarithmic time without merging.",
+    "intuition": "DIVIDE AND CONQUER. We're not looking for a value, but a 'cut' point. By cutting the smaller array, we instantly know where the cut must be in the larger array to keep the total halves equal.",
+    "scenarios": [
+      "Optimizing database merges",
+      "High-frequency trade matching",
+      "Real-time sensor data fusion"
     ],
     "complexity": {
-      "brute": "O(m+n)",
-      "optimal": "O(log(min(m,n)))",
-      "space": "O(1)"
+      "brute": {
+        "time": "O(M+N)",
+        "space": "O(M+N)"
+      },
+      "optimal": {
+        "time": "O(log(min(M, N)))",
+        "space": "O(1)"
+      }
     },
+    "pseudocode": {
+      "brute": "merged = sort(nums1 + nums2)\nif even: return (merged[mid] + merged[mid-1])/2\nelse: return merged[mid]",
+      "optimal": "ensure nums1 is shorter\nlow, high = 0, len(nums1)\nwhile low <= high:\n    partitionX = (low + high) // 2\n    partitionY = (total + 1) // 2 - partitionX\n    if maxLeftX <= minRightY and maxLeftY <= minRightX:\n        return median calculation\n    high/low = adjust bounds"
+    },
+    "external_links": {
+      "leetcode": "https://leetcode.com/problems/median-of-two-sorted-arrays/"
+    },
+    "input_settings": {
+      "input1": {
+        "label": "Array 1 (Sorted)",
+        "placeholder": "[1, 3]"
+      },
+      "input2": {
+        "label": "Array 2 (Sorted)",
+        "placeholder": "[2]"
+      }
+    },
+    "efficiencyGain": "Logarithmic complexity scaling ensures high performance even with arrays containing millions of elements.",
+    "real_time_applications": [
+      {
+        "title": "Adexchange Bid Sorting",
+        "description": "Rapidly finding the median bid price across multiple sorted streams to set real-time floors."
+      },
+      {
+        "title": "Parallel DB Joins",
+        "description": "Coordinating data partitions between distributed nodes where data is already sorted by primary key."
+      },
+      {
+        "title": "Autonomous Path Median",
+        "description": "Synthesizing depth-sensor streams (LIDAR) into a median safety distance calculation in milliseconds."
+      }
+    ],
     "pattern_capsule": {
       "invariant": "The median divides the total set into two equal halves.",
       "trigger": "Two sorted arrays + O(log(m+n)) constraint.",
@@ -326,220 +369,466 @@
     "slug": "longest-palindromic-substring",
     "difficulty": "Medium",
     "algorithmType": "two_pointer",
-    "status": "coming_soon",
+    "status": "complete",
     "tags": [
       "String",
       "Dynamic Programming"
     ],
-    "problem_statement": "Given a string s, return the longest palindromic substring in s.",
+    "primaryPattern": "Expand Around Center",
+    "shortPatternReason": "Exploiting palindromic symmetry by expanding outward from each character as a potential center.",
+    "time_complexity": "O(n²)",
+    "space_complexity": "O(1)",
+    "problem_statement": "Given a string `s`, return the longest palindromic substring in `s`. A palindrome reads the same forwards and backwards. The challenge is to identify the global maximum palindrome without checking every possible substring (O(N³)).",
     "constraints": [
       "1 <= s.length <= 1000",
       "s consists of only digits and English letters."
     ],
-    "examples": [],
-    "brute_force_explanation": "",
-    "optimal_explanation": "",
-    "brute_force_steps": [],
-    "optimal_steps": [],
-    "code_solutions": {
-      "cpp": "",
-      "python": ""
+    "examples": [
+      {
+        "input": "s = 'babad'",
+        "output": "'bab'",
+        "explanation": "'aba' is also a valid answer."
+      }
+    ],
+    "brute_force_explanation": "A naive approach checks every possible substring ($O(N^2)$) and, for each, verify if it is a palindrome ($O(N)$). This leads to an $O(N^3)$ complexity, which becomes unusable as the string length approaches 1,000.",
+    "optimal_explanation": "The 'Expand Around Center' pattern treats each character (and each gap between characters) as a potential center of a palindrome. By expanding outward as long as characters match, we find the longest palindrome for each center in $O(N)$ time, totaling $O(N^2)$ for the whole string with zero extra space.",
+    "intuition": "SYMMETRY IS THE KEY. Instead of building strings and checking them, we start from a single point and 'verify symmetry' in both directions simultaneously. This leverages the definition of a palindrome to prune millions of unnecessary checks.",
+    "scenarios": [
+      "DNA sequence analysis",
+      "Pattern matching in text editors",
+      "Data compression algorithms"
+    ],
+    "complexity": {
+      "brute": {
+        "time": "O(N³)",
+        "space": "O(1)"
+      },
+      "optimal": {
+        "time": "O(N²)",
+        "space": "O(1)"
+      }
     },
-    "time_complexity": "O(n^2)",
-    "space_complexity": "O(1)",
-    "strategyShift": "",
-    "naiveApproach": "",
-    "optimalApproach": "",
-    "simpleExplanation": "Explore this fundamental computational pattern.",
-    "patternSignals": [],
-    "edgeCases": [],
-    "subPattern": "opposite_direction",
-    "patternLevel": "core_patterns",
-    "primaryPattern": "two_pointer"
+    "pseudocode": {
+      "brute": "for i from 0 to n-1:\n    for j from i to n-1:\n        if isPalindrome(s[i:j+1]):\n            update maxStr",
+      "optimal": "for i from 0 to n-1:\n    len1 = expand(s, i, i) // odd\n    len2 = expand(s, i, i+1) // even\n    update maxRange if len1 or len2 is larger"
+    },
+    "external_links": {
+      "leetcode": "https://leetcode.com/problems/longest-palindromic-substring/"
+    },
+    "input_settings": {
+      "input1": {
+        "label": "Input Sequence (String)",
+        "placeholder": "\"babad\""
+      },
+      "input2": {
+        "label": "Case Sensitivity",
+        "placeholder": "Sensitive"
+      }
+    },
+    "efficiencyGain": "Reducing cubic time to quadratic time by leveraging symmetry, saving thousands of operations on even medium-sized strings.",
+    "real_time_applications": [
+      {
+        "title": "Bioinformatics Linkages",
+        "description": "Identifying inverted repeats in genetic sequences which often indicate critical biological functions."
+      },
+      {
+        "title": "Compiler Syntax Trees",
+        "description": "Used in lexers to identify symmetric tokens or mirrored structures in recursive descent parsing."
+      },
+      {
+        "title": "Network Protocol Palindromes",
+        "description": "Detecting specific data packet patterns that serve as 'headers' or 'footers' in low-latency stream protocols."
+      }
+    ]
   },
   {
     "id": 6,
     "title": "Zigzag Conversion",
     "slug": "zigzag-conversion",
     "difficulty": "Medium",
-    "algorithmType": "two_pointer",
-    "status": "coming_soon",
+    "algorithmType": "array",
+    "status": "complete",
     "tags": [
       "String"
     ],
-    "problem_statement": "The string \"PAYPALISHIRING\" is written in a zigzag pattern on a given number of rows like this: (you may want to display this pattern in a fixed font for better legibility)",
+    "primaryPattern": "Cyclic Traversal",
+    "shortPatternReason": "Simulating the zigzag motion by iterating through string and rows in a bouncing cycle.",
+    "time_complexity": "O(n)",
+    "space_complexity": "O(n)",
+    "problem_statement": "The string \"PAYPALISHIRING\" is written in a zigzag pattern on a given number of rows. This problem asks you to simulate this layout and then read the result row by row.",
     "constraints": [
       "1 <= s.length <= 1000",
       "s consists of English letters (lower-case and upper-case), ',' and '.'.",
       "1 <= numRows <= 1000"
     ],
-    "examples": [],
-    "brute_force_explanation": "",
-    "optimal_explanation": "",
-    "brute_force_steps": [],
-    "optimal_steps": [],
-    "code_solutions": {
-      "cpp": "",
-      "python": ""
+    "examples": [
+      {
+        "input": "s = 'PAYPALISHIRING', numRows = 3",
+        "output": "'PAHNAPLSIIGYIR'",
+        "explanation": "P   A   H   N\nA P L S I I G\nY   I   R"
+      }
+    ],
+    "brute_force_explanation": "A brute force approach would involve creating a 2D matrix of size (numRows, s.length) and manually placing characters. However, this wastes significant space as most matrix cells will be empty.",
+    "optimal_explanation": "Instead of a full matrix, we use an array of strings (one for each row). We traverse the input string once, adding each character to the current row and 'bouncing' the row direction whenever we hit the top or bottom row.",
+    "intuition": "THE BOUNCING BALL. Imagine a ball bouncing between the first and last row as it travels left to right. We don't need to know the horizontal position, only the current row and the direction of the bounce.",
+    "scenarios": [
+      "Text rendering in limited space",
+      "Data obfuscation/Transposition ciphers",
+      "Waveform visualization"
+    ],
+    "complexity": {
+      "brute": {
+        "time": "O(N)",
+        "space": "O(N * numRows)"
+      },
+      "optimal": {
+        "time": "O(N)",
+        "space": "O(N)"
+      }
     },
-    "time_complexity": "O(n)",
-    "space_complexity": "O(n)",
-    "strategyShift": "",
-    "naiveApproach": "",
-    "optimalApproach": "",
-    "simpleExplanation": "Explore this fundamental computational pattern.",
-    "patternSignals": [],
-    "edgeCases": [],
-    "subPattern": "same_direction",
-    "patternLevel": "core_patterns",
-    "primaryPattern": "two_pointer"
+    "pseudocode": {
+      "brute": "matrix = createMatrix(numRows, n)\nfill matrix in zigzag order\nresult = read matrix row by row",
+      "optimal": "rows = array of strings\nfor char in s:\n    rows[currRow] += char\n    if currRow == 0 or currRow == max: direction *= -1\n    currRow += direction"
+    },
+    "external_links": {
+      "leetcode": "https://leetcode.com/problems/zigzag-conversion/"
+    },
+    "input_settings": {
+      "input1": {
+        "label": "Input String",
+        "placeholder": "\"PAYPALISHIRING\""
+      },
+      "input2": {
+        "label": "Number of Rows",
+        "placeholder": "3"
+      }
+    },
+    "efficiencyGain": "Reducing space complexity from O(N*K) to O(N) by using row-level accumulation instead of a sparse 2D matrix.",
+    "real_time_applications": [
+      {
+        "title": "Data Serialization",
+        "description": "Rearranging data streams for specific hardware pipelines that read parallel chunks row-by-row."
+      },
+      {
+        "title": "OLED Display Refresh",
+        "description": "Optimizing scan-line updates for unconventional display geometries where pixels are addressed in non-linear zigzags."
+      },
+      {
+        "title": "Classic Transposition Ciphers",
+        "description": "Implementing 'Rail Fence' ciphers used in historical cryptography for basic message encryption."
+      }
+    ]
   },
   {
     "id": 7,
     "title": "Reverse Integer",
     "slug": "reverse-integer",
     "difficulty": "Easy",
-    "algorithmType": "two_pointer",
-    "status": "coming_soon",
+    "algorithmType": "math",
+    "status": "complete",
     "tags": [
       "Math"
     ],
-    "problem_statement": "Given a signed 32-bit integer x, return x with its digits reversed. If reversing x causes the value to go outside the signed 32-bit integer range [-2^31, 2^31 - 1], then return 0.",
+    "primaryPattern": "Digit Manipulation",
+    "shortPatternReason": "Using basic arithmetic (modulo/division) to reverse digits without using expensive string conversions.",
+    "time_complexity": "O(log(x))",
+    "space_complexity": "O(1)",
+    "problem_statement": "Given a signed 32-bit integer `x`, return `x` with its digits reversed. If reversing `x` causes the value to go outside the signed 32-bit integer range, return 0.",
     "constraints": [
       "-2^31 <= x <= 2^31 - 1"
     ],
-    "examples": [],
-    "brute_force_explanation": "",
-    "optimal_explanation": "",
-    "brute_force_steps": [],
-    "optimal_steps": [],
-    "code_solutions": {
-      "cpp": "",
-      "python": ""
+    "examples": [
+      {
+        "input": "x = 123",
+        "output": "321"
+      }
+    ],
+    "brute_force_explanation": "A common mistake is converting the number to a string, reversing the string, and converting it back. This is slow and can fail significantly on overflow before the conversion even happens.",
+    "optimal_explanation": "Repeatedly extract the last digit using `x % 10` and append it to the result `res = res * 10 + lastDigit`. This process is done in a loop until `x` becomes 0, with checks for overflow at each step.",
+    "intuition": "POP AND PUSH. Think of the number as a stack of digits. We 'pop' from the end of the original number and 'push' to the beginning of the new reverse number in a single movement.",
+    "scenarios": [
+      "Endianness conversion",
+      "Bit-level field reversal",
+      "Mathematical sequence analysis"
+    ],
+    "complexity": {
+      "brute": {
+        "time": "O(log X)",
+        "space": "O(log X)"
+      },
+      "optimal": {
+        "time": "O(log X)",
+        "space": "O(1)"
+      }
     },
-    "time_complexity": "O(log(x))",
-    "space_complexity": "O(1)",
-    "strategyShift": "",
-    "naiveApproach": "",
-    "optimalApproach": "",
-    "simpleExplanation": "Explore this fundamental computational pattern.",
-    "patternSignals": [],
-    "edgeCases": [],
-    "subPattern": "same_direction",
-    "patternLevel": "core_patterns",
-    "primaryPattern": "two_pointer"
+    "pseudocode": {
+      "brute": "s = str(abs(x))\nrev = s.reverse()\nif out_of_bounds: return 0\nreturn int(rev)",
+      "optimal": "while x != 0:\n    pop = x % 10\n    if about_to_overflow: return 0\n    res = res * 10 + pop\n    x /= 10"
+    },
+    "external_links": {
+      "leetcode": "https://leetcode.com/problems/reverse-integer/"
+    },
+    "input_settings": {
+      "input1": {
+        "label": "Input Integer",
+        "placeholder": "123"
+      },
+      "input2": {
+        "label": "Overflow Boundary",
+        "placeholder": "32-bit"
+      }
+    },
+    "efficiencyGain": "Avoiding O(log X) extra space for string storage and the overhead of multiple type conversions.",
+    "real_time_applications": [
+      {
+        "title": "Low-level Bitstream Reversal",
+        "description": "Reversing packet headers or field orders in networking protocols where speed is critical."
+      },
+      {
+        "title": "Legacy System Migrations",
+        "description": "Transforming data between Big-Endian and Little-Endian format in older embedded architectures."
+      },
+      {
+        "title": "Decimal Arithmetic Verification",
+        "description": "Checking numeric properties in accounting software where precise digit-level control is required."
+      }
+    ]
   },
   {
     "id": 8,
     "title": "String to Integer (atoi)",
     "slug": "string-to-integer-atoi",
     "difficulty": "Medium",
-    "algorithmType": "two_pointer",
-    "status": "coming_soon",
+    "algorithmType": "array",
+    "status": "complete",
     "tags": [
       "String"
     ],
-    "problem_statement": "Implement the myAtoi(string s) function, which converts a string to a 32-bit signed integer.",
-    "constraints": [
-      "0 <= s.length <= 200",
-      "s consists of English letters (lower-case and upper-case), digits (0-9), ' ', '+', '-', and '.'."
-    ],
-    "examples": [],
-    "brute_force_explanation": "",
-    "optimal_explanation": "",
-    "brute_force_steps": [],
-    "optimal_steps": [],
-    "code_solutions": {
-      "cpp": "",
-      "python": ""
-    },
+    "primaryPattern": "Deterministic Finite Automata",
+    "shortPatternReason": "Handling complex edge case states (whitespace, signs, non-digits) using a linear scan.",
     "time_complexity": "O(n)",
     "space_complexity": "O(1)",
-    "strategyShift": "",
-    "naiveApproach": "",
-    "optimalApproach": "",
-    "simpleExplanation": "Explore this fundamental computational pattern.",
-    "patternSignals": [],
-    "edgeCases": [],
-    "subPattern": "same_direction",
-    "patternLevel": "core_patterns",
-    "primaryPattern": "two_pointer"
+    "problem_statement": "Implement the `myAtoi(string s)` function, which converts a string to a 32-bit signed integer. It must handle leading whitespace, signs, and ignore non-digit characters following the number.",
+    "constraints": [
+      "0 <= s.length <= 200",
+      "s consists of English letters, digits, ' ', '+', '-', and '.'."
+    ],
+    "examples": [
+      {
+        "input": "s = ' -42'",
+        "output": "-42",
+        "explanation": "Leading spaces are ignored, sign is detected."
+      }
+    ],
+    "brute_force_explanation": "Checking the string multiple times (once for spaces, once for sign, once for digits) leads to redundant processing and complex conditional logic.",
+    "optimal_explanation": "Use a single-pass implementation that mimics a simple State Machine. Start in 'Whitespace' state, move to 'Sign' state, then finally to 'Digit' state, maintaining the result and checking for overflow on every character.",
+    "intuition": "CHARACTER VALIDATION. Instead of looking for a number, look for why a character should *stop* being a number. It's a process of elimination: first skip spaces, then confirm direction (sign), then harvest digits until any noise appears.",
+    "scenarios": [
+      "CLI argument parsing",
+      "HTTP Header extraction",
+      "Data ingestion from CSV/TXT"
+    ],
+    "complexity": {
+      "brute": {
+        "time": "O(N)",
+        "space": "O(N)"
+      },
+      "optimal": {
+        "time": "O(N)",
+        "space": "O(1)"
+      }
+    },
+    "pseudocode": {
+      "brute": "s = s.strip()\nsign = get_sign(s)\ndigits = extract_digits(s)\nreturn clampTo32Bit(digits)",
+      "optimal": "skipSpaces(s)\nif +/-: sign = val\nwhile isDigit(s[i]):\n    res = res * 10 + s[i]\n    if overflow: return limit\nreturn res * sign"
+    },
+    "external_links": {
+      "leetcode": "https://leetcode.com/problems/string-to-integer-atoi/"
+    },
+    "input_settings": {
+      "input1": {
+        "label": "Input String",
+        "placeholder": "\"  -42 with words\""
+      },
+      "input2": {
+        "label": "Digit Clamp Target",
+        "placeholder": "32-bit Signed"
+      }
+    },
+    "efficiencyGain": "Reducing memory overhead by processing characters in-place rather than allocating new strings for stripping and filtering.",
+    "real_time_applications": [
+      {
+        "title": "Compiler Lexical Analysis",
+        "description": "Transforming ASCII source code into internal numeric types for faster computation in compilers."
+      },
+      {
+        "title": "Financial Transaction Parsing",
+        "description": "Processing raw text logs from banking mainframes where numbers are often padded with spaces or extra symbols."
+      },
+      {
+        "title": "Embedded Input Handling",
+        "description": "Translating user input from keypads or serial monitors into control variables for micro-controllers."
+      }
+    ]
   },
   {
     "id": 9,
     "title": "Palindrome Number",
     "slug": "palindrome-number",
     "difficulty": "Easy",
-    "algorithmType": "two_pointer",
-    "status": "coming_soon",
+    "algorithmType": "math",
+    "status": "complete",
     "tags": [
       "Math"
     ],
-    "problem_statement": "Given an integer x, return true if x is a palindrome, and false otherwise.",
+    "primaryPattern": "Half-Reversal",
+    "shortPatternReason": "Reversing only half of the integer to compare against the first half, preventing overflow issues.",
+    "time_complexity": "O(log(n))",
+    "space_complexity": "O(1)",
+    "problem_statement": "Given an integer `x`, return `true` if `x` is a palindrome, and `false` otherwise. A negative number is never a palindrome.",
     "constraints": [
       "-2^31 <= x <= 2^31 - 1"
     ],
-    "examples": [],
-    "brute_force_explanation": "",
-    "optimal_explanation": "",
-    "brute_force_steps": [],
-    "optimal_steps": [],
-    "code_solutions": {
-      "cpp": "",
-      "python": ""
+    "examples": [
+      {
+        "input": "x = 121",
+        "output": "true"
+      },
+      {
+        "input": "x = -121",
+        "output": "false"
+      }
+    ],
+    "brute_force_explanation": "Converting the integer to a string and checking if the string is a palindrome is simple but slow and expensive in terms of memory.",
+    "optimal_explanation": "Reverse the second half of the number and compare it with the first half. We know we've reached the middle when our reversed number becomes greater than or equal to the remaining original number.",
+    "intuition": "MEETING IN THE MIDDLE. You don't need to rebuild the whole house to see if it's symmetrical. Just check if the back door is in the same place as the front door relative to the center.",
+    "scenarios": [
+      "Fast mathematical property checks",
+      "Network ID verification",
+      "Pattern discovery in large datasets"
+    ],
+    "complexity": {
+      "brute": {
+        "time": "O(log N)",
+        "space": "O(log N)"
+      },
+      "optimal": {
+        "time": "O(log N)",
+        "space": "O(1)"
+      }
     },
-    "time_complexity": "O(log(x))",
-    "space_complexity": "O(1)",
-    "strategyShift": "",
-    "naiveApproach": "",
-    "optimalApproach": "",
-    "simpleExplanation": "Explore this fundamental computational pattern.",
-    "patternSignals": [],
-    "edgeCases": [],
-    "subPattern": "same_direction",
-    "patternLevel": "core_patterns",
-    "primaryPattern": "two_pointer"
+    "pseudocode": {
+      "brute": "s = str(x)\nreturn s == s.reverse()",
+      "optimal": "if x < 0: return False\nrev = 0\nwhile x > rev:\n    rev = rev * 10 + x % 10\n    x /= 10\nreturn x == rev or x == rev / 10"
+    },
+    "external_links": {
+      "leetcode": "https://leetcode.com/problems/palindrome-number/"
+    },
+    "input_settings": {
+      "input1": {
+        "label": "Input Integer",
+        "placeholder": "121"
+      },
+      "input2": {
+        "label": "Base System",
+        "placeholder": "Decimal (Base 10)"
+      }
+    },
+    "efficiencyGain": "Eliminating string allocation and half of the iteration count by stopping at the numeric center.",
+    "real_time_applications": [
+      {
+        "title": "In-Memory ID Validation",
+        "description": "Rapidly verifying symmetric auto-generated IDs in distributed databases before processing more expensive queries."
+      },
+      {
+        "title": "Graphic Symmetry Engines",
+        "description": "Checking for mirror points in 2D coordinate maps to optimize rendering of symmetrical objects."
+      },
+      {
+        "title": "Financial Checksumming",
+        "description": "Using palindromic properties as simple, fast initial validation for certain data packet structures."
+      }
+    ]
   },
   {
     "id": 10,
     "title": "Regular Expression Matching",
     "slug": "regular-expression-matching",
     "difficulty": "Hard",
-    "algorithmType": "two_pointer",
-    "status": "coming_soon",
+    "algorithmType": "dynamic_programming",
+    "status": "complete",
     "tags": [
       "String",
       "Dynamic Programming",
       "Recursion"
     ],
-    "problem_statement": "Given an input string s and a pattern p, implement regular expression matching with support for '.' and '*' where '.' Matches any single character and '*' Matches zero or more of the preceding element.",
+    "primaryPattern": "Top-Down Memoization",
+    "shortPatternReason": "Breaking down wildcard matching into overlapping subproblems solved recursively with caching.",
+    "time_complexity": "O(S*P)",
+    "space_complexity": "O(S*P)",
+    "problem_statement": "Implement regular expression matching with support for '.' and '*' where '.' matches any single character and '*' matches zero or more of the preceding element.",
     "constraints": [
       "1 <= s.length <= 20",
       "1 <= p.length <= 20",
-      "s consists of only lowercase English letters.",
-      "p consists of only lowercase English letters, '.', and '*'.",
-      "It is guaranteed for each appearance of the character '*', there will be a previous valid character to match."
+      "s consists of lowercase English letters.",
+      "p consists of lowercase English letters, '.', and '*'."
     ],
-    "examples": [],
-    "brute_force_explanation": "",
-    "optimal_explanation": "",
-    "brute_force_steps": [],
-    "optimal_steps": [],
-    "code_solutions": {
-      "cpp": "",
-      "python": ""
+    "examples": [
+      {
+        "input": "s = 'aa', p = 'a*'",
+        "output": "true"
+      }
+    ],
+    "brute_force_explanation": "A pure recursive approach without memoization explores the same sub-paths multiple times, exponential complexity that will hang on even slightly complex patterns.",
+    "optimal_explanation": "Use Dynamic Programming (Table) or Recursion with Memoization. For each pair (i, j), we check if the current characters match. If the next character in pattern is '*', we have two choices: skip the '*' or continue matching with the same '*' element.",
+    "intuition": "DECISION BRANCHES. Wildcards are just choices. '*' means 'I can be empty' OR 'I can be one of my previous self'. We explore both branches and if either leads to a match, the whole thing matches.",
+    "scenarios": [
+      "Search engines",
+      "Log filtering",
+      "Security rule validation"
+    ],
+    "complexity": {
+      "brute": {
+        "time": "O((S+P)*2^(S+P/2))",
+        "space": "O(S+P)"
+      },
+      "optimal": {
+        "time": "O(S*P)",
+        "space": "O(S*P)"
+      }
     },
-    "time_complexity": "O((m+n) * 2^(m+n))",
-    "space_complexity": "O(m+n)",
-    "strategyShift": "",
-    "naiveApproach": "",
-    "optimalApproach": "",
-    "simpleExplanation": "Explore this fundamental computational pattern.",
-    "patternSignals": [],
-    "edgeCases": [],
-    "subPattern": "same_direction",
-    "patternLevel": "core_patterns",
-    "primaryPattern": "two_pointer"
+    "pseudocode": {
+      "brute": "match(s, p):\n    if not p: return not s\n    first_match = s and p[0] in {s[0], '.'}\n    if len(p) >= 2 and p[1] == '*':\n        return match(s, p[2:]) or (first_match and match(s[1:], p))\n    else:\n        return first_match and match(s[1:], p[1:])",
+      "optimal": "dp = matrix[s+1][p+1]\ndp[last][last] = True\nfor i from s to 0:\n    for j from p-1 to 0:\n        // similar logic to recursive but fills table"
+    },
+    "external_links": {
+      "leetcode": "https://leetcode.com/problems/regular-expression-matching/"
+    },
+    "input_settings": {
+      "input1": {
+        "label": "Input String (s)",
+        "placeholder": "\"aa\""
+      },
+      "input2": {
+        "label": "Regex Pattern (p)",
+        "placeholder": "\"a*\""
+      }
+    },
+    "efficiencyGain": "From exponential to polynomial time by caching results of sub-matches, handling deep recursion depths in real-world patterns.",
+    "real_time_applications": [
+      {
+        "title": "WAF (Web Application Firewalls)",
+        "description": "Rapidly matching incoming request patterns against known attack signatures (SQLi, XSS) using regex optimizations."
+      },
+      {
+        "title": "Text Editor Search/Replace",
+        "description": "Powers the core find-in-files functionality in IDEs like VS Code where patterns must match across thousands of lines."
+      },
+      {
+        "title": "Routing Engines",
+        "description": "Used in frameworks like Express or Django to translate URL patterns (e.g., /user/*) into specific function calls."
+      }
+    ]
   },
   {
     "id": 11,
@@ -547,56 +836,78 @@
     "slug": "container-with-most-water",
     "difficulty": "Medium",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
-      "Two Pointer"
+      "Array",
+      "Two Pointers"
     ],
-    "primaryPattern": "two_pointer",
-    "shortPatternReason": "Shrinking search space by moving pointers inward.",
+    "primaryPattern": "Two Pointers",
+    "shortPatternReason": "Searching for maximum area by narrowing the distance between the tallest possible vertical lines.",
     "time_complexity": "O(n)",
     "space_complexity": "O(1)",
-    "problem_statement": "Standard LeetCode problem: Container With Most Water.",
+    "problem_statement": "You are given an integer array `height` of length `n`. There are `n` vertical lines drawn such that the two endpoints of the `ith` line are `(i, 0)` and `(i, height[i])`. Find two lines that together with the x-axis form a container, such that the container contains the most water. Return the maximum amount of water a container can store.",
     "constraints": [
-      "N <= 10^5"
+      "n == height.length",
+      "2 <= n <= 10^5",
+      "0 <= height[i] <= 10^4"
     ],
-    "examples": [],
-    "brute_force_explanation": "Iterative approach checking all pairs/subsets.",
-    "optimal_explanation": "Optimal solution using Two Pointer.",
-    "brute_force_steps": [],
-    "optimal_steps": [],
+    "examples": [
+      {
+        "input": "height = [1,8,6,2,5,4,8,3,7]",
+        "output": "49",
+        "explanation": "The max area is found between indices 1 and 8 (heights 8 and 7), width = 7, area = 7 * 7 = 49."
+      }
+    ],
+    "brute_force_explanation": "Checking every possible pair of lines (i, j) to calculate the area and keeping track of the maximum. This requires O(n\u00b2) time which is too slow for large inputs.",
+    "optimal_explanation": "Use two pointers starting at both ends of the array. Calculate the current area and move the pointer that points to the shorter line inward. Since the width is already decreasing, the only way to potentially find a larger area is to find a taller line.",
+    "intuition": "GREEDY NARROWING. The area is limited by the shorter line. To find a larger area while the width decreases, we MUST find a taller line. Thus, we always move the pointer pointing to the shorter line.",
+    "scenarios": [
+      "Optimizing physical storage containers",
+      "Resource allocation in networking",
+      "Financial portfolio optimization"
+    ],
     "complexity": {
-      "brute": "O(n\u00b2)",
-      "optimal": "O(n)",
-      "space": "O(1)"
+      "brute": {
+        "time": "O(N\u00b2)",
+        "space": "O(1)"
+      },
+      "optimal": {
+        "time": "O(N)",
+        "space": "O(1)"
+      }
     },
-    "patternSignals": [
-      "Shrinking search space by moving pointers inward."
-    ],
-    "edgeCases": [
-      "Small input",
-      "Large values"
-    ],
-    "thinking_guide": {
-      "first_principles": [
-        "Understand the goal of Container With Most Water."
-      ],
-      "pattern_signals": [
-        "Shrinking search space by moving pointers inward."
-      ],
-      "naive_approach": [
-        "Brute force checking all possibilities."
-      ],
-      "approach_blueprint": [
-        "1. Apply pattern",
-        "2. Optimize"
-      ]
+    "pseudocode": {
+      "brute": "maxArea = 0\nfor i in 0..n:\n    for j in i+1..n:\n        area = min(h[i], h[j]) * (j - i)\n        maxArea = max(maxArea, area)\nreturn maxArea",
+      "optimal": "l = 0, r = n-1, maxArea = 0\nwhile l < r:\n    area = min(h[l], h[r]) * (r - l)\n    maxArea = max(maxArea, area)\n    if h[l] < h[r]: l++\n    else: r--\nreturn maxArea"
     },
-    "strategyShift": "Optimal solution using Two Pointer.",
-    "naiveApproach": "Iterative approach checking all pairs/subsets.",
-    "optimalApproach": "Optimal solution using Two Pointer.",
-    "simpleExplanation": "Shrinking search space by moving pointers inward.",
-    "subPattern": "opposite_direction",
-    "patternLevel": "core_patterns"
+    "external_links": {
+      "leetcode": "https://leetcode.com/problems/container-with-most-water/"
+    },
+    "input_settings": {
+      "input1": {
+        "label": "Line Heights Array",
+        "placeholder": "[1,8,6,2,5,4,8,3,7]"
+      },
+      "input2": {
+        "label": "Goal Area",
+        "placeholder": "Maximize"
+      }
+    },
+    "efficiencyGain": "Reducing search space from O(N\u00b2) pairs to O(N) by eliminating pairs that can't possibly exceed the current maximum.",
+    "real_time_applications": [
+      {
+        "title": "Logistics & Warehousing",
+        "description": "Optimizing the placement of partitions in bulk storage units to maximize volumetric capacity."
+      },
+      {
+        "title": "Bandwidth Throttling",
+        "description": "Calculating peak data throughput between two time points in a fluctuating network signal."
+      },
+      {
+        "title": "Supply Chain Fluidity",
+        "description": "Determining the limiting factor in a multi-stage manufacturing pipeline by finding the 'shortest' resource line."
+      }
+    ]
   },
   {
     "id": 12,

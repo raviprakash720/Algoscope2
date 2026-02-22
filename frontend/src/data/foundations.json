@@ -12,32 +12,289 @@
         "difficulty": "Novice",
         "description": "Contiguous memory blocks for O(1) access.",
         "definition": "A collection of items stored at contiguous memory locations.",
-        "whatItIs": "The simplest data structure where elements are stored in contiguous memory locations, allowing for constant-time access via index.",
-        "coreInvariant": "Index i is at address Base + (i * ElementSize).",
-        "timeComplexity": [
-          {
-            "operation": "Access",
-            "time": "O(1)",
-            "space": "O(1)"
+        "hero": {
+          "analogy": "The Contiguous Parking Lot",
+          "analogyImage": "array_parking",
+          "realWorldExample": "A street with numbered houses. You can go directly to house #5 without checking #1-#4.",
+          "whenToUse": [
+            "Random access by index",
+            "Fixed-size collections",
+            "Frequent iterations"
+          ],
+          "quickComplexity": [
+            {
+              "operation": "Access",
+              "time": "O(1)",
+              "space": "O(1)"
+            },
+            {
+              "operation": "Search",
+              "time": "O(N)",
+              "space": "O(1)"
+            },
+            {
+              "operation": "Insertion (End)",
+              "time": "O(1)",
+              "space": "O(1)"
+            }
+          ]
+        },
+        "whatProblemItSolves": "Solves the problem of organizing data that needs to be accessed quickly via a numerical position. It provides the foundation for most other data structures.",
+        "memoryRepresentation": "Arrays occupy a single continuous block of RAM. If an array starts at address X, the element at index i is at address X + (i * size_of_element).",
+        "internalWorking": "When an array is created, the system allocates a block of memory. Access is O(1) because the CPU calculates the address directly using the index. Resizing usually involves allocating a new, larger block and copying all elements.",
+        "progression": {
+          "fundamentals": {
+            "title": "Level 1 \u2013 Fundamentals",
+            "description": "Basic array operations and linear scans.",
+            "concepts": [
+              {
+                "title": "Index Access",
+                "explanation": "Directly fetching an element using its zero-based position."
+              },
+              {
+                "title": "Linear Traversal",
+                "explanation": "Visiting every element from index 0 to N-1."
+              }
+            ],
+            "problems": [
+              1,
+              283
+            ]
           },
-          {
-            "operation": "Insert",
-            "time": "O(n)",
-            "space": "O(1)"
+          "patterns": {
+            "title": "Level 2 \u2013 Pattern Usage",
+            "description": "How arrays power advanced strategies.",
+            "concepts": [
+              {
+                "title": "Two Pointers",
+                "explanation": "Moving two indices towards each other or at different speeds."
+              },
+              {
+                "title": "Sliding Window",
+                "explanation": "Maintaining a range of elements that 'slides' through the array."
+              }
+            ],
+            "problems": [
+              53,
+              121
+            ]
           },
+          "advanced": {
+            "title": "Level 3 \u2013 Advanced Mode",
+            "description": "Memory optimizations and amortized analysis.",
+            "concepts": [
+              {
+                "title": "Dynamic Resizing",
+                "explanation": "Understanding amortized O(1) for push operations in dynamic arrays."
+              },
+              {
+                "title": "Cache Locality",
+                "explanation": "How contiguous memory maximizes CPU cache hits."
+              }
+            ],
+            "problems": [
+              41,
+              152
+            ]
+          }
+        },
+        "visualizerType": "array",
+        "patternMapping": {
+          "relatedPatterns": [
+            {
+              "id": "two_pointers",
+              "label": "Two Pointers",
+              "reason": "Requires constant time index access."
+            },
+            {
+              "id": "sliding_window",
+              "label": "Sliding Window",
+              "reason": "Efficiently processes ranges."
+            }
+          ],
+          "dependencyGraph": {
+            "nodes": [
+              {
+                "id": "arrays",
+                "label": "Arrays",
+                "type": "root"
+              },
+              {
+                "id": "two_pointers",
+                "label": "Two Pointers",
+                "type": "pattern"
+              },
+              {
+                "id": "sliding_window",
+                "label": "Sliding Window",
+                "type": "pattern"
+              },
+              {
+                "id": "prefix_sum",
+                "label": "Prefix Sum",
+                "type": "pattern"
+              }
+            ],
+            "edges": [
+              {
+                "from": "arrays",
+                "to": "two_pointers",
+                "label": "O(1) Access"
+              },
+              {
+                "from": "arrays",
+                "to": "sliding_window",
+                "label": "Contiguous Range"
+              },
+              {
+                "from": "arrays",
+                "to": "prefix_sum",
+                "label": "Subarray Queries"
+              }
+            ]
+          }
+        },
+        "comparisons": [
           {
-            "operation": "Delete",
-            "time": "O(n)",
-            "space": "O(1)"
-          },
-          {
-            "operation": "Search",
-            "time": "O(n)",
-            "space": "O(1)"
+            "targetId": "linked_lists",
+            "title": "Array vs Linked List",
+            "metrics": [
+              {
+                "label": "Access",
+                "values": {
+                  "Array": "O(1)",
+                  "Linked List": "O(N)"
+                }
+              },
+              {
+                "label": "Insertion",
+                "values": {
+                  "Array": "O(N)",
+                  "Linked List": "O(1)"
+                }
+              }
+            ],
+            "tradeoff": "Arrays are better for read-heavy apps, while Linked Lists excel at frequent insertions/deletions."
           }
         ],
-        "visualizerType": "array",
-        "subPatterns": [],
+        "interviewSim": {
+          "commonMistakes": [
+            {
+              "title": "Off-by-one",
+              "explanation": "Accessing index N in size N array.",
+              "warning": "Indices are 0 to N-1."
+            }
+          ],
+          "constraints": [
+            "N < 10^5 (O(N) search OK)",
+            "N < 10^8 (Requires O(log N))"
+          ],
+          "practiceProblems": [
+            1,
+            53
+          ]
+        },
+        "deepDive": {
+          "foundation": "Arrays are the most fundamental data structure. They represent a contiguous block of memory where each element is located at an offset from the start address. This deterministic nature is what allows for O(1) random access.",
+          "engine": "Modern CPU architectures optimize for arrays using 'Spatial Locality'. When you access index 0, the CPU fetches more than just that one byte; it pulls a 'Cache Line' of surrounding data into the L1 cache, making sequential access lightning fast.",
+          "storage": "Storage is purely linear. If an array starts at address 0x100 and stores 4-byte integers, index 5 is guaranteed to be at 0x100 + (5 * 4) = 0x114. No metadata is stored with individual elements, making it the most space-efficient structure.",
+          "visualization": {
+            "type": "memory_grid",
+            "layers": [
+              {
+                "name": "Logical View",
+                "description": "Numbered slots [0...N]"
+              },
+              {
+                "name": "Physical View",
+                "description": "Hexadecimal memory addresses"
+              },
+              {
+                "name": "Hardware View",
+                "description": "CPU Cache Line blocks"
+              }
+            ]
+          }
+        },
+        "relatedProblems": [
+          1,
+          53,
+          121,
+          283
+        ],
+        "subPatterns": [
+          {
+            "id": "linear_scan",
+            "title": "Linear Scan",
+            "description": "Iterating through the array from start to end.",
+            "signals": [
+              "Find max/min",
+              "Count occurrences",
+              "Accumulate result"
+            ],
+            "invariant": "i increases from 0 to N-1",
+            "formula": "for x in arr: process(x)",
+            "mistakes": [
+              "Off-by-one errors",
+              "Modifying while iterating"
+            ],
+            "edgeCases": [
+              {
+                "title": "Empty Array",
+                "description": "Loop body never executes.",
+                "whyItBreaks": "Assumptions inside loop fail."
+              }
+            ],
+            "exampleCode": "for i in range(len(arr)): print(arr[i])"
+          },
+          {
+            "id": "two_pointers_array",
+            "title": "Two Pointers",
+            "description": "Using two indices to traverse relative to each other.",
+            "signals": [
+              "Sorted pair sum",
+              "In-place reversal",
+              "Partitioning elements"
+            ],
+            "invariant": "left < right",
+            "formula": "while l < r: ...",
+            "mistakes": [
+              "Infinite loops",
+              "Crossing pointers"
+            ],
+            "edgeCases": [
+              {
+                "title": "Single Element",
+                "description": "Left == Right.",
+                "whyItBreaks": "Swap logic might need check."
+              }
+            ],
+            "exampleCode": "l, r = 0, len(arr)-1"
+          },
+          {
+            "id": "prefix_sum_sub",
+            "title": "Prefix Sum",
+            "description": "Pre-calculating cumulative sums.",
+            "signals": [
+              "Subarray sum queries",
+              "Range checks"
+            ],
+            "invariant": "P[i] = Sum(0...i-1)",
+            "formula": "P[i] = P[i-1] + arr[i]",
+            "mistakes": [
+              "Index alignment (size N+1)",
+              "Overflow"
+            ],
+            "edgeCases": [
+              {
+                "title": "Zero length",
+                "description": "Result is [0]",
+                "whyItBreaks": "N/A"
+              }
+            ],
+            "exampleCode": "P = [0] * (N+1)"
+          }
+        ],
         "recognitionSignals": [
           "Index access needed",
           "Fixed size collection",
@@ -46,27 +303,52 @@
         "formulaPattern": "arr[i]",
         "commonMistakes": [
           "Index out of bounds",
-          "Off-by-one errors"
+          "Off-by-one errors",
+          "Inefficient insertion/deletion in middle"
         ],
         "edgeCases": [
           "Empty array",
           "Index < 0",
-          "Index >= length"
+          "Index >= length",
+          "Null array"
         ],
         "templates": {
-          "python": "# Array Access\nvalue = arr[i]\n\n# Array Traversal\nfor x in arr:\n    print(x)",
-          "javascript": "// Array Access\nconst value = arr[i];\n\n// Array Traversal\nfor (const x of arr) {\n    console.log(x);\n}"
+          "python": "# 1. Linear Scan\nfor x in arr:\n    print(x)\n\n# 2. Index Scan\nfor i in range(len(arr)):\n    val = arr[i]\n\n# 3. Two Pointers (Reverse)\nl, r = 0, len(arr)-1\nwhile l < r:\n    arr[l], arr[r] = arr[r], arr[l]\n    l += 1; r -= 1",
+          "javascript": "// 1. Linear Scan\nfor (const x of arr) {\n    console.log(x);\n}\n\n// 2. Index Scan\nfor (let i = 0; i < arr.length; i++) {\n    const val = arr[i];\n}\n\n// 3. Two Pointers\nlet l = 0, r = arr.length - 1;\nwhile (l < r) {\n    [arr[l], arr[r]] = [arr[r], arr[l]];\n    l++; r--;\n}"
         },
         "microDrills": [
           {
-            "question": "What is the time complexity to access an element by index in an array?",
+            "question": "What is the time complexity to insert an element at the BEGINNING of an array of size N?",
             "options": [
               "O(1)",
-              "O(n)",
-              "O(log n)",
-              "O(n^2)"
+              "O(log N)",
+              "O(N)",
+              "O(N^2)"
             ],
-            "correctAnswer": "O(1)"
+            "correctAnswer": "O(N)",
+            "explanation": "Because all N elements must be shifted one position to the right to make space at index 0."
+          },
+          {
+            "question": "Which operation is O(1) in a standard Array?",
+            "options": [
+              "Searching for a value",
+              "Accessing by Index",
+              "Deleting from middle",
+              "Finding minimum"
+            ],
+            "correctAnswer": "Accessing by Index",
+            "explanation": "Arrays provide direct memory access using the base address and index offset."
+          },
+          {
+            "question": "What happens if you access index `N` in an array of size `N`?",
+            "options": [
+              "Returns last element",
+              "Returns random garbage",
+              "Index Out of Bounds Error",
+              "Resizes array"
+            ],
+            "correctAnswer": "Index Out of Bounds Error",
+            "explanation": "Valid indices are 0 to N-1. Index N is past the end of the allocated memory."
           }
         ],
         "recognitionChallenges": []
@@ -78,47 +360,316 @@
         "difficulty": "Novice",
         "description": "Immutable sequences of characters.",
         "definition": "A sequence of characters, often immutable in many languages.",
-        "whatItIs": "A sequence of characters. In many modern languages (Java, Python, JS), strings are immutable, meaning they cannot be changed after creation.",
-        "coreInvariant": "s[i] refers to the character at index i.",
-        "timeComplexity": [
-          {
-            "operation": "Access",
-            "time": "O(1)",
-            "space": "O(1)"
+        "hero": {
+          "analogy": "The Immutable Necklace",
+          "analogyImage": "string_necklace",
+          "realWorldExample": "A printed book page. You can't change a letter; you must reprint the page to make edits.",
+          "whenToUse": [
+            "Text processing",
+            "Search keywords",
+            "Serialization (JSON/XML)"
+          ],
+          "quickComplexity": [
+            {
+              "operation": "Access",
+              "time": "O(1)",
+              "space": "O(1)"
+            },
+            {
+              "operation": "Concatenation",
+              "time": "O(N+M)",
+              "space": "O(N+M)"
+            },
+            {
+              "operation": "Substring",
+              "time": "O(N)",
+              "space": "O(N)"
+            }
+          ]
+        },
+        "whatProblemItSolves": "Allows representing and manipulating human-readable text. It handles the mapping between character symbols and numerical memory codes (ASCII/Unicode).",
+        "memoryRepresentation": "Strings are typically stored as continuous arrays of bytes or words. Many languages store an extra 'Length' field or a null-terminator (\\0) to mark the end.",
+        "internalWorking": "In languages like Python/Java, strings are immutable. Any 'modification' creates a completely new string in memory. 'String Interning' is often used to share memory for identical literals.",
+        "progression": {
+          "fundamentals": {
+            "title": "Level 1 \u2013 Fundamentals",
+            "description": "Text representation and basic indexing.",
+            "concepts": [
+              {
+                "title": "Immutability",
+                "explanation": "Why strings cannot be modified in-place in many languages."
+              },
+              {
+                "title": "Encoding",
+                "explanation": "How characters like 'A' become numbers like 65 (ASCII)."
+              }
+            ],
+            "problems": [
+              344,
+              242
+            ]
           },
-          {
-            "operation": "Concatenation",
-            "time": "O(n)",
-            "space": "O(n)"
+          "patterns": {
+            "title": "Level 2 \u2013 Pattern Usage",
+            "description": "Advanced string manipulation algorithms.",
+            "concepts": [
+              {
+                "title": "Sliding Window",
+                "explanation": "Finding the longest substring with unique characters."
+              },
+              {
+                "title": "Two Pointers",
+                "explanation": "Checking for palindromes by comparing characters from both ends."
+              }
+            ],
+            "problems": [
+              3,
+              125
+            ]
           },
+          "advanced": {
+            "title": "Level 3 \u2013 Advanced Mode",
+            "description": "Memory optimizations and prefix trees.",
+            "concepts": [
+              {
+                "title": "String Building",
+                "explanation": "Using O(N) buffers instead of O(N^2) concatenation."
+              },
+              {
+                "title": "Trie Integration",
+                "explanation": "How strings are stored as paths in prefix trees."
+              }
+            ],
+            "problems": [
+              14,
+              208
+            ]
+          }
+        },
+        "visualizerType": "string",
+        "patternMapping": {
+          "relatedPatterns": [
+            {
+              "id": "sliding_window",
+              "label": "Sliding Window",
+              "reason": "Standard for substring problems."
+            },
+            {
+              "id": "two_pointers",
+              "label": "Two Pointers",
+              "reason": "Used for reversals and palindrome checks."
+            }
+          ],
+          "dependencyGraph": {
+            "nodes": [
+              {
+                "id": "strings",
+                "label": "Strings",
+                "type": "root"
+              },
+              {
+                "id": "two_pointers",
+                "label": "Two Pointers",
+                "type": "pattern"
+              },
+              {
+                "id": "sliding_window",
+                "label": "Sliding Window",
+                "type": "pattern"
+              }
+            ],
+            "edges": [
+              {
+                "from": "strings",
+                "to": "two_pointers",
+                "label": "Palindrome/Reverse"
+              },
+              {
+                "from": "strings",
+                "to": "sliding_window",
+                "label": "Substring Search"
+              }
+            ]
+          }
+        },
+        "comparisons": [
           {
-            "operation": "Substring",
-            "time": "O(n)",
-            "space": "O(n)"
+            "targetId": "arrays",
+            "title": "String vs Char Array",
+            "metrics": [
+              {
+                "label": "Mutability",
+                "values": {
+                  "String": "No",
+                  "Char Array": "Yes"
+                }
+              },
+              {
+                "label": "Memory",
+                "values": {
+                  "String": "Interned",
+                  "Char Array": "Explicit"
+                }
+              }
+            ],
+            "tradeoff": "Strings offer safe, easier API, but Char Arrays are significantly faster for complex in-place edits."
           }
         ],
-        "visualizerType": "string",
-        "subPatterns": [],
+        "interviewSim": {
+          "commonMistakes": [
+            {
+              "title": "Concatenation Loop",
+              "explanation": "Using `S += char` in a loop (O(N^2)).",
+              "warning": "Use a list/buffer and `.join()` instead."
+            }
+          ],
+          "constraints": [
+            "L < 10^5 (Linear scan OK)",
+            "Unicode support (Check character width)"
+          ],
+          "practiceProblems": [
+            3,
+            242
+          ]
+        },
+        "deepDive": {
+          "foundation": "While arrays store bytes, strings store semantics. In many high-level languages, strings are 'Interned' objects\u2014identical string literals share the same memory location to save space.",
+          "engine": "Strings often use COW (Copy-On-Write) optimization. If two variables point to the same string, they share memory until one is modified. At that moment, the system clones the string to preserve immutability.",
+          "storage": "Internally, strings are often Byte Arrays (UTF-8) or Word Arrays (UTF-8). They usually include a hidden 'Length' prefix or a null-terminator (\\0) to mark the end, unlike raw arrays which rely on the programmer's bounds-checking.",
+          "visualization": {
+            "type": "character_chain",
+            "layers": [
+              {
+                "name": "Encoding",
+                "description": "ASCII/Unicode hex values"
+              },
+              {
+                "name": "Pointer Map",
+                "description": "References to the String Intern Pool"
+              }
+            ]
+          }
+        },
+        "relatedProblems": [
+          3,
+          125,
+          242,
+          49
+        ],
+        "subPatterns": [
+          {
+            "id": "string_builder",
+            "title": "StringBuilder Pattern",
+            "description": "Constructing strings efficiently using an array/buffer.",
+            "signals": [
+              "Repeated concatenation",
+              "Building result char by char"
+            ],
+            "invariant": "Buffer accumulates parts",
+            "formula": "''.join(list)",
+            "mistakes": [
+              "Using += in a loop (O(N^2))"
+            ],
+            "edgeCases": [
+              {
+                "title": "Empty Result",
+                "description": "Joining empty list.",
+                "whyItBreaks": "Returns empty string ''."
+              }
+            ],
+            "exampleCode": "res = []; res.append('a'); ''.join(res)"
+          },
+          {
+            "id": "two_pointers_string",
+            "title": "Two Pointers (String)",
+            "description": "Checking palindromes or reversing string.",
+            "signals": [
+              "Palindrome check",
+              "Reverse string"
+            ],
+            "invariant": "l < r",
+            "formula": "s[l] == s[r]",
+            "mistakes": [
+              "Case sensitivity ignored"
+            ],
+            "edgeCases": [
+              {
+                "title": "Single char",
+                "description": "Is palindrome.",
+                "whyItBreaks": "Loop condition."
+              }
+            ],
+            "exampleCode": "while l<r: if s[l]!=s[r]: return False"
+          },
+          {
+            "id": "sliding_window_string",
+            "title": "Sliding Window",
+            "description": "Finding substrings with specific properties.",
+            "signals": [
+              "Longest substring w/o repeats",
+              "Anagram search"
+            ],
+            "invariant": "Window validity",
+            "formula": "expand right, shrink left",
+            "mistakes": [
+              "Not updating max length correctly"
+            ],
+            "edgeCases": [
+              {
+                "title": "No valid window",
+                "description": "Return 0 or empty.",
+                "whyItBreaks": "Logic."
+              }
+            ],
+            "exampleCode": "For char in s: ..."
+          }
+        ],
         "recognitionSignals": [
           "Text processing",
           "Character manipulation",
-          "Palindrome/Anagram"
+          "Palindrome/Anagram",
+          "Subsequence/Substring"
         ],
         "formulaPattern": "s[i...j]",
         "commonMistakes": [
           "Assuming mutability in immutable languages",
-          "String concatenation in loops (O(n^2))"
+          "String concatenation in loops (O(n^2))",
+          "ASCII vs Unicode confusion"
         ],
         "edgeCases": [
           "Empty string",
           "Single character",
-          "Whitespace only"
+          "Whitespace only",
+          "Special characters"
         ],
         "templates": {
-          "python": "# String Builders are efficient\nres = []\nres.append('c')\nfinal_str = ''.join(res)",
-          "javascript": "// String Builders (Array join) are efficient\nconst res = [];\nres.push('c');\nconst finalStr = res.join('');"
+          "python": "# 1. Efficient Build\nres = []\nfor c in s:\n    if condition(c):\n        res.append(c)\nfinal_str = ''.join(res)\n\n# 2. Iterate chars\nfor i, c in enumerate(s):\n    print(i, c)",
+          "javascript": "// 1. Efficient Build\nconst res = [];\nfor (const c of s) {\n    if (condition(c)) res.push(c);\n}\nconst finalStr = res.join('');\n\n// 2. Iterate\nfor (let i=0; i<s.length; i++) {\n    console.log(s[i]);\n}"
         },
-        "microDrills": [],
+        "microDrills": [
+          {
+            "question": "In Python/Java, what is the time complexity of `s += c` inside a loop running N times?",
+            "options": [
+              "O(N)",
+              "O(N^2)",
+              "O(1)",
+              "O(log N)"
+            ],
+            "correctAnswer": "O(N^2)",
+            "explanation": "Strings are immutable. `s += c` creates a NEW string copying all previous characters every iteration. 1+2+3+...+N = O(N^2)."
+          },
+          {
+            "question": "Which data structure is best for checking if two strings are anagrams?",
+            "options": [
+              "Linked List",
+              "Stack",
+              "Hash Map / Frequency Array",
+              "Queue"
+            ],
+            "correctAnswer": "Hash Map / Frequency Array",
+            "explanation": "You count character frequencies in both strings and compare them."
+          }
+        ],
         "recognitionChallenges": []
       },
       {
@@ -128,47 +679,294 @@
         "difficulty": "Novice",
         "description": "LIFO linear structure.",
         "definition": "Last-In-First-Out data structure.",
-        "whatItIs": "A collection that follows LIFO (Last In, First Out). Think of a stack of plates.",
-        "coreInvariant": "Last element added is the first one removed.",
-        "timeComplexity": [
-          {
-            "operation": "Push",
-            "time": "O(1)",
-            "space": "O(1)"
+        "hero": {
+          "analogy": "The Cafeteria Tray Stack",
+          "analogyImage": "stack_trays",
+          "realWorldExample": "Browser Back Button history. You visit A -> B -> C. Clicking back goes C -> B -> A.",
+          "whenToUse": [
+            "Expression evaluation",
+            "Undo/Redo logic",
+            "Backtracking algorithms"
+          ],
+          "quickComplexity": [
+            {
+              "operation": "Push",
+              "time": "O(1)",
+              "space": "O(1)"
+            },
+            {
+              "operation": "Pop",
+              "time": "O(1)",
+              "space": "O(1)"
+            },
+            {
+              "operation": "Peek",
+              "time": "O(1)",
+              "space": "O(1)"
+            }
+          ]
+        },
+        "whatProblemItSolves": "Solves problems where you need to reverse history or maintain state in nested structures (like recursion).",
+        "memoryRepresentation": "Usually implemented as an array where the 'Top' index only moves in one direction relative to the start.",
+        "internalWorking": "Restrict access to exactly one end. This enforcement of LIFO ensures O(1) for all core operations.",
+        "progression": {
+          "fundamentals": {
+            "title": "Level 1 \u2013 Fundamentals",
+            "description": "Basic push/pop operations.",
+            "concepts": [
+              {
+                "title": "LIFO Principle",
+                "explanation": "Last-In-First-Out: The most recently added item is the first out."
+              },
+              {
+                "title": "Stack Pointer",
+                "explanation": "Tracking the index of the top element."
+              }
+            ],
+            "problems": [
+              20,
+              155
+            ]
           },
-          {
-            "operation": "Pop",
-            "time": "O(1)",
-            "space": "O(1)"
+          "patterns": {
+            "title": "Level 2 \u2013 Pattern Usage",
+            "description": "Monotonicity and nested matching.",
+            "concepts": [
+              {
+                "title": "Monotonic Stack",
+                "explanation": "Keeping elements in increasing or decreasing order."
+              },
+              {
+                "title": "Depth First Search",
+                "explanation": "Using a stack to explore as deep as possible before backtracking."
+              }
+            ],
+            "problems": [
+              739,
+              84
+            ]
           },
+          "advanced": {
+            "title": "Level 3 \u2013 Advanced Mode",
+            "description": "Memory optimizations and complex simulations.",
+            "concepts": [
+              {
+                "title": "Call Stack Simulation",
+                "explanation": "Implementing recursion iteratively."
+              },
+              {
+                "title": "In-place Stack",
+                "explanation": "Using existing array segments as stack space."
+              }
+            ],
+            "problems": [
+              394,
+              71
+            ]
+          }
+        },
+        "visualizerType": "stack",
+        "patternMapping": {
+          "relatedPatterns": [
+            {
+              "id": "monotonic_stack",
+              "label": "Monotonic Stack",
+              "reason": "Standard for next-greater-element problems."
+            },
+            {
+              "id": "dfs",
+              "label": "DFS",
+              "reason": "Stacks drive the recursion/iterative search."
+            }
+          ],
+          "dependencyGraph": {
+            "nodes": [
+              {
+                "id": "stacks",
+                "label": "Stacks",
+                "type": "root"
+              },
+              {
+                "id": "monotonic_stack",
+                "label": "Monotonic Stack",
+                "type": "pattern"
+              },
+              {
+                "id": "dfs",
+                "label": "DFS",
+                "type": "pattern"
+              }
+            ],
+            "edges": [
+              {
+                "from": "stacks",
+                "to": "monotonic_stack",
+                "label": "Next Greater Item"
+              },
+              {
+                "from": "stacks",
+                "to": "dfs",
+                "label": "Recursive Simulation"
+              }
+            ]
+          }
+        },
+        "comparisons": [
           {
-            "operation": "Peek",
-            "time": "O(1)",
-            "space": "O(1)"
+            "targetId": "queues",
+            "title": "Stack vs Queue",
+            "metrics": [
+              {
+                "label": "Order",
+                "values": {
+                  "Stack": "LIFO",
+                  "Queue": "FIFO"
+                }
+              },
+              {
+                "label": "Search",
+                "values": {
+                  "Stack": "O(N)",
+                  "Queue": "O(N)"
+                }
+              }
+            ],
+            "tradeoff": "Stacks reverse order, Queues preserve it."
           }
         ],
-        "visualizerType": "stack",
-        "subPatterns": [],
+        "interviewSim": {
+          "commonMistakes": [
+            {
+              "title": "Empty Pop",
+              "explanation": "Trying to pop from an empty stack.",
+              "warning": "Always check `if stack:` before popping."
+            }
+          ],
+          "constraints": [
+            "N < 10^5 (Linear scan OK)",
+            "Stack space (Recursion limit)"
+          ],
+          "practiceProblems": [
+            20,
+            739
+          ]
+        },
+        "deepDive": {
+          "foundation": "Stacks are an abstract data type that enforces the LIFO (Last-In-First-Out) protocol. They are the backbone of recursion and expression evaluation in computing. Every function call in your code is managed by the system 'Call Stack'.",
+          "engine": "The stack engine works by maintaining a 'Top' pointer. Unlike arrays where we access any index, a stack engine restricts visibility to exactly one element. This restriction is actually a performance feature\u2014it removes the need for search logic.",
+          "storage": "Stacks are usually implemented as contiguous arrays with a dynamic size or as linked lists. However, 'Hardware Stacks' are fixed-size regions of memory where the Stack Pointer (SP) register decrements as you push data, moving 'downwards' in address space.",
+          "visualization": {
+            "type": "vertical_silo",
+            "layers": [
+              {
+                "name": "Stack Pointer",
+                "description": "The current memory address of the Top element"
+              },
+              {
+                "name": "Frame Boundary",
+                "description": "Separation between different function contexts"
+              }
+            ]
+          }
+        },
+        "relatedProblems": [
+          20,
+          155,
+          739
+        ],
+        "subPatterns": [
+          {
+            "id": "monotonic_stack",
+            "title": "Monotonic Stack",
+            "description": "Keeping elements in increasing/decreasing order.",
+            "signals": [
+              "Next Greater Element",
+              "Histogram Area"
+            ],
+            "invariant": "Elements are sorted",
+            "formula": "while stack and stack[-1] < curr: pop()",
+            "mistakes": [
+              "Wrong direction (< vs >)",
+              "Not storing indices"
+            ],
+            "edgeCases": [
+              {
+                "title": "Dupes",
+                "description": "Duplicate values.",
+                "whyItBreaks": "Strict vs non-strict inequality."
+              }
+            ],
+            "exampleCode": "stack = []\nfor x in arr:\n  while stack and stack[-1] < x: stack.pop()"
+          },
+          {
+            "id": "parentheses_matching",
+            "title": "Parentheses Matching",
+            "description": "Validating nested structures.",
+            "signals": [
+              "Valid Parentheses",
+              "Expression evaluation"
+            ],
+            "invariant": "Openers matched by Closers",
+            "formula": "if opener push, if closer pop check",
+            "mistakes": [
+              "Empty stack on pop"
+            ],
+            "edgeCases": [
+              {
+                "title": "Unbalanced",
+                "description": "))((",
+                "whyItBreaks": "Stack empty or leftover."
+              }
+            ],
+            "exampleCode": "stack.append('('); if stack[-1] == '(': stack.pop()"
+          }
+        ],
         "recognitionSignals": [
           "LIFO requirements",
           "Undo/Redo",
           "Matching brackets",
-          "Depth-First Search"
+          "Depth-First Search",
+          "Next Greater/Smaller Element"
         ],
         "formulaPattern": "stack.pop()",
         "commonMistakes": [
           "Popping from empty stack",
-          "Confusing LIFO with FIFO"
+          "Confusing LIFO with FIFO",
+          "Using stack when random access is needed"
         ],
         "edgeCases": [
           "Empty stack pop",
-          "Stack overflow (if fixed size)"
+          "Stack overflow (recursion depth)",
+          "Single element"
         ],
         "templates": {
-          "python": "stack = []\nstack.append(x) # Push\nval = stack.pop() # Pop",
-          "javascript": "const stack = [];\nstack.push(x); // Push\nconst val = stack.pop(); // Pop"
+          "python": "# Standard Stack\nstack = []\nstack.append(1)  # Push\nval = stack.pop() # Pop\ntop = stack[-1]   # Peek",
+          "javascript": "// Standard Stack using Array\nconst stack = [];\nstack.push(1);  // Push\nconst val = stack.pop(); // Pop\nconst top = stack[stack.length - 1]; // Peek"
         },
-        "microDrills": [],
+        "microDrills": [
+          {
+            "question": "If you push 1, 2, 3 into a stack, what is the order they are popped?",
+            "options": [
+              "1, 2, 3",
+              "3, 2, 1",
+              "Random",
+              "3, 1, 2"
+            ],
+            "correctAnswer": "3, 2, 1",
+            "explanation": "LIFO: Last In (3) is First Out."
+          },
+          {
+            "question": "Which problem is typically solved with a Stack?",
+            "options": [
+              "Printing tasks queue",
+              "Valid Parentheses",
+              "Shortest Path in Graph",
+              "Sorting numbers"
+            ],
+            "correctAnswer": "Valid Parentheses",
+            "explanation": "Nested structures require remembering the most recent open bracket to match with a closer."
+          }
+        ],
         "recognitionChallenges": []
       },
       {
@@ -178,40 +976,259 @@
         "difficulty": "Novice",
         "description": "FIFO linear structure.",
         "definition": "First-In-First-Out data structure.",
-        "whatItIs": "A collection that follows FIFO (First In, First Out). Think of a line at a store.",
-        "coreInvariant": "First element added is the first one removed.",
-        "timeComplexity": [
-          {
-            "operation": "Enqueue",
-            "time": "O(1)",
-            "space": "O(1)"
+        "hero": {
+          "analogy": "The Ticket Line",
+          "analogyImage": "queue_ticket",
+          "realWorldExample": "Printer job queue. The first document sent is the first one printed.",
+          "whenToUse": [
+            "Scheduling tasks",
+            "Breadth-First Search",
+            "Asynchronous messaging"
+          ],
+          "quickComplexity": [
+            {
+              "operation": "Enqueue",
+              "time": "O(1)",
+              "space": "O(1)"
+            },
+            {
+              "operation": "Dequeue",
+              "time": "O(1)",
+              "space": "O(1)"
+            },
+            {
+              "operation": "Peek",
+              "time": "O(1)",
+              "space": "O(1)"
+            }
+          ]
+        },
+        "whatProblemItSolves": "Ensures fairness and maintains arrival order for processing.",
+        "memoryRepresentation": "Often implemented as a 'Ring Buffer' in an array or as a Linked List with head and tail pointers.",
+        "internalWorking": "Uses two markers: Front and Rear. When rear hits the array end, it wraps around to index 0.",
+        "progression": {
+          "fundamentals": {
+            "title": "Level 1 \u2013 Fundamentals",
+            "description": "Basic enqueue/dequeue operations.",
+            "concepts": [
+              {
+                "title": "FIFO Principle",
+                "explanation": "First-In-First-Out: The first item added is the first processed."
+              },
+              {
+                "title": "Circular Buffer",
+                "explanation": "Efficiency using modulo arithmetic to wrap pointers."
+              }
+            ],
+            "problems": [
+              933,
+              622
+            ]
           },
+          "patterns": {
+            "title": "Level 2 \u2013 Pattern Usage",
+            "description": "Level-order traversals and buffering.",
+            "concepts": [
+              {
+                "title": "BFS",
+                "explanation": "Exploring all neighbors before moving to the next level."
+              },
+              {
+                "title": "Sliding Window Maximum",
+                "explanation": "Using a deque (Double-ended Queue) for range maximums."
+              }
+            ],
+            "problems": [
+              102,
+              239
+            ]
+          },
+          "advanced": {
+            "title": "Level 3 \u2013 Advanced Mode",
+            "description": "Distributed queues and lock-free concurrency.",
+            "concepts": [
+              {
+                "title": "Monotonic Queue",
+                "explanation": "Maintaining sorted order within the window."
+              },
+              {
+                "title": "Priority Queue",
+                "explanation": "Processing elements by importance, not just timing."
+              }
+            ],
+            "problems": [
+              862,
+              1438
+            ]
+          }
+        },
+        "visualizerType": "queue",
+        "patternMapping": {
+          "relatedPatterns": [
+            {
+              "id": "bfs",
+              "label": "BFS",
+              "reason": "Queues power level-by-level exploration."
+            },
+            {
+              "id": "sliding_window",
+              "label": "Sliding Window",
+              "reason": "Deques optimize range queries."
+            }
+          ],
+          "dependencyGraph": {
+            "nodes": [
+              {
+                "id": "queues",
+                "label": "Queues",
+                "type": "root"
+              },
+              {
+                "id": "bfs",
+                "label": "BFS",
+                "type": "pattern"
+              },
+              {
+                "id": "sliding_window_max",
+                "label": "Sliding Window Max",
+                "type": "pattern"
+              }
+            ],
+            "edges": [
+              {
+                "from": "queues",
+                "to": "bfs",
+                "label": "Level-order Explore"
+              },
+              {
+                "from": "queues",
+                "to": "sliding_window_max",
+                "label": "Deque (Monotonic)"
+              }
+            ]
+          }
+        },
+        "comparisons": [
           {
-            "operation": "Dequeue",
-            "time": "O(1)",
-            "space": "O(1)"
+            "targetId": "stacks",
+            "title": "Queue vs Stack",
+            "metrics": [
+              {
+                "label": "Traversal",
+                "values": {
+                  "Queue": "Horizontal (Level)",
+                  "Stack": "Vertical (Depth)"
+                }
+              }
+            ],
+            "tradeoff": "Queue is for breadth, Stack is for depth."
           }
         ],
-        "visualizerType": "queue",
-        "subPatterns": [],
+        "interviewSim": {
+          "commonMistakes": [
+            {
+              "title": "Empty Dequeue",
+              "explanation": "Dequeueing from an empty queue.",
+              "warning": "Always check `if queue:` first."
+            }
+          ],
+          "constraints": [
+            "Time per operation < 10^-6s",
+            "Memory < 256MB"
+          ],
+          "practiceProblems": [
+            102,
+            933
+          ]
+        },
+        "deepDive": {
+          "foundation": "Queues implement a 'First-Come-First-Served' logic (FIFO). They are essential for decoupling systems where data produced at one speed must be consumed at another (Producer-Consumer pattern).",
+          "engine": "A high-performance queue engine often uses a 'Circular Buffer' (Ring Buffer). Instead of shifting elements (O(N)), the 'Head' and 'Tail' pointers simply wrap around the array using modulo arithmetic: `tail = (tail + 1) % size`.",
+          "storage": "Storage consists of two boundary pointers. In distributed systems, queues are often persisted to disk (like Kafka or RabbitMQ) to ensure message durability even if the consumer crashes.",
+          "visualization": {
+            "type": "circular_track",
+            "layers": [
+              {
+                "name": "Head/Tail Sync",
+                "description": "How the start and end pointers chase each other"
+              },
+              {
+                "name": "Buffer Capacity",
+                "description": "The physical memory allocated vs utilized"
+              }
+            ]
+          }
+        },
+        "relatedProblems": [],
+        "subPatterns": [
+          {
+            "id": "bfs_pattern",
+            "title": "Breadth-First Search",
+            "description": "Level-by-level traversal.",
+            "signals": [
+              "Shortest path (unweighted)",
+              "Level order traversal"
+            ],
+            "invariant": "Process all nodes at dist k before k+1",
+            "formula": "q.append(start); while q: ...",
+            "mistakes": [
+              "Not marking visited (cycles)"
+            ],
+            "edgeCases": [
+              {
+                "title": "Disconnected Graph",
+                "description": "Unreachable nodes.",
+                "whyItBreaks": "Queue empty early."
+              }
+            ],
+            "exampleCode": "q = deque([root])"
+          }
+        ],
         "recognitionSignals": [
           "FIFO requirements",
           "Order processing",
-          "Breadth-First Search"
+          "Breadth-First Search",
+          "Buffering data"
         ],
         "formulaPattern": "queue.dequeue()",
         "commonMistakes": [
           "Dequeuing empty queue",
-          "Confusing FIFO with LIFO"
+          "Confusing FIFO with LIFO",
+          "Using Array.shift() in JS (O(N) cost)"
         ],
         "edgeCases": [
-          "Empty queue dequeue"
+          "Empty queue dequeue",
+          "Queue full (bounded)",
+          "Single element"
         ],
         "templates": {
           "python": "from collections import deque\nq = deque()\nq.append(x) # Enqueue\nval = q.popleft() # Dequeue",
-          "javascript": "const q = [];\nq.push(x); // Enqueue\nconst val = q.shift(); // Dequeue (O(n) in JS array, use Linked List for O(1))"
+          "javascript": "// Use Array properly or Linked List\nconst q = [];\nq.push(x); // Enqueue\nconst val = q.shift(); // Dequeue (O(N)! Warn)"
         },
-        "microDrills": [],
+        "microDrills": [
+          {
+            "question": "What is the order of processing for a Queue containing [A, B, C] (A at front)?",
+            "options": [
+              "A, B, C",
+              "C, B, A",
+              "B, A, C",
+              "Random"
+            ],
+            "correctAnswer": "A, B, C",
+            "explanation": "FIFO: First In (A) is First Out."
+          },
+          {
+            "question": "What is the time complexity of `shift()` on a standard JavaScript Array?",
+            "options": [
+              "O(1)",
+              "O(N)",
+              "O(log N)",
+              "O(N^2)"
+            ],
+            "correctAnswer": "O(N)",
+            "explanation": "Removing the first element requires shifting all remaining elements to the left by one index."
+          }
+        ],
         "recognitionChallenges": []
       },
       {
@@ -221,46 +1238,287 @@
         "difficulty": "Adept",
         "description": "Key-value pairs with O(1) average access.",
         "definition": "A data structure that maps keys to values using a hash function.",
-        "whatItIs": "A structure that maps keys to values for efficient lookup. Uses a hash function to compute an index into an array of buckets.",
-        "coreInvariant": "Key maps to a consistent bucket index via Hash(Key) % Capacity.",
-        "timeComplexity": [
-          {
-            "operation": "Insert",
-            "time": "O(1)",
-            "space": "O(n)"
+        "hero": {
+          "analogy": "The Magic Locker System",
+          "analogyImage": "hash_lockers",
+          "realWorldExample": "Library Index Card. You look up 'Moby Dick' and it tells you 'Row 3, Shelf B'.",
+          "whenToUse": [
+            "Instant lookups",
+            "Frequency counting",
+            "Database indexing"
+          ],
+          "quickComplexity": [
+            {
+              "operation": "Insert",
+              "time": "O(1)*",
+              "space": "O(N)"
+            },
+            {
+              "operation": "Search",
+              "time": "O(1)*",
+              "space": "O(N)"
+            },
+            {
+              "operation": "Delete",
+              "time": "O(1)*",
+              "space": "O(N)"
+            }
+          ]
+        },
+        "whatProblemItSolves": "Bypasses the need for linear search. It provides a direct numerical lookup for any hashable key.",
+        "memoryRepresentation": "An array of 'Buckets'. A hash function converts the key into a bucket index.",
+        "internalWorking": "Uses a Hash Function (e.g., MurmurHash) for distribution. Resolves 'Collisions' via Chaining or Open Addressing.",
+        "progression": {
+          "fundamentals": {
+            "title": "Level 1 \u2013 Fundamentals",
+            "description": "Mapping keys to values.",
+            "concepts": [
+              {
+                "title": "Hash Function",
+                "explanation": "Turning a complex key into a simple index."
+              },
+              {
+                "title": "Collision Handling",
+                "explanation": "What happens when two keys want the same bucket."
+              }
+            ],
+            "problems": [
+              217,
+              1
+            ]
           },
-          {
-            "operation": "Lookup",
-            "time": "O(1)",
-            "space": "O(n)"
+          "patterns": {
+            "title": "Level 2 \u2013 Pattern Usage",
+            "description": "Counting frequencies and caching.",
+            "concepts": [
+              {
+                "title": "Frequency Map",
+                "explanation": "Storing the count of each element to solve anagrams or majority problems."
+              },
+              {
+                "title": "Memoization",
+                "explanation": "Caching expensive function results by their inputs."
+              }
+            ],
+            "problems": [
+              49,
+              169
+            ]
           },
+          "advanced": {
+            "title": "Level 3 \u2013 Advanced Mode",
+            "description": "Amortized analysis and load factors.",
+            "concepts": [
+              {
+                "title": "Rehashing",
+                "explanation": "Resizing the internal array and redistribution when it gets too full."
+              },
+              {
+                "title": "Custom Hashing",
+                "explanation": "Designing functions for complex objects like Matrices or Curves."
+              }
+            ],
+            "problems": [
+              146,
+              560
+            ]
+          }
+        },
+        "visualizerType": "hash_map",
+        "patternMapping": {
+          "relatedPatterns": [
+            {
+              "id": "frequency_counter",
+              "label": "Frequency Counter",
+              "reason": "Essential for counting-based challenges."
+            },
+            {
+              "id": "optimization",
+              "label": "Optimization",
+              "reason": "Reduces O(N^2) problems to O(N)."
+            }
+          ],
+          "dependencyGraph": {
+            "nodes": [
+              {
+                "id": "hash_maps",
+                "label": "Hash Maps",
+                "type": "root"
+              },
+              {
+                "id": "frequency_counter",
+                "label": "Frequency Counter",
+                "type": "pattern"
+              },
+              {
+                "id": "lru_cache",
+                "label": "LRU Cache",
+                "type": "pattern"
+              }
+            ],
+            "edges": [
+              {
+                "from": "hash_maps",
+                "to": "frequency_counter",
+                "label": "Key-based Count"
+              },
+              {
+                "from": "hash_maps",
+                "to": "lru_cache",
+                "label": "O(1) Access"
+              }
+            ]
+          }
+        },
+        "comparisons": [
           {
-            "operation": "Delete",
-            "time": "O(1)",
-            "space": "O(n)"
+            "targetId": "sets",
+            "title": "Hash Map vs Set",
+            "metrics": [
+              {
+                "label": "Data",
+                "values": {
+                  "Map": "Key-Value",
+                  "Set": "Key Only"
+                }
+              }
+            ],
+            "tradeoff": "Use Map when you need metadata, Set when you only need existence checking."
           }
         ],
-        "visualizerType": "hash_map",
-        "subPatterns": [],
+        "interviewSim": {
+          "commonMistakes": [
+            {
+              "title": "Mutable Keys",
+              "explanation": "Using a list as a key in Python.",
+              "warning": "Keys must be immutable (Hashable)."
+            }
+          ],
+          "constraints": [
+            "Load Factor < 0.75",
+            "Collision resistance"
+          ],
+          "practiceProblems": [
+            1,
+            49
+          ]
+        },
+        "deepDive": {
+          "foundation": "Hash Maps trade space for time. By applying a mathematical 'Hash Function' to a key, we get a direct address, turning a needle-in-a-haystack search into a direct lookup.",
+          "engine": "The engine consists of two parts: the Hash Function (like MurmurHash or SHA) and the Collision Resolver. When two keys hash to the same bucket, the engine uses 'Chaining' (Linked Lists inside buckets) or 'Open Addressing' (finding the next empty slot).",
+          "storage": "Storage is a sparse array of 'Buckets'. A 'Load Factor' (usually 0.75) determines when the map is too crowded. At that point, the map 'Rehashes'\u2014it creates a double-sized array and moves every single key to a new location.",
+          "visualization": {
+            "type": "scattering_map",
+            "layers": [
+              {
+                "name": "Hash Transformation",
+                "description": "String/Int -> Index Number"
+              },
+              {
+                "name": "Collision Buckets",
+                "description": "How keys are stored when they 'clash'"
+              }
+            ]
+          }
+        },
+        "relatedProblems": [
+          1,
+          49,
+          217
+        ],
+        "subPatterns": [
+          {
+            "id": "frequency_counter",
+            "title": "Frequency Counter",
+            "description": "Counting occurrences of elements.",
+            "signals": [
+              "Find duplicates",
+              "Anagrams",
+              "Majority element"
+            ],
+            "invariant": "Map[item] = count",
+            "formula": "map[x] = map.get(x, 0) + 1",
+            "mistakes": [
+              "Not handling first occurrence"
+            ],
+            "edgeCases": [
+              {
+                "title": "All unique",
+                "description": "Map size N.",
+                "whyItBreaks": "Memory usage."
+              }
+            ],
+            "exampleCode": "counts = {}\nfor x in arr: counts[x] = counts.get(x, 0) + 1"
+          },
+          {
+            "id": "lookup_table",
+            "title": "Lookup Table",
+            "description": "Caching results or checking existence.",
+            "signals": [
+              "Two Sum",
+              "seen set",
+              "Memoization"
+            ],
+            "invariant": "Key in map implies visited",
+            "formula": "if target - x in map: found",
+            "mistakes": [
+              "Using mutable keys (list) as key"
+            ],
+            "edgeCases": [
+              {
+                "title": "Collision storm",
+                "description": "Bad hash function.",
+                "whyItBreaks": "Performance degrades to O(N)."
+              }
+            ],
+            "exampleCode": "seen = set()\nif x in seen: return True"
+          }
+        ],
         "recognitionSignals": [
           "Fast lookups needed",
           "Counting frequencies",
-          "Finding duplicates"
+          "Finding duplicates",
+          "Mapping relationships"
         ],
         "formulaPattern": "map.get(key)",
         "commonMistakes": [
-          "Ignoring collisions",
-          "Using mutable keys"
+          "Ignoring collisions (in theory)",
+          "Using mutable keys (Python list as key error)",
+          "Order confusion (Insertion order vs Random)"
         ],
         "edgeCases": [
-          "Hash collisions",
-          "Load factor resizing"
+          "Hash collisions (Same bucket)",
+          "Load factor resizing (Lag)",
+          "All keys hash to same value (DoS)"
         ],
         "templates": {
           "python": "m = {}\nm[key] = val\nif key in m:\n    print(m[key])",
           "javascript": "const m = new Map();\nm.set(key, val);\nif (m.has(key)) {\n    console.log(m.get(key));\n}"
         },
-        "microDrills": [],
+        "microDrills": [
+          {
+            "question": "What is the WORST case time complexity for a Hash Map lookup?",
+            "options": [
+              "O(1)",
+              "O(log N)",
+              "O(N)",
+              "O(N^2)"
+            ],
+            "correctAnswer": "O(N)",
+            "explanation": "If all keys collide and hash to the same bucket, it degrades to a linked list traversal."
+          },
+          {
+            "question": "Can you use a List as a key in a Python dictionary?",
+            "options": [
+              "Yes",
+              "No",
+              "Only if list is empty",
+              "Only if list is sorted"
+            ],
+            "correctAnswer": "No",
+            "explanation": "Keys must be immutable (hashable). Lists are mutable."
+          }
+        ],
         "recognitionChallenges": []
       },
       {
@@ -270,41 +1528,321 @@
         "difficulty": "Novice",
         "description": "Nodes coupled by pointers.",
         "definition": "A linear collection of data elements whose order is not given by their physical placement in memory.",
-        "whatItIs": "A sequence of nodes where each node points to the next node.",
-        "coreInvariant": "Node.next points to the successor.",
-        "timeComplexity": [
-          {
-            "operation": "Access",
-            "time": "O(n)",
-            "space": "O(1)"
+        "hero": {
+          "analogy": "The Treasure Hunt / Scavenger Hunt",
+          "analogyImage": "linked_list_hunt",
+          "realWorldExample": "A train where each car is hooked to the next. To get to the last car, you must walk through all others.",
+          "whenToUse": [
+            "Dynamic memory allocation",
+            "Frequent insertions at head/tail",
+            "Implementing stacks/queues"
+          ],
+          "quickComplexity": [
+            {
+              "operation": "Access",
+              "time": "O(N)",
+              "space": "O(1)"
+            },
+            {
+              "operation": "Insertion",
+              "time": "O(1)",
+              "space": "O(1)"
+            },
+            {
+              "operation": "Deletion",
+              "time": "O(1)",
+              "space": "O(1)"
+            }
+          ]
+        },
+        "whatProblemItSolves": "Solves the 'Contiguous Memory' limitation. It allows storing data across scattered memory locations, linked only by pointers.",
+        "memoryRepresentation": "Each node is a structure containing data and a memory address (pointer) to the next node. Nodes can be far apart in RAM.",
+        "internalWorking": "Traversing requires 'Pointer Chasing'\u2014reading one address to find the next. Operations like insertion simply involve changing point-to targets.",
+        "progression": {
+          "fundamentals": {
+            "title": "Level 1 \u2013 Fundamentals",
+            "description": "Basic node traversal and head manipulation.",
+            "concepts": [
+              {
+                "title": "Node Structure",
+                "explanation": "Understanding [Data | Next] as a dual-part memory unit."
+              },
+              {
+                "title": "Sequential Access",
+                "explanation": "Why you cannot jump to index i without visiting 0...i-1."
+              }
+            ],
+            "problems": [
+              206,
+              21
+            ]
           },
+          "patterns": {
+            "title": "Level 2 \u2013 Pattern Usage",
+            "description": "Pointer-based logic and cycle detection.",
+            "concepts": [
+              {
+                "title": "Fast & Slow Pointers",
+                "explanation": "Using different speeds to find midpoints or detect cycles (Floyd's)."
+              },
+              {
+                "title": "Sentinel Nodes",
+                "explanation": "Using a 'Dummy' head to simplify edge cases at the start of the list."
+              }
+            ],
+            "problems": [
+              141,
+              19
+            ]
+          },
+          "advanced": {
+            "title": "Level 3 \u2013 Advanced Mode",
+            "description": "Complex reconstructions and in-place sorting.",
+            "concepts": [
+              {
+                "title": "Recursive Reversal",
+                "explanation": "Thinking of a reversed list as a functional transformation."
+              },
+              {
+                "title": "Copy List with Random Pointer",
+                "explanation": "Handling deep clones in graphs-disguised-as-lists."
+              }
+            ],
+            "problems": [
+              138,
+              25
+            ]
+          }
+        },
+        "visualizerType": "linked_list",
+        "patternMapping": {
+          "relatedPatterns": [
+            {
+              "id": "fast_slow",
+              "label": "Fast & Slow",
+              "reason": "Standard for midpoint and cycle detection."
+            },
+            {
+              "id": "sentinel",
+              "label": "Sentinel Node",
+              "reason": "Reduces conditional branching in deletions."
+            }
+          ],
+          "dependencyGraph": {
+            "nodes": [
+              {
+                "id": "linked_lists",
+                "label": "Linked Lists",
+                "type": "root"
+              },
+              {
+                "id": "fast_slow",
+                "label": "Fast & Slow Pointers",
+                "type": "pattern"
+              },
+              {
+                "id": "reverse_nodes",
+                "label": "Reverse Nodes",
+                "type": "pattern"
+              }
+            ],
+            "edges": [
+              {
+                "from": "linked_lists",
+                "to": "fast_slow",
+                "label": "Cycle/Midpoint"
+              },
+              {
+                "from": "linked_lists",
+                "to": "reverse_nodes",
+                "label": "Pointer Reassignment"
+              }
+            ]
+          }
+        },
+        "comparisons": [
           {
-            "operation": "Insert Head",
-            "time": "O(1)",
-            "space": "O(1)"
+            "targetId": "arrays",
+            "title": "Linked List vs Array",
+            "metrics": [
+              {
+                "label": "Search",
+                "values": {
+                  "List": "O(N)",
+                  "Array": "O(N)"
+                }
+              },
+              {
+                "label": "Access",
+                "values": {
+                  "List": "O(N)",
+                  "Array": "O(1)"
+                }
+              },
+              {
+                "label": "Space",
+                "values": {
+                  "List": "Data + Pointer",
+                  "Array": "Data Only"
+                }
+              }
+            ],
+            "tradeoff": "Lists are better for dynamic growth, Arrays are better for random access speed."
           }
         ],
-        "visualizerType": "linked_list",
-        "subPatterns": [],
+        "interviewSim": {
+          "commonMistakes": [
+            {
+              "title": "Losing the Head",
+              "explanation": "Modifying the head pointer directly and losing the list reference.",
+              "warning": "Use a `curr = head` temporary variable."
+            }
+          ],
+          "constraints": [
+            "Pointer size (8 bytes)",
+            "Null safety"
+          ],
+          "practiceProblems": [
+            206,
+            141
+          ]
+        },
+        "deepDive": {
+          "foundation": "Linked Lists solve the 'Contiguous Memory Problem'. Instead of demanding one giant block of RAM, they scatter data across different addresses, stitched together by pointers.",
+          "engine": "The list engine is a 'Pointer Chaser'. It doesn't use math to find addresses; it dereferences memory. This makes it highly flexible for dynamic growth but 'Cache Unfriendly'\u2014the CPU often has to wait for RAM to fetch scattered nodes.",
+          "storage": "Each node is a composite structure: `[Data | NextPointer]`. In a 64-bit system, the pointer alone takes 8 bytes. This means a linked list of characters uses significantly more memory than a string, but it allows O(1) insertion without moving thousands of other elements.",
+          "visualization": {
+            "type": "pointer_web",
+            "layers": [
+              {
+                "name": "Node Anatomy",
+                "description": "Data value vs Memory Address reference"
+              },
+              {
+                "name": "Dereferencing",
+                "description": "The jump from one RAM address to another"
+              }
+            ]
+          }
+        },
+        "relatedProblems": [
+          2,
+          21,
+          206,
+          141
+        ],
+        "subPatterns": [
+          {
+            "id": "fast_slow",
+            "title": "Fast & Slow Pointers",
+            "description": "Two pointers moving at different speeds.",
+            "signals": [
+              "Cycle detection",
+              "Middle of list"
+            ],
+            "invariant": "Fast is 2x steps ahead",
+            "formula": "slow = slow.next; fast = fast.next.next",
+            "mistakes": [
+              "Null pointer checks on fast.next"
+            ],
+            "edgeCases": [
+              {
+                "title": "No Cycle",
+                "description": "Fast reaches end.",
+                "whyItBreaks": "End condition."
+              }
+            ],
+            "exampleCode": "while fast and fast.next: ..."
+          },
+          {
+            "id": "dummy_node",
+            "title": "Dummy/Sentinel Node",
+            "description": "Simplifying head operations.",
+            "signals": [
+              "Merge lists",
+              "Delete node (might be head)"
+            ],
+            "invariant": "ans.next is real head",
+            "formula": "dummy = Node(0); curr = dummy",
+            "mistakes": [
+              "Returning dummy instead of dummy.next"
+            ],
+            "edgeCases": [
+              {
+                "title": "Empty Output",
+                "description": "dummy.next is None.",
+                "whyItBreaks": "N/A"
+              }
+            ],
+            "exampleCode": "dummy = ListNode(0); tail = dummy"
+          },
+          {
+            "id": "list_reversal",
+            "title": "List Reversal",
+            "description": "Reversing pointers in place.",
+            "signals": [
+              "Reverse list",
+              "Palindrome check"
+            ],
+            "invariant": "Next becomes Prev",
+            "formula": "nxt = curr.next; curr.next = prev",
+            "mistakes": [
+              "Losing reference to rest of list"
+            ],
+            "edgeCases": [
+              {
+                "title": "Single/Empty",
+                "description": "Already reversed.",
+                "whyItBreaks": "N/A"
+              }
+            ],
+            "exampleCode": "prev = None; while curr: ..."
+          }
+        ],
         "recognitionSignals": [
-          "Dynamic size",
-          "Frequent insertions/deletions at ends"
+          "Dynamic size needed",
+          "Frequent insertions/deletions at ends",
+          "No random access required"
         ],
         "formulaPattern": "curr = curr.next",
         "commonMistakes": [
           "Lost reference (memory leak)",
-          "Null pointer exception"
+          "Null pointer exception (fast.next.next)",
+          "Cycle creation (infinite loop)"
         ],
         "edgeCases": [
           "Empty list",
           "Single node",
-          "Cycle detection"
+          "Cycle presence"
         ],
         "templates": {
-          "python": "class Node:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next",
-          "javascript": "class Node {\n    constructor(val = 0, next = null) {\n        this.val = val;\n        this.next = next;\n    }\n}"
+          "python": "class Node:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n# Traverse\ncurr = head\nwhile curr:\n    curr = curr.next",
+          "javascript": "class Node {\n    constructor(val = 0, next = null) {\n        this.val = val;\n        this.next = next;\n    }\n}\n// Traverse\nlet curr = head;\nwhile (curr) curr = curr.next;"
         },
-        "microDrills": [],
+        "microDrills": [
+          {
+            "question": "What is the time complexity to access the Kth element in a Singly Linked List?",
+            "options": [
+              "O(1)",
+              "O(K) / O(N)",
+              "O(log K)",
+              "O(K^2)"
+            ],
+            "correctAnswer": "O(K) / O(N)",
+            "explanation": "You must traverse from the head, following `next` pointers K times."
+          },
+          {
+            "question": "Why use a Dummy Node?",
+            "options": [
+              "Faster access",
+              "Simplify edge cases at Head",
+              "Reduce memory usage",
+              "Required by generic libraries"
+            ],
+            "correctAnswer": "Simplify edge cases at Head",
+            "explanation": "It avoids conditional logic for insert/delete when operating on the first node."
+          }
+        ],
         "recognitionChallenges": []
       },
       {
@@ -314,44 +1852,285 @@
         "difficulty": "Adept",
         "description": "Tree-based structure for efficient max/min access.",
         "definition": "A specialized tree-based data structure which is essentially an almost complete tree that satisfies the heap property.",
-        "whatItIs": "A binary tree that satisfies the heap property (Parent >= Child for MaxHeap). Efficiently retrieves the min or max element.",
-        "coreInvariant": "Parent is always >= (MaxHeap) or <= (MinHeap) than children.",
-        "timeComplexity": [
-          {
-            "operation": "Insert",
-            "time": "O(log n)",
-            "space": "O(n)"
+        "hero": {
+          "analogy": "The Corporate Ladder / Emergency Room",
+          "analogyImage": "heap_ladder",
+          "realWorldExample": "Emergency Room triage. Patients are handled by severity, not strictly by their time of arrival.",
+          "whenToUse": [
+            "Finding Kth largest element",
+            "Task scheduling",
+            "Merging sorted streams"
+          ],
+          "quickComplexity": [
+            {
+              "operation": "Peek Max/Min",
+              "time": "O(1)",
+              "space": "O(1)"
+            },
+            {
+              "operation": "Insert",
+              "time": "O(log N)",
+              "space": "O(1)"
+            },
+            {
+              "operation": "Pop",
+              "time": "O(log N)",
+              "space": "O(1)"
+            }
+          ]
+        },
+        "whatProblemItSolves": "Avoids the cost of sorting an entire array when you only need to repeatedly find the 'best' (max or min) element.",
+        "memoryRepresentation": "Stored as a flat array where a parent at index `i` has children at `2i + 1` and `2i + 2`.",
+        "internalWorking": "Semi-Sorted. Maintains a specific order where every parent is superior to its children. Uses 'Bubbling' to maintain this property after updates.",
+        "progression": {
+          "fundamentals": {
+            "title": "Level 1 \u2013 Fundamentals",
+            "description": "Heap property and array mapping.",
+            "concepts": [
+              {
+                "title": "Complete Tree",
+                "explanation": "Why heaps are filled level-by-level from left to right."
+              },
+              {
+                "title": "Heapify",
+                "explanation": "Converting an unsorted array into a heap in O(N) time."
+              }
+            ],
+            "problems": [
+              215,
+              703
+            ]
           },
-          {
-            "operation": "Extract Max",
-            "time": "O(log n)",
-            "space": "O(n)"
+          "patterns": {
+            "title": "Level 2 \u2013 Pattern Usage",
+            "description": "Priority-based processing.",
+            "concepts": [
+              {
+                "title": "Top K",
+                "explanation": "Using a heap of size K to find the largest or smallest K elements."
+              },
+              {
+                "title": "Merge Sorted",
+                "explanation": "Using a heap to efficiently pick the next element from multiple sorted lists."
+              }
+            ],
+            "problems": [
+              347,
+              23
+            ]
           },
+          "advanced": {
+            "title": "Level 3 \u2013 Advanced Mode",
+            "description": "Dynamic medians and graph algorithms.",
+            "concepts": [
+              {
+                "title": "Two Heaps",
+                "explanation": "Using a MinHeap and MaxHeap together to track the median of a stream."
+              },
+              {
+                "title": "Dijkstra Integration",
+                "explanation": "How priority queues power shortest path searches in graphs."
+              }
+            ],
+            "problems": [
+              295,
+              857
+            ]
+          }
+        },
+        "visualizerType": "heap",
+        "patternMapping": {
+          "relatedPatterns": [
+            {
+              "id": "greedy",
+              "label": "Greedy",
+              "reason": "Heaps are used to pick the 'best' option at each step."
+            }
+          ],
+          "dependencyGraph": {
+            "nodes": [
+              {
+                "id": "heaps",
+                "label": "Heaps",
+                "type": "root"
+              },
+              {
+                "id": "top_k",
+                "label": "Top K",
+                "type": "pattern"
+              },
+              {
+                "id": "greedy",
+                "label": "Greedy",
+                "type": "pattern"
+              }
+            ],
+            "edges": [
+              {
+                "from": "heaps",
+                "to": "top_k",
+                "label": "Partial Sorting"
+              },
+              {
+                "from": "heaps",
+                "to": "greedy",
+                "label": "Optimal Choice"
+              }
+            ]
+          }
+        },
+        "comparisons": [
           {
-            "operation": "Peek",
-            "time": "O(1)",
-            "space": "O(1)"
+            "targetId": "bst",
+            "title": "Heap vs BST",
+            "metrics": [
+              {
+                "label": "Search",
+                "values": {
+                  "Heap": "O(N)",
+                  "BST": "O(log N)"
+                }
+              },
+              {
+                "label": "Find Min",
+                "values": {
+                  "Heap": "O(1)",
+                  "BST": "O(log N)"
+                }
+              }
+            ],
+            "tradeoff": "Heaps are better for priority tracking, BSTs are better for general sorted search."
           }
         ],
-        "visualizerType": "heap",
-        "subPatterns": [],
+        "interviewSim": {
+          "commonMistakes": [
+            {
+              "title": "Heapq Default",
+              "explanation": "Forgetting that Python's `heapq` is a MinHeap.",
+              "warning": "Negate values to simulate a MaxHeap."
+            }
+          ],
+          "constraints": [
+            "N log N complexity",
+            "In-place heapify"
+          ],
+          "practiceProblems": [
+            215,
+            347
+          ]
+        },
+        "deepDive": {
+          "foundation": "Heaps are the 'Optimization Shortcuts' of the data world. They don't sort everything; they only maintain a partial order that guarantees the 'Max' or 'Min' is always at the root.",
+          "engine": "The engine uses a 'Bubble-Up' (Swim) and 'Bubble-Down' (Sink) mechanism. When you add an element, it travels up the tree until it finds its rank. When you remove the root, the last element takes its place and 'sinks' down to the correct level.",
+          "storage": "Surprisingly, heaps are usually stored as Arrays, not Trees with pointers. Using the formula `LeftChild = 2i + 1` and `RightChild = 2i + 2`, we can traverse a tree structure perfectly inside a flat linear array.",
+          "visualization": {
+            "type": "layered_tree",
+            "layers": [
+              {
+                "name": "Array Mapping",
+                "description": "Index i -> Tree Node relation"
+              },
+              {
+                "name": "The Sink Effect",
+                "description": "Visualizing the recursive rank adjustment"
+              }
+            ]
+          }
+        },
+        "relatedProblems": [
+          215,
+          295,
+          23
+        ],
+        "subPatterns": [
+          {
+            "id": "top_k",
+            "title": "Top K Elements",
+            "description": "Finding the k largest/smallest items.",
+            "signals": [
+              "Find K most frequent",
+              "K closest points"
+            ],
+            "invariant": "Heap size <= K",
+            "formula": "push(x); if size>k pop()",
+            "mistakes": [
+              "Using wrong heap type (Min vs Max)"
+            ],
+            "edgeCases": [
+              {
+                "title": "K > N",
+                "description": "Request more than available.",
+                "whyItBreaks": "Logic."
+              }
+            ],
+            "exampleCode": "heapq.heappush(h, x); if len(h)>k: heapq.heappop(h)"
+          },
+          {
+            "id": "median_stream",
+            "title": "Median of Stream",
+            "description": "Using two heaps (Min & Max) to track middle.",
+            "signals": [
+              "Dynamic median",
+              "Rolling stats"
+            ],
+            "invariant": "Balance sizes",
+            "formula": "MaxHeap(Left) <= MinHeap(Right)",
+            "mistakes": [
+              "Not rebalancing heaps"
+            ],
+            "edgeCases": [
+              {
+                "title": "Odd vs Even count",
+                "description": "Need precise logic.",
+                "whyItBreaks": "Off-by-one."
+              }
+            ],
+            "exampleCode": "if len(small) > len(large) + 1: ..."
+          }
+        ],
         "recognitionSignals": [
           "Kth largest/smallest",
           "Median of stream",
-          "Task scheduling"
+          "Task scheduling",
+          "Merge K Sorted Lists"
         ],
         "formulaPattern": "heapq.heappush(h, val)",
         "commonMistakes": [
-          "Confusing MinHeap (default in Python) with MaxHeap"
+          "Confusing MinHeap (default in Python) with MaxHeap",
+          "Rebuilding heap instead of updating (slow)"
         ],
         "edgeCases": [
-          "Empty heap extract"
+          "Empty heap extract",
+          "Single element"
         ],
         "templates": {
-          "python": "import heapq\nh = []\nheapq.heappush(h, val)\nmin_val = heapq.heappop(h)",
-          "javascript": "// JS has no built-in Heap, usually requires custom class or library."
+          "python": "import heapq\nh = []\nheapq.heappush(h, val)\nmin_val = heapq.heappop(h)\n# For MaxHeap: Push -val",
+          "javascript": "// Use library or implement:\nconst pq = new MinPriorityQueue();\npq.enqueue(val);\npq.dequeue().element;"
         },
-        "microDrills": [],
+        "microDrills": [
+          {
+            "question": "What is the time complexity to convert an unsorted array into a Heap (Heapify)?",
+            "options": [
+              "O(N log N)",
+              "O(N)",
+              "O(1)",
+              "O(log N)"
+            ],
+            "correctAnswer": "O(N)",
+            "explanation": "While inserting one by one is O(N log N), building it bottom-up is O(N)."
+          },
+          {
+            "question": "Python's `heapq` module implements which type of heap?",
+            "options": [
+              "Max Heap",
+              "Min Heap",
+              "Fibonacci Heap",
+              "Binomial Heap"
+            ],
+            "correctAnswer": "Min Heap",
+            "explanation": "To simulate a Max Heap, values are often negated."
+          }
+        ],
         "recognitionChallenges": []
       },
       {
@@ -361,35 +2140,190 @@
         "difficulty": "Adept",
         "description": "Grid-based data representation.",
         "definition": "A two-dimensional array representing table-like data.",
-        "whatItIs": "A 2D array representing a grid or table.",
-        "coreInvariant": "matrix[r][c] is the cell at row r, column c.",
-        "timeComplexity": [
+        "hero": {
+          "analogy": "The Battleship Board / Spreadsheet",
+          "analogyImage": "matrix_grid",
+          "realWorldExample": "Excel Sheet. Cells identified by coordinates (A1, B2). Neighbors are spatially adjacent.",
+          "whenToUse": [
+            "Spatial data (Grids/Maps)",
+            "Dynamic Programming tables",
+            "Graph representation"
+          ],
+          "quickComplexity": [
+            {
+              "operation": "Access Cell",
+              "time": "O(1)",
+              "space": "O(1)"
+            },
+            {
+              "operation": "Traversal",
+              "time": "O(R*C)",
+              "space": "O(1)"
+            }
+          ]
+        },
+        "whatProblemItSolves": "Allows representing and processing data that has a spatial or relational dimension (like a 2D grid).",
+        "memoryRepresentation": "Stored as 'Row-Major' (linear block of cells) or as an 'Array of Arrays'.",
+        "internalWorking": "Uses a coordinate system. Cell (r, c) is mapped to memory address `Base + (r * Width + c) * Size`.",
+        "progression": {
+          "fundamentals": {
+            "title": "Level 1 \u2013 Fundamentals",
+            "description": "Grid indexing and bounded traversal.",
+            "concepts": [
+              {
+                "title": "Row-Major Storage",
+                "explanation": "Why row-by-row traversal is faster due to CPU cache locality."
+              },
+              {
+                "title": "Boundary Checks",
+                "explanation": "Ensuring (r, c) stays within [0...Rows-1] and [0...Cols-1]."
+              }
+            ],
+            "problems": [
+              73,
+              48
+            ]
+          },
+          "patterns": {
+            "title": "Level 2 \u2013 Pattern Usage",
+            "description": "Spatial searches and state machines.",
+            "concepts": [
+              {
+                "title": "Spiral Traversal",
+                "explanation": "Navigating the perimeter in layers."
+              },
+              {
+                "title": "Island Problems",
+                "explanation": "Using DFS or BFS to traverse connected components in a grid."
+              }
+            ],
+            "problems": [
+              54,
+              200
+            ]
+          },
+          "advanced": {
+            "title": "Level 3 \u2013 Advanced Mode",
+            "description": "Graph mappings and DP optimizations.",
+            "concepts": [
+              {
+                "title": "Adjacency Matrix",
+                "explanation": "Using a grid to represent connections between nodes in a graph."
+              },
+              {
+                "title": "In-place Transformation",
+                "explanation": "Rotating or modifying the grid without O(R*C) extra space."
+              }
+            ],
+            "problems": [
+              329,
+              36
+            ]
+          }
+        },
+        "visualizerType": "matrix",
+        "deepDive": {
+          "foundation": "Matrices provide a spatial dimension to data. They represent a Cartesian coordinate system (X, Y) where every element has exactly 4 (or 8) immediate neighbors.",
+          "engine": "The matrix engine is a 'Row-Major' or 'Column-Major' mapper. In Row-Major (used by C/Python), a 2D matrix is actually stored as a single long 1D array. The engine calculates index as `i = row * rowLength + col`.",
+          "storage": "Storage is a flat memory block. This 'Flattening' is critical for performance\u2014it allows the CPU to use the same 'Spatial Locality' optimizations as 1D arrays, provided you traverse them row-by-row rather than jumping between columns.",
+          "visualization": {
+            "type": "coordinate_grid",
+            "layers": [
+              {
+                "name": "Adjacency Map",
+                "description": "Up, Down, Left, Right connections"
+              },
+              {
+                "name": "Flattened RAM",
+                "description": "How 2D coords map to 1D physical memory"
+              }
+            ]
+          }
+        },
+        "relatedProblems": [
+          48,
+          73,
+          200
+        ],
+        "subPatterns": [
           {
-            "operation": "Access",
-            "time": "O(1)",
-            "space": "O(1)"
+            "id": "grid_dfs_bfs",
+            "title": "Grid DFS/BFS",
+            "description": "Traversing connected components in a grid.",
+            "signals": [
+              "Number of Islands",
+              "Shortest Path in Maize"
+            ],
+            "invariant": "Stay within bounds",
+            "formula": "directions = [(0,1), (1,0), ...]",
+            "mistakes": [
+              "Visiting same cell twice (infinite loop)"
+            ],
+            "edgeCases": [
+              {
+                "title": "Corner cells",
+                "description": "Fewer neighbors.",
+                "whyItBreaks": "Bounds check."
+              }
+            ],
+            "exampleCode": "for dr, dy in directions: nr, nc = r+dr, c+dc"
+          },
+          {
+            "id": "matrix_manipulation",
+            "title": "In-place Manipulation",
+            "description": "Rotating or modifying grid without extra space.",
+            "signals": [
+              "Rotate Image",
+              "Set Matrix Zeroes"
+            ],
+            "invariant": "Map old coords to new",
+            "formula": "matrix[j][n-1-i] = matrix[i][j]",
+            "mistakes": [
+              "Overwriting needed data"
+            ],
+            "edgeCases": [
+              {
+                "title": "Non-square",
+                "description": "Rotation difficult.",
+                "whyItBreaks": "N/A"
+              }
+            ],
+            "exampleCode": "transpose(); reverse_rows()"
           }
         ],
-        "visualizerType": "matrix",
-        "subPatterns": [],
         "recognitionSignals": [
           "Grid traversal",
           "Game boards",
-          "Image processing"
+          "Image processing",
+          "Adjacency constraints"
         ],
         "formulaPattern": "matrix[row][col]",
         "commonMistakes": [
-          "Confusing row (y) and col (x) indices"
+          "Confusing row (y) and col (x) indices",
+          "Index out of bounds (negative or >= length)"
         ],
         "edgeCases": [
           "Empty matrix",
-          "Jagged matrix (uneven rows)"
+          "Jagged matrix (uneven rows)",
+          "1x1 Matrix"
         ],
         "templates": {
-          "python": "rows, cols = len(matrix), len(matrix[0])\nfor r in range(rows):\n    for c in range(cols):\n        print(matrix[r][c])",
-          "javascript": "for(let r=0; r<matrix.length; r++) {\n    for(let c=0; c<matrix[0].length; c++) {\n        console.log(matrix[r][c]);\n    }\n}"
+          "python": "R, C = len(grid), len(grid[0])\nfor r in range(R):\n    for c in range(C):\n        # Visit grid[r][c]",
+          "javascript": "const R=grid.length, C=grid[0].length;\nfor(let r=0; r<R; r++) {\n    for(let c=0; c<C; c++) {\n        // Visit grid[r][c]\n    }\n}"
         },
-        "microDrills": [],
+        "microDrills": [
+          {
+            "question": "How many neighbors does a cell have in a standard grid (excluding diagonals)?",
+            "options": [
+              "2",
+              "4 (fewer on edges)",
+              "8",
+              "6"
+            ],
+            "correctAnswer": "4 (fewer on edges)",
+            "explanation": "Up, Down, Left, Right."
+          }
+        ],
         "recognitionChallenges": []
       },
       {
@@ -399,29 +2333,193 @@
         "difficulty": "Adept",
         "description": "Precomputed cumulative sums for range queries.",
         "definition": "An array where the element at index i stores the sum of the original array from 0 to i.",
-        "whatItIs": "An auxiliary array where P[i] stores the sum of A[0...i]. Allows O(1) range sum queries.",
-        "coreInvariant": "Sum(i, j) = P[j] - P[i-1]",
-        "timeComplexity": [
-          {
-            "operation": "Build",
-            "time": "O(n)",
-            "space": "O(n)"
+        "hero": {
+          "analogy": "The Running Ledger",
+          "analogyImage": "prefix_ledger",
+          "realWorldExample": "Bank Account Balance history. Balance at Day 5 - Balance at Day 2 = Spending between Day 3 and 5.",
+          "whenToUse": [
+            "Multiple range sum queries",
+            "Subarray sum problems",
+            "Image processing (Integral images)"
+          ],
+          "quickComplexity": [
+            {
+              "operation": "Build",
+              "time": "O(N)",
+              "space": "O(N)"
+            },
+            {
+              "operation": "Range Query",
+              "time": "O(1)",
+              "space": "O(1)"
+            }
+          ]
+        },
+        "whatProblemItSolves": "Transforms O(N) range queries into O(1) by precomputing cumulative totals.",
+        "memoryRepresentation": "Usually an array of size N+1, where index 0 is a 0-filled 'sentinel' to handle ranges starting at index 0.",
+        "internalWorking": "Traverse the array once, adding current element to the previous prefix sum: `P[i] = P[i-1] + A[i-1]`.",
+        "progression": {
+          "fundamentals": {
+            "title": "Level 1 \u2013 Fundamentals",
+            "description": "Building and querying prefix sums.",
+            "concepts": [
+              {
+                "title": "Sentinel Zero",
+                "explanation": "Why starting with a zero makes range logic cleaner."
+              },
+              {
+                "title": "O(1) Delta",
+                "explanation": "Understanding why `P[R+1] - P[L]` yields the sum of `nums[L...R]`."
+              }
+            ],
+            "problems": [
+              303,
+              724
+            ]
           },
+          "patterns": {
+            "title": "Level 2 \u2013 Pattern Usage",
+            "description": "Hash maps and difference arrays.",
+            "concepts": [
+              {
+                "title": "Prefix Sum + Hash Map",
+                "explanation": "Finding subarrays that sum to K in O(N) by storing previous sums."
+              },
+              {
+                "title": "2D Prefix Sum",
+                "explanation": "Extending the concept to matrices for O(1) subgrid sums."
+              }
+            ],
+            "problems": [
+              560,
+              304
+            ]
+          },
+          "advanced": {
+            "title": "Level 3 \u2013 Advanced Mode",
+            "description": "Advanced Range Manipulations.",
+            "concepts": [
+              {
+                "title": "Difference Array",
+                "explanation": "The inverse: adding a value to a range [L, R] in O(1)."
+              },
+              {
+                "title": "Prefix XOR",
+                "explanation": "Applying the same delta logic to bitwise XOR operations."
+              }
+            ],
+            "problems": [
+              1109,
+              1310
+            ]
+          }
+        },
+        "visualizerType": "prefix_sum",
+        "patternMapping": {
+          "relatedPatterns": [
+            {
+              "id": "precomputation",
+              "label": "Precomputation",
+              "reason": "Reduces query time from linear to constant."
+            }
+          ],
+          "dependencyGraph": {
+            "nodes": [],
+            "edges": []
+          }
+        },
+        "comparisons": [
           {
-            "operation": "Range Query",
-            "time": "O(1)",
-            "space": "O(1)"
+            "targetId": "segment_tree",
+            "title": "Prefix Sum vs Segment Tree",
+            "metrics": [
+              {
+                "label": "Updates",
+                "values": {
+                  "PrefixSum": "O(N)",
+                  "SegTree": "O(log N)"
+                }
+              },
+              {
+                "label": "Queries",
+                "values": {
+                  "PrefixSum": "O(1)",
+                  "SegTree": "O(log N)"
+                }
+              }
+            ],
+            "tradeoff": "Prefix Sum is superior for static arrays; Segment Tree is required for dynamic updates."
           }
         ],
-        "visualizerType": "prefix_sum",
-        "subPatterns": [],
+        "interviewSim": {
+          "commonMistakes": [
+            {
+              "title": "Off-by-one",
+              "explanation": "Forgetting the N+1 array size requirement.",
+              "warning": "PrefixSum[i] should represent sum of first `i` elements."
+            }
+          ],
+          "practiceProblems": [
+            303,
+            560
+          ]
+        },
+        "deepDive": {
+          "foundation": "Prefix Sums are the 'Preprocessing Wizards'. They transform a data set so that complex range queries can be answered in absolute constant time, regardless of the range size.",
+          "engine": "The engine is a 'Cumulative Accumulator'. By storing the running total at each index, it creates a lookup table where the sum between `i` and `j` is recovered using a simple subtraction: `P[j] - P[i-1]`. It effectively caches the results of all possible starting-from-zero ranges.",
+          "storage": "Storage requires an auxiliary array of size `N+1`. This 'extra slot' at index 0 (initialized to zero) is the secret to avoiding edge-case logic when the range starts at the very beginning of the original array.",
+          "visualization": {
+            "type": "running_total_bar",
+            "layers": [
+              {
+                "name": "Delta Logic",
+                "description": "Visualizing why subtraction yields the range sum"
+              },
+              {
+                "name": "Aux Array Offset",
+                "description": "The N+1 shift explained"
+              }
+            ]
+          }
+        },
+        "relatedProblems": [
+          303,
+          560,
+          238
+        ],
+        "subPatterns": [
+          {
+            "id": "range_sum",
+            "title": "Range Sum Query",
+            "description": "Basic 1D range sum.",
+            "signals": [
+              "Multiple queries for sum",
+              "Static array"
+            ],
+            "invariant": "P[i] includes arr[i]",
+            "formula": "P[R] - P[L-1]",
+            "mistakes": [
+              "Using P[L] instead of P[L-1]"
+            ],
+            "edgeCases": [
+              {
+                "title": "L=0",
+                "description": "Formula needs P[-1] = 0.",
+                "whyItBreaks": "Index error."
+              }
+            ],
+            "exampleCode": "return P[r+1] - P[l]"
+          }
+        ],
         "recognitionSignals": [
           "Range sum queries",
-          "Constant time subarray sum"
+          "Constant time subarray sum",
+          "Product of array except self"
         ],
         "formulaPattern": "P[i] = P[i-1] + A[i]",
         "commonMistakes": [
-          "Off-by-one error in range formula"
+          "Off-by-one error in range formula",
+          "Forgetting to handle index 0"
         ],
         "edgeCases": [
           "Empty array",
@@ -431,7 +2529,19 @@
           "python": "P = [0] * (len(nums) + 1)\nfor i, x in enumerate(nums):\n    P[i+1] = P[i] + x\n# Sum(i, j) = P[j+1] - P[i]",
           "javascript": "const P = new Array(nums.length + 1).fill(0);\nfor(let i=0; i<nums.length; i++) {\n    P[i+1] = P[i] + nums[i];\n}"
         },
-        "microDrills": [],
+        "microDrills": [
+          {
+            "question": "If P[i] sums A[0]...A[i-1], what is the sum of A[L...R]?",
+            "options": [
+              "P[R] - P[L]",
+              "P[R+1] - P[L]",
+              "P[R] - P[L-1]",
+              "P[R+1] - P[L-1]"
+            ],
+            "correctAnswer": "P[R+1] - P[L]",
+            "explanation": "P array usually has size N+1. P[k] stores sum of first k elements."
+          }
+        ],
         "recognitionChallenges": []
       },
       {
@@ -441,37 +2551,1266 @@
         "difficulty": "Expert",
         "description": "Low-level binary operations.",
         "definition": "Direct manipulation of bits to perform operations efficiently.",
-        "whatItIs": "Operating on data at the bit level (AND, OR, XOR, Shifts).",
-        "coreInvariant": "Information is encoded in binary bits.",
-        "timeComplexity": [
+        "hero": {
+          "analogy": "The Light Switch Panel",
+          "analogyImage": "bit_panel",
+          "realWorldExample": "Unix Permissions: Read=4(100), Write=2(010), Execute=1(001). All permissions = 7(111).",
+          "whenToUse": [
+            "Set theory problems",
+            "State compression",
+            "Mathematical optimizations"
+          ],
+          "quickComplexity": [
+            {
+              "operation": "Logical Gates",
+              "time": "O(1)",
+              "space": "O(1)"
+            },
+            {
+              "operation": "Bit Counts",
+              "time": "O(1)",
+              "space": "O(1)"
+            }
+          ]
+        },
+        "whatProblemItSolves": "Utilizes the CPU's ability to process 32/64 bits in parallel, providing extreme speed and memory efficiency.",
+        "memoryRepresentation": "Data is stored as raw binary sequences (integers). Information is encoded by the presence (1) or absence (0) of charge.",
+        "internalWorking": "Uses hardware-level logic gates (AND, OR, XOR, NOT, SHIFT). These are the fastest possible operations in computing.",
+        "progression": {
+          "fundamentals": {
+            "title": "Level 1 \u2013 Fundamentals",
+            "description": "Bitwise foundations.",
+            "concepts": [
+              {
+                "title": "Logical XOR",
+                "explanation": "Understanding that `x ^ x = 0` and `x ^ 0 = x`."
+              },
+              {
+                "title": "The Bitmask",
+                "explanation": "Using an integer to check or set specific positions (e.g., `(n >> i) & 1`)."
+              }
+            ],
+            "problems": [
+              191,
+              136
+            ]
+          },
+          "patterns": {
+            "title": "Level 2 \u2013 Pattern Usage",
+            "description": "Power-of-two and bit counting.",
+            "concepts": [
+              {
+                "title": "n & (n-1)",
+                "explanation": "The trick to unset the rightmost set bit (used for counting bits or checking power of 2)."
+              },
+              {
+                "title": "Bit Shifting",
+                "explanation": "Left shift (`<<`) as multiplication by 2, Right shift (`>>`) as division."
+              }
+            ],
+            "problems": [
+              231,
+              338
+            ]
+          },
+          "advanced": {
+            "title": "Level 3 \u2013 Advanced Mode",
+            "description": "State compression and subsets.",
+            "concepts": [
+              {
+                "title": "Subsets Generation",
+                "explanation": "Using numbers from 0 to 2^N - 1 as bitmasks to represent all subsets."
+              },
+              {
+                "title": "Kernighan\u2019s Algorithm",
+                "explanation": "Counting set bits in O(Set-Bits) rather than O(Total-Bits)."
+              }
+            ],
+            "problems": [
+              78,
+              201
+            ]
+          }
+        },
+        "visualizerType": "bit_manipulation",
+        "patternMapping": {
+          "relatedPatterns": [
+            {
+              "id": "subsets",
+              "label": "Subsets",
+              "reason": "Bitmasks are the standard way to represent combinations."
+            }
+          ],
+          "dependencyGraph": {
+            "nodes": [],
+            "edges": []
+          }
+        },
+        "comparisons": [
           {
-            "operation": "Bitwise Ops",
-            "time": "O(1)",
-            "space": "O(1)"
+            "targetId": "sets",
+            "title": "Bitmask vs Set",
+            "metrics": [
+              {
+                "label": "Memory",
+                "values": {
+                  "Bitmask": "4 bytes",
+                  "HashSet": "Variable (KB)"
+                }
+              },
+              {
+                "label": "Range",
+                "values": {
+                  "Bitmask": "0-63",
+                  "HashSet": "Infinite"
+                }
+              }
+            ],
+            "tradeoff": "Use Bitmasks for small, fixed ranges (like alphabets or permissions); use Sets for large or sparse data."
           }
         ],
-        "visualizerType": "bit_manipulation",
-        "subPatterns": [],
+        "interviewSim": {
+          "commonMistakes": [
+            {
+              "title": "Sign Bits",
+              "explanation": "Forgetting that right shift behavior varies for negative numbers.",
+              "warning": "Use unsigned shifts (`>>>` in JS) or be careful with `>>` in Python/C++."
+            }
+          ],
+          "constraints": [
+            "32-bit vs 64-bit limits",
+            "Two's complement"
+          ],
+          "practiceProblems": [
+            136,
+            191
+          ]
+        },
+        "deepDive": {
+          "foundation": "Bit Manipulation is the art of speaking the CPU's native language. Instead of high-level objects, we operate on the 0s and 1s that physically charge the transistors in your processor.",
+          "engine": "The bit engine uses 'Logical Gates' (AND, OR, XOR, NOT). Because these gates are implemented directly in hardware circuitry, bitwise operations are often literally the fastest instructions a computer can execute, completing in a single clock cycle.",
+          "storage": "Storage is the ultimately compressed form. A single 32-bit integer can store 32 boolean flags, whereas an array of 32 booleans would take at least 32 bytes (256 bits). It's the maximum efficiency density possible in modern computing.",
+          "visualization": {
+            "type": "binary_gate_panel",
+            "layers": [
+              {
+                "name": "The Mask Effect",
+                "description": "How AND/OR operations isolate or set bits"
+              },
+              {
+                "name": "Two's Complement",
+                "description": "Visualizing how negative numbers are encoded"
+              }
+            ]
+          }
+        },
+        "relatedProblems": [
+          136,
+          191,
+          338
+        ],
+        "subPatterns": [
+          {
+            "id": "xor_ops",
+            "title": "XOR Tricks",
+            "description": "Using A^A=0 and A^0=A.",
+            "signals": [
+              "Find single number",
+              "Missing number"
+            ],
+            "invariant": "XOR is self-inverse",
+            "formula": "res ^= nums[i]",
+            "mistakes": [
+              "Confusing ^ with power"
+            ],
+            "edgeCases": [
+              {
+                "title": "All duplicates",
+                "description": "Result 0.",
+                "whyItBreaks": "N/A"
+              }
+            ],
+            "exampleCode": "mask ^= val"
+          },
+          {
+            "id": "bit_masking",
+            "title": "Bit Masking",
+            "description": "Setting/Unsetting specific bits.",
+            "signals": [
+              "Subsets",
+              "State compression"
+            ],
+            "invariant": "1<<k represents k-th item",
+            "formula": "(n >> k) & 1",
+            "mistakes": [
+              "Precedence errors (use parens)"
+            ],
+            "edgeCases": [
+              {
+                "title": "Overflow",
+                "description": "Left shift beyond 32/64.",
+                "whyItBreaks": "Loss of data."
+              }
+            ],
+            "exampleCode": "if (state & (1 << i))"
+          }
+        ],
         "recognitionSignals": [
           "Binary representation",
           "Space optimization",
-          "XOR tricks"
+          "XOR tricks",
+          "Power of 2 check"
         ],
         "formulaPattern": "x & (x-1)",
         "commonMistakes": [
-          "Operator precedence",
-          "Signed vs Unsigned shifts"
+          "Operator precedence (always wrap bit ops in parens)",
+          "Signed vs Unsigned shifts",
+          "Negative numbers (Two's complement)"
         ],
         "edgeCases": [
           "Overflow",
-          "Negative numbers (Two's complement)"
+          "Negative numbers (Two's complement)",
+          "0 input"
         ],
         "templates": {
-          "python": "# Check if kth bit is set\nis_set = (n >> k) & 1",
-          "javascript": "// Check if kth bit is set\nconst isSet = (n >> k) & 1;"
+          "python": "# Check if kth bit is set\nis_set = (n >> k) & 1\n# Set kth bit\nn |= (1 << k)\n# Clear kth bit\nn &= ~(1 << k)",
+          "javascript": "// Check if kth bit is set\nconst isSet = (n >> k) & 1;\n// Set\nn |= (1 << k);\n// Clear\nn &= ~(1 << k);"
         },
-        "microDrills": [],
+        "microDrills": [
+          {
+            "question": "What is the result of `n & (n-1)`?",
+            "options": [
+              "Turns off the rightmost 1-bit",
+              "Turns on the rightmost 0-bit",
+              "Flips all bits",
+              "Checks if n is odd"
+            ],
+            "correctAnswer": "Turns off the rightmost 1-bit",
+            "explanation": "Common trick to count set bits or check power of 2."
+          }
+        ],
         "recognitionChallenges": []
+      },
+      {
+        "id": "sets",
+        "title": "Set",
+        "family": "Data Structures",
+        "difficulty": "Novice",
+        "description": "Unique elements only.",
+        "definition": "A collection that contains no duplicate elements.",
+        "hero": {
+          "analogy": "The VIP Guest List",
+          "analogyImage": "set_vip",
+          "realWorldExample": "Email list filtering. If you try to add 'alice@gmail.com' twice, the system only keeps one copy.",
+          "whenToUse": [
+            "Removing duplicates",
+            "Existence checking",
+            "Finding intersections/unions"
+          ],
+          "quickComplexity": [
+            {
+              "operation": "Add",
+              "time": "O(1)*",
+              "space": "O(N)"
+            },
+            {
+              "operation": "Check",
+              "time": "O(1)*",
+              "space": "O(N)"
+            },
+            {
+              "operation": "Remove",
+              "time": "O(1)*",
+              "space": "O(N)"
+            }
+          ]
+        },
+        "whatProblemItSolves": "Solves the problem of membership testing without linear search. It provides a mathematical guarantee of uniqueness.",
+        "memoryRepresentation": "Usually implemented as a Hash Map where the 'Value' is ignored, or using a Bitset for large ranges.",
+        "internalWorking": "Uses a Hash Function to determine existence. Collisions are handled via chaining, much like a Hash Map.",
+        "progression": {
+          "fundamentals": {
+            "title": "Level 1 \u2013 Fundamentals",
+            "description": "Basic membership and uniqueness.",
+            "concepts": [
+              {
+                "title": "Uniqueness Constraint",
+                "explanation": "Why adding the same item twice results in a single entry."
+              },
+              {
+                "title": "O(1) Membership",
+                "explanation": "The efficiency of `item in set` vs `item in list`."
+              }
+            ],
+            "problems": [
+              217,
+              349
+            ]
+          },
+          "patterns": {
+            "title": "Level 2 \u2013 Pattern Usage",
+            "description": "Set algebra and intersections.",
+            "concepts": [
+              {
+                "title": "Intersection/Union",
+                "explanation": "Finding common elements between two sets efficiently."
+              },
+              {
+                "title": "Seen Set Pattern",
+                "explanation": "Using a set to track visited nodes or seen values in a single pass."
+              }
+            ],
+            "problems": [
+              350,
+              128
+            ]
+          },
+          "advanced": {
+            "title": "Level 3 \u2013 Advanced Mode",
+            "description": "Bitsets and specialized sets.",
+            "concepts": [
+              {
+                "title": "Bitset Optimization",
+                "explanation": "Using a bitmask as a set for fixed integer ranges (speed/space boost)."
+              },
+              {
+                "title": "Ordered Set",
+                "explanation": "Maintaining insertion order while preserving uniqueness (LinkedHashSet)."
+              }
+            ],
+            "problems": [
+              705,
+              146
+            ]
+          }
+        },
+        "visualizerType": "set",
+        "patternMapping": {
+          "relatedPatterns": [
+            {
+              "id": "seen_tracking",
+              "label": "Seen Tracking",
+              "reason": "Standard for detecting duplicates or visited states."
+            }
+          ],
+          "dependencyGraph": {
+            "nodes": [],
+            "edges": []
+          }
+        },
+        "comparisons": [
+          {
+            "targetId": "arrays",
+            "title": "Set vs Array",
+            "metrics": [
+              {
+                "label": "Uniqueness",
+                "values": {
+                  "Set": "Enforced",
+                  "Array": "Manual"
+                }
+              },
+              {
+                "label": "Search",
+                "values": {
+                  "Set": "O(1)",
+                  "Array": "O(N)"
+                }
+              }
+            ],
+            "tradeoff": "Sets are faster for lookups but do not preserve order or allow duplicates."
+          }
+        ],
+        "interviewSim": {
+          "commonMistakes": [
+            {
+              "title": "Order Assumption",
+              "explanation": "Assuming a set will return elements in the order they were added.",
+              "warning": "Standard HashSets are unordered."
+            }
+          ],
+          "practiceProblems": [
+            217,
+            128
+          ]
+        }
+      },
+      {
+        "id": "deques",
+        "title": "Deque (Double-Ended Queue)",
+        "family": "Data Structures",
+        "difficulty": "Novice",
+        "description": "Efficient insertion/deletion at both ends.",
+        "definition": "An abstract data type that generalizes a queue, for which elements can be added to or removed from either the front or back.",
+        "hero": {
+          "analogy": "The Two-Ended Slide",
+          "analogyImage": "deque_slide",
+          "realWorldExample": "Browser History + Forward/Back. You can go forward from one end and backward from the other.",
+          "whenToUse": [
+            "Sliding Window Maximum",
+            "Implementing both Stack and Queue",
+            "Efficient BFS"
+          ],
+          "quickComplexity": [
+            {
+              "operation": "Push Front/Back",
+              "time": "O(1)",
+              "space": "O(1)"
+            },
+            {
+              "operation": "Pop Front/Back",
+              "time": "O(1)",
+              "space": "O(1)"
+            }
+          ]
+        },
+        "whatProblemItSolves": "Eliminates the O(N) shift cost when adding/removing from the front of an array.",
+        "memoryRepresentation": "Implemented as a Doubly Linked List or a Circular Buffer within an array.",
+        "internalWorking": "Maintains two pointers (Head and Tail). Modulo arithmetic is typically used to handle wrap-around in array implementations.",
+        "progression": {
+          "fundamentals": {
+            "title": "Level 1 \u2013 Fundamentals",
+            "description": "Basic push/pop from both ends.",
+            "concepts": [
+              {
+                "title": "Dual Access",
+                "explanation": "Why having access to both ends is more versatile than a standard stack or queue."
+              },
+              {
+                "title": "Implementation Tradeoffs",
+                "explanation": "LinkedList vs Circular Array speed differences."
+              }
+            ],
+            "problems": [
+              641,
+              933
+            ]
+          },
+          "patterns": {
+            "title": "Level 2 \u2013 Pattern Usage",
+            "description": "Monotonicity and ranges.",
+            "concepts": [
+              {
+                "title": "Monotonic Deque",
+                "explanation": "Keeping elements in increasing/decreasing order while sliding a window."
+              },
+              {
+                "title": "BFS Optimizations",
+                "explanation": "Using a deque to efficiently manage level-order exploration."
+              }
+            ],
+            "problems": [
+              239,
+              1438
+            ]
+          },
+          "advanced": {
+            "title": "Level 3 \u2013 Advanced Mode",
+            "description": "Shortest paths and work-stealing.",
+            "concepts": [
+              {
+                "title": "0-1 BFS",
+                "explanation": "Using a deque to solve shortest path in graphs with weights 0 and 1."
+              },
+              {
+                "title": "Work-Stealing",
+                "explanation": "How parallel executors use deques to balance tasks."
+              }
+            ],
+            "problems": [
+              862,
+              1368
+            ]
+          }
+        },
+        "visualizerType": "deque",
+        "patternMapping": {
+          "relatedPatterns": [
+            {
+              "id": "sliding_window",
+              "label": "Sliding Window",
+              "reason": "Deques are the engine for monotonic range queries."
+            }
+          ],
+          "dependencyGraph": {
+            "nodes": [],
+            "edges": []
+          }
+        },
+        "comparisons": [
+          {
+            "targetId": "stacks",
+            "title": "Deque vs Stack",
+            "metrics": [
+              {
+                "label": "Ends",
+                "values": {
+                  "Deque": "Both",
+                  "Stack": "Top Only"
+                }
+              }
+            ],
+            "tradeoff": "A Deque is a superset of a Stack."
+          }
+        ],
+        "interviewSim": {
+          "commonMistakes": [
+            {
+              "title": "Front shift",
+              "explanation": "Using `list.pop(0)` in Python instead of `collections.deque`.",
+              "warning": "`list.pop(0)` is O(N). Always use `deque.popleft()` for O(1)."
+            }
+          ],
+          "practiceProblems": [
+            239,
+            641
+          ]
+        }
+      },
+      {
+        "id": "binary_trees",
+        "title": "Binary Tree",
+        "family": "Data Structures",
+        "difficulty": "Adept",
+        "description": "Hierarchical node structure with at most two children.",
+        "definition": "A tree data structure in which each node has at most two children, referred to as the left child and the right child.",
+        "hero": {
+          "analogy": "The Family Tree",
+          "analogyImage": "tree_family",
+          "realWorldExample": "File System Directories. A folder can contain subfolders (children).",
+          "whenToUse": [
+            "Representing hierarchical data",
+            "Recursive searching",
+            "Decision trees"
+          ],
+          "quickComplexity": [
+            {
+              "operation": "Traversal",
+              "time": "O(N)",
+              "space": "O(H)"
+            },
+            {
+              "operation": "Search",
+              "time": "O(N)",
+              "space": "O(H)"
+            }
+          ]
+        },
+        "whatProblemItSolves": "Organizes data into paths and hierarchies, allowing for exponential data growth with logarithmic depth (in balanced cases).",
+        "memoryRepresentation": "Nodes containing `value`, `left_pointer`, and `right_pointer`. References can be null if a child doesn't exist.",
+        "internalWorking": "Traversed using depth (DFS) or breadth (BFS). Properties like 'Height' and 'Balance' determine the efficiency of operations.",
+        "progression": {
+          "fundamentals": {
+            "title": "Level 1 \u2013 Fundamentals",
+            "description": "Basic traversal and node properties.",
+            "concepts": [
+              {
+                "title": "Recursive Traversal",
+                "explanation": "In-order, Pre-order, and Post-order visiting patterns."
+              },
+              {
+                "title": "Height vs Depth",
+                "explanation": "Understanding the vertical metrics of a tree."
+              }
+            ],
+            "problems": [
+              104,
+              226
+            ]
+          },
+          "patterns": {
+            "title": "Level 2 \u2013 Pattern Usage",
+            "description": "Properties and path analysis.",
+            "concepts": [
+              {
+                "title": "Level Order (BFS)",
+                "explanation": "Visiting the tree layer-by-layer using a queue."
+              },
+              {
+                "title": "Path Sums",
+                "explanation": "Exploring paths from root to leaves to satisfy conditions."
+              }
+            ],
+            "problems": [
+              102,
+              112
+            ]
+          },
+          "advanced": {
+            "title": "Level 3 \u2013 Advanced Mode",
+            "description": "Structural transformations and complex LCA.",
+            "concepts": [
+              {
+                "title": "Lowest Common Ancestor",
+                "explanation": "Finding the split point between two nodes in the hierarchy."
+              },
+              {
+                "title": "Tree Serialization",
+                "explanation": "Converting a binary tree into a string/array format for transmission."
+              }
+            ],
+            "problems": [
+              236,
+              297
+            ]
+          }
+        },
+        "visualizerType": "binary_tree",
+        "patternMapping": {
+          "relatedPatterns": [
+            {
+              "id": "dfs",
+              "label": "DFS",
+              "reason": "The natural way to explore tree branches."
+            },
+            {
+              "id": "bfs",
+              "label": "BFS",
+              "reason": "Standard for level-by-level traversal."
+            }
+          ],
+          "dependencyGraph": {
+            "nodes": [
+              {
+                "id": "binary_trees",
+                "label": "Binary Trees",
+                "type": "root"
+              },
+              {
+                "id": "dfs",
+                "label": "DFS",
+                "type": "pattern"
+              },
+              {
+                "id": "bfs",
+                "label": "BFS",
+                "type": "pattern"
+              }
+            ],
+            "edges": [
+              {
+                "from": "binary_trees",
+                "to": "dfs",
+                "label": "Path Exploration"
+              },
+              {
+                "from": "binary_trees",
+                "to": "bfs",
+                "label": "Level Traversal"
+              }
+            ]
+          }
+        },
+        "comparisons": [
+          {
+            "targetId": "linked_lists",
+            "title": "Binary Tree vs Linked List",
+            "metrics": [
+              {
+                "label": "Structure",
+                "values": {
+                  "Tree": "Non-linear",
+                  "List": "Linear"
+                }
+              },
+              {
+                "label": "Search",
+                "values": {
+                  "Tree": "O(log N)*",
+                  "List": "O(N)"
+                }
+              }
+            ],
+            "tradeoff": "Trees allow branching search, Lists are strictly sequential."
+          }
+        ],
+        "interviewSim": {
+          "commonMistakes": [
+            {
+              "title": "Base Case",
+              "explanation": "Forgetting the `if not root: return` case in recursive functions.",
+              "warning": "Will cause AttributeErrors/NullPointerExceptions."
+            }
+          ],
+          "practiceProblems": [
+            104,
+            102
+          ]
+        }
+      },
+      {
+        "id": "bst",
+        "title": "Binary Search Tree (BST)",
+        "family": "Data Structures",
+        "difficulty": "Adept",
+        "description": "Sorted binary tree for efficient search.",
+        "definition": "A binary tree where for every node, values in the left subtree are smaller and values in the right subtree are larger.",
+        "hero": {
+          "analogy": "The Organized Library Shelves",
+          "analogyImage": "bst_library",
+          "realWorldExample": "Search Engines. By keeping data sorted, you can discard half the search space with every step (Binary Search).",
+          "whenToUse": [
+            "Dynamic sorting",
+            "Fast lookups in unpredictable data sets",
+            "Range queries"
+          ],
+          "quickComplexity": [
+            {
+              "operation": "Search",
+              "time": "O(log N)*",
+              "space": "O(H)"
+            },
+            {
+              "operation": "Insert",
+              "time": "O(log N)*",
+              "space": "O(H)"
+            }
+          ]
+        },
+        "whatProblemItSolves": "Combines the fast insertion of a linked list with the fast search of a sorted array.",
+        "memoryRepresentation": "Same as a Binary Tree, but maintained with a strict ordering invariant.",
+        "internalWorking": "During insertion/search, we compare target with current node. If `target < node.val`, go left; else go right.",
+        "progression": {
+          "fundamentals": {
+            "title": "Level 1 \u2013 Fundamentals",
+            "description": "BST properties and validation.",
+            "concepts": [
+              {
+                "title": "The BST Invariant",
+                "explanation": "Left < Node < Right. Always."
+              },
+              {
+                "title": "Validating BST",
+                "explanation": "Why checking children values isn't enough (need range boundaries)."
+              }
+            ],
+            "problems": [
+              98,
+              700
+            ]
+          },
+          "patterns": {
+            "title": "Level 2 \u2013 Pattern Usage",
+            "description": "In-order properties and searching.",
+            "concepts": [
+              {
+                "title": "In-order = Sorted",
+                "explanation": "An in-order traversal of a BST always yields sorted values."
+              },
+              {
+                "title": "Successor/Predecessor",
+                "explanation": "Finding the next smallest/largest nodes without full traversal."
+              }
+            ],
+            "problems": [
+              230,
+              173
+            ]
+          },
+          "advanced": {
+            "title": "Level 3 \u2013 Advanced Mode",
+            "description": "Balancing and deletions.",
+            "concepts": [
+              {
+                "title": "Balanced BST (AVL/Red-Black)",
+                "explanation": "Automatically keeping height at O(log N) regardless of input order."
+              },
+              {
+                "title": "BST Deletion",
+                "explanation": "Handling the complex 'Node with two children' case."
+              }
+            ],
+            "problems": [
+              450,
+              108
+            ]
+          }
+        },
+        "visualizerType": "bst",
+        "patternMapping": {
+          "relatedPatterns": [
+            {
+              "id": "binary_search",
+              "label": "Binary Search",
+              "reason": "The logic derived from the BST structure."
+            }
+          ],
+          "dependencyGraph": {
+            "nodes": [],
+            "edges": []
+          }
+        },
+        "comparisons": [
+          {
+            "targetId": "hash_maps",
+            "title": "BST vs Hash Map",
+            "metrics": [
+              {
+                "label": "Search",
+                "values": {
+                  "BST": "O(log N)",
+                  "Hash": "O(1) avg"
+                }
+              },
+              {
+                "label": "Sorting",
+                "values": {
+                  "BST": "Inherent",
+                  "Hash": "None"
+                }
+              }
+            ],
+            "tradeoff": "Hash Maps are faster, but BSTs stay sorted and support range queries."
+          }
+        ],
+        "interviewSim": {
+          "commonMistakes": [
+            {
+              "title": "Skewed Tree",
+              "explanation": "Inserting sorted data into a BST results in a O(N) linked list.",
+              "warning": "Mention 'Self-Balancing Trees' if asked about worst-case O(N)."
+            }
+          ],
+          "practiceProblems": [
+            98,
+            230
+          ]
+        }
+      },
+      {
+        "id": "graphs",
+        "title": "Graph",
+        "family": "Data Structures",
+        "difficulty": "Adept",
+        "description": "Nodes and edges representing complex relationships.",
+        "definition": "A collection of vertices (nodes) and edges (connections) between them.",
+        "hero": {
+          "analogy": "The Social Network",
+          "analogyImage": "graph_social",
+          "realWorldExample": "Google Maps. Intersections are nodes, and roads connecting them are edges. Some roads are one-way (Directed).",
+          "whenToUse": [
+            "Modeling networks",
+            "Pathfinding",
+            "Recommendation engines"
+          ],
+          "quickComplexity": [
+            {
+              "operation": "Adjacency List Space",
+              "time": "O(V+E)",
+              "space": "O(V+E)"
+            },
+            {
+              "operation": "Adjacency Matrix Space",
+              "time": "O(V^2)",
+              "space": "O(V^2)"
+            }
+          ]
+        },
+        "whatProblemItSolves": "Models non-hierarchical, many-to-many relationships that trees and lists cannot represent.",
+        "memoryRepresentation": "Usually 'Adjacency List' (Map of lists) or 'Adjacency Matrix' (2D Grid).",
+        "internalWorking": "Basic exploration uses DFS/BFS. Complex problems involve cycles, connectivity, and shortest paths.",
+        "progression": {
+          "fundamentals": {
+            "title": "Level 1 \u2013 Fundamentals",
+            "description": "Representation and basic traversal.",
+            "concepts": [
+              {
+                "title": "Adj List vs Matrix",
+                "explanation": "When to trade space for lookup speed."
+              },
+              {
+                "title": "Directed vs Undirected",
+                "explanation": "Whether friendships go one way or both."
+              }
+            ],
+            "problems": [
+              133,
+              1971
+            ]
+          },
+          "patterns": {
+            "title": "Level 2 \u2013 Pattern Usage",
+            "description": "Connectivity and cycles.",
+            "concepts": [
+              {
+                "title": "Cycle Detection",
+                "explanation": "Using visited/recStack to find loops in directed graphs."
+              },
+              {
+                "title": "Connected Components",
+                "explanation": "Finding isolated islands of nodes in a network."
+              }
+            ],
+            "problems": [
+              207,
+              323
+            ]
+          },
+          "advanced": {
+            "title": "Level 3 \u2013 Advanced Mode",
+            "description": "Graph optimizations.",
+            "concepts": [
+              {
+                "title": "Bipartite Check",
+                "explanation": "Determining if a graph can be split into two independent sets."
+              },
+              {
+                "title": "Topological Sort",
+                "explanation": "Finding a valid order of operations in dependencies (DAG)."
+              }
+            ],
+            "problems": [
+              785,
+              210
+            ]
+          }
+        },
+        "visualizerType": "graph",
+        "patternMapping": {
+          "relatedPatterns": [
+            {
+              "id": "bfs",
+              "label": "BFS",
+              "reason": "Shortest path discovery."
+            },
+            {
+              "id": "dfs",
+              "label": "DFS",
+              "reason": "Connectivity analysis."
+            }
+          ],
+          "dependencyGraph": {
+            "nodes": [
+              {
+                "id": "graphs",
+                "label": "Graphs",
+                "type": "root"
+              },
+              {
+                "id": "bfs",
+                "label": "BFS",
+                "type": "pattern"
+              },
+              {
+                "id": "dfs",
+                "label": "DFS",
+                "type": "pattern"
+              },
+              {
+                "id": "union_find",
+                "label": "Union Find",
+                "type": "pattern"
+              }
+            ],
+            "edges": [
+              {
+                "from": "graphs",
+                "to": "bfs",
+                "label": "Shortest Path"
+              },
+              {
+                "from": "graphs",
+                "to": "dfs",
+                "label": "Connectivity"
+              },
+              {
+                "from": "graphs",
+                "to": "union_find",
+                "label": "Disjoint Sets"
+              }
+            ]
+          }
+        },
+        "comparisons": [
+          {
+            "targetId": "binary_trees",
+            "title": "Graph vs Tree",
+            "metrics": [
+              {
+                "label": "Connections",
+                "values": {
+                  "Graph": "Any",
+                  "Tree": "Hierarchical"
+                }
+              },
+              {
+                "label": "Cycles",
+                "values": {
+                  "Graph": "Allowed",
+                  "Tree": "Forbidden"
+                }
+              }
+            ],
+            "tradeoff": "Trees are specialized graphs with no cycles."
+          }
+        ],
+        "interviewSim": {
+          "commonMistakes": [
+            {
+              "title": "Infinite Loops",
+              "explanation": "Forgetting the 'Visited' set in an undirected graph traversal.",
+              "warning": "Will cause a Stack Overflow."
+            }
+          ],
+          "practiceProblems": [
+            133,
+            207
+          ]
+        }
+      },
+      {
+        "id": "trie",
+        "title": "Trie (Prefix Tree)",
+        "family": "Data Structures",
+        "difficulty": "Expert",
+        "description": "Efficient string retrieval via prefixes.",
+        "definition": "A tree-like data structure used to store a dynamic set or associative array where the keys are usually strings.",
+        "hero": {
+          "analogy": "The Autocomplete Dictionary",
+          "analogyImage": "trie_autocomplete",
+          "realWorldExample": "Search box suggestions. As you type 'APP', the Trie quickly finds 'APPLE', 'APPLY', and 'APPROVE' by following the 'A'->'P'->'P' path.",
+          "whenToUse": [
+            "Prefix matching",
+            "Dictionary lookups",
+            "IP routing tables"
+          ],
+          "quickComplexity": [
+            {
+              "operation": "Insert/Search",
+              "time": "O(L)",
+              "space": "O(Alphabet * L * N)"
+            }
+          ]
+        },
+        "whatProblemItSolves": "Eliminates the need to compare strings character-by-character against every item in a list. Search time depends only on string length, not the number of strings.",
+        "memoryRepresentation": "A root node where each child is a character. Nodes often contain a boolean `isEndOfWord` flag.",
+        "internalWorking": "Each step down the tree represents one character. Paths share common prefixes, significantly reducing redundant storage for similar words.",
+        "progression": {
+          "fundamentals": {
+            "title": "Level 1 \u2013 Fundamentals",
+            "description": "Prefix branching and insertion.",
+            "concepts": [
+              {
+                "title": "Character Paths",
+                "explanation": "How each node represents a single step in a word."
+              },
+              {
+                "title": "isEndOfWord Flag",
+                "explanation": "Distinguishing between a prefix (APP) and a complete word (APPLE)."
+              }
+            ],
+            "problems": [
+              208,
+              211
+            ]
+          },
+          "patterns": {
+            "title": "Level 2 \u2013 Pattern Usage",
+            "description": "Searching and Wildcards.",
+            "concepts": [
+              {
+                "title": "Prefix Search",
+                "explanation": "Returning all words that start with a specific string."
+              },
+              {
+                "title": "Wildcard Matching",
+                "explanation": "Using DFS to search multiple branches when characters are unknown (e.g., 'A..E')."
+              }
+            ],
+            "problems": [
+              211,
+              648
+            ]
+          },
+          "advanced": {
+            "title": "Level 3 \u2013 Advanced Mode",
+            "description": "Bitwise Tries and Compressed Tries.",
+            "concepts": [
+              {
+                "title": "Compressed Trie (Radix)",
+                "explanation": "Merging nodes with only one child to save space."
+              },
+              {
+                "title": "Max XOR Path",
+                "explanation": "Using a Bitwise Trie to find the pair of numbers with maximum XOR."
+              }
+            ],
+            "problems": [
+              421,
+              1032
+            ]
+          }
+        },
+        "visualizerType": "trie",
+        "patternMapping": {
+          "relatedPatterns": [
+            {
+              "id": "dfs",
+              "label": "DFS",
+              "reason": "Used for exhaustive search and autocomplete."
+            }
+          ],
+          "dependencyGraph": {
+            "nodes": [],
+            "edges": []
+          }
+        },
+        "comparisons": [
+          {
+            "targetId": "hash_maps",
+            "title": "Trie vs Hash Map",
+            "metrics": [
+              {
+                "label": "Prefix Search",
+                "values": {
+                  "Trie": "O(L)",
+                  "Hash": "O(N*L)"
+                }
+              }
+            ],
+            "tradeoff": "Tries are better for prefix lookups; Hash Maps are better for exact matches."
+          }
+        ],
+        "interviewSim": {
+          "commonMistakes": [
+            {
+              "title": "Memory Overhead",
+              "explanation": "Tries can consume a lot of memory because of empty child pointers.",
+              "warning": "Consider using a Map for children instead of an array of size 26."
+            }
+          ],
+          "practiceProblems": [
+            208,
+            211
+          ]
+        }
+      },
+      {
+        "id": "union_find",
+        "title": "Union-Find (Disjoint Set)",
+        "family": "Data Structures",
+        "difficulty": "Adept",
+        "description": "Tracks partitions of elements into disjoint sets.",
+        "definition": "A data structure that tracks elements partitioned into disjoint subsets and provides efficient operations to merge sets and find representatives.",
+        "hero": {
+          "analogy": "The Social Circles Merger",
+          "analogyImage": "union_find_circles",
+          "realWorldExample": "Electronic Circuit Connectivity. Checking if two points on a circuit board are electrically connected.",
+          "whenToUse": [
+            "Dynamic connectivity",
+            "Cycle detection in undirected graphs",
+            "Kruskal's algorithm"
+          ],
+          "quickComplexity": [
+            {
+              "operation": "Union/Find",
+              "time": "O(\u03b1(N))",
+              "space": "O(N)"
+            }
+          ]
+        },
+        "whatProblemItSolves": "Answers the 'Are these two connected?' question in near-constant time, even as new connections are added dynamically.",
+        "memoryRepresentation": "An array (or map) `parent` where `parent[i]` is the parent of `i`. Elements with `parent[i] == i` are set representatives (roots).",
+        "internalWorking": "Use 'Path Compression' to flatten the tree during `find` and 'Union by Rank/Size' to keep trees shallow.",
+        "progression": {
+          "fundamentals": {
+            "title": "Level 1 \u2013 Fundamentals",
+            "description": "Basic parent tracking.",
+            "concepts": [
+              {
+                "title": "The Root",
+                "explanation": "The ultimate representative of a set."
+              },
+              {
+                "title": "The Find Operation",
+                "explanation": "Climbing the parent tree to find the root."
+              }
+            ],
+            "problems": [
+              547,
+              990
+            ]
+          },
+          "patterns": {
+            "title": "Level 2 \u2013 Pattern Usage",
+            "description": "Efficiency optimizations.",
+            "concepts": [
+              {
+                "title": "Path Compression",
+                "explanation": "Flattening the hierarchy every time we search (The Secret Sauce)."
+              },
+              {
+                "title": "Union by Rank",
+                "explanation": "Always attaching the smaller tree to the larger one."
+              }
+            ],
+            "problems": [
+              684,
+              1202
+            ]
+          },
+          "advanced": {
+            "title": "Level 3 \u2013 Advanced Mode",
+            "description": "Complex connectivity and Kruskal's.",
+            "concepts": [
+              {
+                "title": "Kruskal's Algorithm",
+                "explanation": "Building a Minimum Spanning Tree using Union-Find to avoid cycles."
+              },
+              {
+                "title": "Equation Satisfiability",
+                "explanation": "Using sets to model relationships like `a == b` and `b != c`."
+              }
+            ],
+            "problems": [
+              1584,
+              952
+            ]
+          }
+        },
+        "visualizerType": "union_find",
+        "patternMapping": {
+          "relatedPatterns": [
+            {
+              "id": "greedy",
+              "label": "Greedy",
+              "reason": "Used in Kruskal's for MST."
+            }
+          ],
+          "dependencyGraph": {
+            "nodes": [],
+            "edges": []
+          }
+        },
+        "comparisons": [
+          {
+            "targetId": "graphs",
+            "title": "Union-Find vs DFS",
+            "metrics": [
+              {
+                "label": "Dynamic Updates",
+                "values": {
+                  "UnionFind": "Excellent",
+                  "DFS": "Poor"
+                }
+              }
+            ],
+            "tradeoff": "Union-Find is better for building connections over time; DFS is better for static path analysis."
+          }
+        ],
+        "interviewSim": {
+          "commonMistakes": [
+            {
+              "title": "No Path Compression",
+              "explanation": "Forgetting path compression leads to O(N) performance.",
+              "warning": "Always implement `parent[x] = find(parent[x])`."
+            }
+          ],
+          "practiceProblems": [
+            547,
+            684
+          ]
+        }
       }
     ]
   },
@@ -492,7 +3831,7 @@
           "analogy": "The Dual Scanners",
           "analogyImage": "two_pointers_analogy",
           "realWorldExample": "Two workers scanning a line from both ends to meet in the middle (e.g., matching sorted list items).",
-          "coreInsight": "Narrowing the search space! Instead of checking every pair with nested loops O(N²), we use two pointers to eliminate large portions of the search space in each step O(N).",
+          "coreInsight": "Narrowing the search space! Instead of checking every pair with nested loops O(N\u00b2), we use two pointers to eliminate large portions of the search space in each step O(N).",
           "problemStatement": {
             "definition": "Find two elements in a sorted array that sum up to a specific target value.",
             "returnValue": "The indices of the two elements.",
@@ -503,7 +3842,7 @@
             ]
           },
           "efficiencyComparison": {
-            "bruteForce": "O(N²)",
+            "bruteForce": "O(N\u00b2)",
             "optimal": "O(N)",
             "gain": "95%"
           }
@@ -518,6 +3857,12 @@
           }
         ],
         "visualizerType": "two_pointer",
+        "relatedProblems": [
+          1,
+          5,
+          11,
+          15
+        ],
         "subPatterns": [
           {
             "id": "opposite_direction",
@@ -689,7 +4034,7 @@
               },
               "cpp": {
                 "bruteForce": "bool hasCycleBrute(ListNode *head) {\n    unordered_set<ListNode*> visited;\n    ListNode *curr = head;\n    while (curr) {\n        if (visited.count(curr)) return true;\n        visited.insert(curr);\n        curr = curr->next;\n    }\n    return false;\n}",
-                "optimal": "bool hasCycleOptimal(ListNode *head) {\n    ListNode *slow = head, *fast = head;\n    while (fast && fast->next) {\n        slow = slow->next;\n        fast = fast.next.next;\n        if (slow == fast) return true;\n    }\n    return false;\n}"
+                "optimal": "bool hasCycleOptimal(ListNode *head) {\n    ListNode *slow = head, *fast = head;\n    while (fast && fast->next) {\n        slow = slow->next;\n        fast = fast->next.next;\n        if (slow == fast) return true;\n    }\n    return false;\n}"
               }
             }
           },
@@ -1010,7 +4355,7 @@
             ]
           },
           "efficiencyComparison": {
-            "bruteForce": "O(N × K)",
+            "bruteForce": "O(N \u00d7 K)",
             "optimal": "O(N)",
             "gain": "85%"
           }
@@ -1030,6 +4375,10 @@
           }
         ],
         "visualizerType": "sliding_window",
+        "relatedProblems": [
+          3,
+          76
+        ],
         "subPatterns": [
           {
             "id": "fixed_window",
@@ -1459,6 +4808,11 @@
           }
         ],
         "visualizerType": "binary_search",
+        "relatedProblems": [
+          4,
+          33,
+          74
+        ],
         "subPatterns": [
           {
             "id": "iterative_standard",
@@ -1745,7 +5099,7 @@
             ]
           },
           "efficiencyComparison": {
-            "bruteForce": "O(N²) - Nested loops checking right",
+            "bruteForce": "O(N\u00b2) - Nested loops checking right",
             "optimal": "O(N)",
             "gain": "90% for sparse results"
           }
@@ -1919,16 +5273,39 @@
         "difficulty": "Adept",
         "description": "Sort numbers in range 1 to N in O(N) time with O(1) space.",
         "definition": "A pattern to sort arrays containing numbers in a given range by placing each number at its correct index.",
+        "mentalModel": {
+          "analogy": "The Assigned Seats",
+          "analogyImage": "cyclic_sort_analogy",
+          "realWorldExample": "Organizing a classroom where everyone has a numbered desk; if a student is at the wrong desk, you swap them with whoever is at their desk.",
+          "coreInsight": "If we know the range is 1-N, we know exactly where each number SHOULD be (index = num - 1). We can sort by swapping in O(N)."
+        },
         "visualizerType": "cyclic_sort",
+        "coreInvariant": "After sorting, nums[i] == i + 1 (for 1-indexed range).",
         "subPatterns": [
           {
             "id": "find_missing",
             "title": "Find Missing Number",
             "description": "Identify the number missing from a range of 1..N.",
+            "signals": [
+              "Range 1..N",
+              "One number missing",
+              "O(N) time requirement"
+            ],
+            "invariant": "The index where nums[i] != i is the missing number.",
             "templates": {
               "python": "def find_missing(nums):\n    i = 0\n    while i < len(nums):\n        j = nums[i]\n        if nums[i] < len(nums) and nums[i] != nums[j]:\n            nums[i], nums[j] = nums[j], nums[i]\n        else: i += 1\n    for k in range(len(nums)):\n        if nums[k] != k: return k\n    return len(nums)",
               "javascript": "function findMissing(nums) {\n    let i = 0;\n    while (i < nums.length) {\n        let j = nums[i];\n        if (nums[i] < nums.length && nums[i] !== nums[j]) [nums[i], nums[j]] = [nums[j], nums[i]];\n        else i++;\n    }\n    for (let k = 0; k < nums.length; k++) if (nums[k] !== k) return k;\n    return nums.length;\n}"
             }
+          },
+          {
+            "id": "find_duplicates",
+            "title": "Find All Duplicates",
+            "description": "Find all numbers that appear more than once.",
+            "signals": [
+              "Duplicate elements",
+              "Space O(1) constraint"
+            ],
+            "invariant": "Duplicates will be found at indices they don't belong to."
           }
         ]
       },
@@ -1939,15 +5316,40 @@
         "difficulty": "Adept",
         "description": "Handle overlapping time intervals or ranges in O(N log N).",
         "definition": "A pattern to resolve overlaps between intervals by sorting and merging.",
+        "mentalModel": {
+          "analogy": "The Calendar Merger",
+          "analogyImage": "merge_intervals_analogy",
+          "realWorldExample": "Merging back-to-back meetings into a single block of time.",
+          "coreInsight": "Sorting by start time allows us to process intervals linearly. If the next interval starts before the current one ends, they overlap."
+        },
         "visualizerType": "merge_intervals",
+        "relatedProblems": [
+          56
+        ],
+        "coreInvariant": "All intervals in the result are disjoint and sorted.",
         "subPatterns": [
           {
             "id": "standard_merge",
             "title": "Standard Merge",
             "description": "Merge all overlapping intervals into one.",
+            "signals": [
+              "Overlapping intervals",
+              "Time ranges",
+              "Combine periods"
+            ],
+            "invariant": "if (next.start <= current.end) current.end = max(current.end, next.end)",
             "templates": {
               "python": "def merge(intervals):\n    intervals.sort(key=lambda x: x[0])\n    res = [intervals[0]]\n    for start, end in intervals[1:]:\n        if start <= res[-1][1]: res[-1][1] = max(res[-1][1], end)\n        else: res.append([start, end])\n    return res"
             }
+          },
+          {
+            "id": "insert_interval",
+            "title": "Insert Interval",
+            "description": "Insert a new interval into a sorted list and merge.",
+            "signals": [
+              "New interval",
+              "Maintain sorted order"
+            ]
           }
         ]
       },
@@ -1957,8 +5359,38 @@
         "family": "Core Patterns",
         "difficulty": "Adept",
         "description": "Make the local optimal choice at each step to find a global optimum.",
-        "definition": "An algorithmic paradigm that builds up a solution piece by piece.",
-        "visualizerType": "greedy"
+        "definition": "An algorithmic paradigm that builds up a solution piece by piece, always choosing the next piece that offers the most obvious and immediate benefit.",
+        "mentalModel": {
+          "analogy": "The Coin Collector",
+          "analogyImage": "greedy_analogy",
+          "realWorldExample": "Making change for an amount using the fewest coins possible (always take the largest coin less than the remaining amount).",
+          "coreInsight": "Local optimization lead to global optimization for specific problem structures (Greedy Choice Property)."
+        },
+        "visualizerType": "greedy",
+        "relatedProblems": [
+          55
+        ],
+        "subPatterns": [
+          {
+            "id": "interval_scheduling",
+            "title": "Interval Scheduling",
+            "description": "Select maximum number of non-overlapping intervals.",
+            "signals": [
+              "Maximum number of tasks",
+              "No overlaps allowed"
+            ],
+            "invariant": "Always pick the interval that ends earliest."
+          },
+          {
+            "id": "huffman_coding",
+            "title": "Huffman Coding",
+            "description": "Lossless data compression using greedy tree construction.",
+            "signals": [
+              "Frequency based",
+              "Optimal variable-length coding"
+            ]
+          }
+        ]
       },
       {
         "id": "recursion",
@@ -1967,7 +5399,37 @@
         "difficulty": "Adept",
         "description": "Solve complex problems by breaking them into smaller instances of themselves.",
         "definition": "A method where the solution depends on solutions to smaller instances of the same problem.",
-        "visualizerType": "recursion"
+        "mentalModel": {
+          "analogy": "The Russian Dolls",
+          "analogyImage": "recursion_analogy",
+          "realWorldExample": "Searching through a folder that contains subfolders; you search the folder by searching each of its subfolders in the same way.",
+          "coreInsight": "Build a base case (to stop) and a recursive step (to move toward the base case)."
+        },
+        "visualizerType": "recursion",
+        "relatedProblems": [
+          94,
+          98
+        ],
+        "subPatterns": [
+          {
+            "id": "tree_traversal",
+            "title": "Tree Traversal",
+            "description": "Visit all nodes in a tree using DFS logic.",
+            "signals": [
+              "Tree structure",
+              "Exhaustive search"
+            ]
+          },
+          {
+            "id": "divide_and_conquer",
+            "title": "Divide & Conquer",
+            "description": "Break problem into independent subproblems (e.g. Merge Sort).",
+            "signals": [
+              "Independent halves",
+              "Recursive merge logic"
+            ]
+          }
+        ]
       },
       {
         "id": "backtracking",
@@ -1975,8 +5437,43 @@
         "family": "Core Patterns",
         "difficulty": "Adept",
         "description": "Incremental search for all (or some) solutions to a computational problem.",
-        "definition": "A general algorithm for finding all solutions by abandoning candidates ('backtracking').",
-        "visualizerType": "backtracking"
+        "definition": "A general algorithm for finding all solutions by abandoning candidates ('backtracking') as soon as it determines they cannot possibly be completed to a valid solution.",
+        "mentalModel": {
+          "analogy": "The Labyrinth Explorer",
+          "analogyImage": "backtracking_analogy",
+          "realWorldExample": "Solving a Sudoku puzzle; when you hit a dead end, you go back to the last empty square and try a different number.",
+          "coreInsight": "Try one way. If it works, great! If not, UNDO the move and try another way. The 'undo' step is the key."
+        },
+        "visualizerType": "backtracking",
+        "relatedProblems": [
+          46,
+          78,
+          79
+        ],
+        "subPatterns": [
+          {
+            "id": "permutations",
+            "title": "Permutations/Combinations",
+            "description": "Generate all possible arrangements of a set.",
+            "signals": [
+              "All possible",
+              "N! complexity",
+              "Constraint choices"
+            ],
+            "templates": {
+              "python": "def backtrack(curr):\n    if len(curr) == n: res.append(curr[:]); return\n    for i in range(n):\n        if used[i]: continue\n        used[i] = True\n        curr.append(nums[i])\n        backtrack(curr)\n        curr.pop()\n        used[i] = False"
+            }
+          },
+          {
+            "id": "subset_sum",
+            "title": "Path Finding / Grid Search",
+            "description": "Find path from start to end in a grid/graph.",
+            "signals": [
+              "Target path",
+              "Grid with obstacles"
+            ]
+          }
+        ]
       },
       {
         "id": "bfs",
@@ -1984,8 +5481,30 @@
         "family": "Core Patterns",
         "difficulty": "Adept",
         "description": "Traverse graphs and trees layer by layer using a Queue.",
-        "definition": "An algorithm for searching tree or graph data structures for shortest paths.",
-        "visualizerType": "bfs"
+        "definition": "An algorithm for searching tree or graph data structures for shortest paths. It starts at the root and explores all neighbor nodes at the present depth prior to moving on to the nodes at the next depth level.",
+        "mentalModel": {
+          "analogy": "The Ripple in a Pond",
+          "analogyImage": "bfs_analogy",
+          "realWorldExample": "LinkedIn suggestions: Finding people 1 connection away, then 2, then 3.",
+          "coreInsight": "Use a Queue to keep track of nodes to visit. The first node added is the first one processed, ensuring we explore level by level (Shortest Path in unweighted graphs)."
+        },
+        "visualizerType": "bfs",
+        "relatedProblems": [
+          102,
+          133
+        ],
+        "subPatterns": [
+          {
+            "id": "level_order",
+            "title": "Level Order Traversal",
+            "description": "Process nodes one level at a time.",
+            "signals": [
+              "Tree levels",
+              "Shortest path (unweighted)"
+            ],
+            "invariant": "Queue size at start of loop = number of nodes in current level."
+          }
+        ]
       },
       {
         "id": "dfs",
@@ -1993,8 +5512,26 @@
         "family": "Core Patterns",
         "difficulty": "Adept",
         "description": "Explore as far as possible along each branch before backtracking.",
-        "definition": "An algorithm for traversing or searching tree or graph data structures.",
-        "visualizerType": "dfs"
+        "definition": "An algorithm for traversing or searching tree or graph data structures by starting at the root and exploring as far as possible along each branch before backtracking.",
+        "mentalModel": {
+          "analogy": "The Deep Diver",
+          "analogyImage": "dfs_analogy",
+          "realWorldExample": "Solving a maze by following one path until you hit a wall, then turning back to the last fork.",
+          "coreInsight": "Use a Stack (or Recursion) to go deep first. Great for connectivity and exhaustive search."
+        },
+        "visualizerType": "dfs",
+        "subPatterns": [
+          {
+            "id": "path_finding",
+            "title": "Path Existence",
+            "description": "Check if a path exists between two nodes.",
+            "signals": [
+              "Is reachable?",
+              "Connectivity"
+            ],
+            "invariant": "A visited set is mandatory to prevent infinite loops."
+          }
+        ]
       },
       {
         "id": "topological_sort",
@@ -2002,17 +5539,53 @@
         "family": "Core Patterns",
         "difficulty": "Adept",
         "description": "Linear ordering of directed graph vertices for dependency management.",
-        "definition": "A linear ordering s.t. for every edge u->v, u comes before v.",
-        "visualizerType": "topological_sort"
+        "definition": "A linear ordering s.t. for every edge u->v, u comes before v. Used for task scheduling with dependencies.",
+        "mentalModel": {
+          "analogy": "The University Pre-requisites",
+          "analogyImage": "topological_sort_analogy",
+          "realWorldExample": "Finding the order of courses to take where some courses require others as pre-requisites.",
+          "coreInsight": "Keep track of 'in-degrees' (how many things must happen before me). If in-degree is 0, I can start. (Kahn's Algorithm)."
+        },
+        "visualizerType": "topological_sort",
+        "subPatterns": [
+          {
+            "id": "kahns",
+            "title": "Kahn's Algorithm (BFS)",
+            "description": "Queue-based topological sort using in-degrees.",
+            "signals": [
+              "Directed Acyclic Graph (DAG)",
+              "Order of operations"
+            ],
+            "invariant": "Nodes with 0 in-degree are ready to be added to the result."
+          }
+        ]
       },
       {
         "id": "union_find",
         "title": "Union Find (DSU)",
         "family": "Core Patterns",
         "difficulty": "Adept",
-        "description": "Efficiently track and merge disjoint sets in O(α(N)).",
-        "definition": "A data structure that tracks elements partitioned into disjoint subsets.",
-        "visualizerType": "union_find"
+        "description": "Efficiently track and merge disjoint sets in O(\u03b1(N)).",
+        "definition": "A data structure that tracks elements partitioned into disjoint subsets and provides near-constant time operations to merge sets and find representatives.",
+        "mentalModel": {
+          "analogy": "The Social Groups",
+          "analogyImage": "union_find_analogy",
+          "realWorldExample": "Merging friend circles; if Alice is friends with Bob, and Bob with Charlie, then Alice, Bob, and Charlie are in the same group.",
+          "coreInsight": "Each element points to a 'parent'. If two elements share the same 'ultimate parent' (root), they are in the same set."
+        },
+        "visualizerType": "union_find",
+        "subPatterns": [
+          {
+            "id": "path_compression",
+            "title": "Path Compression",
+            "description": "Flatten the tree structure whenever find() is called.",
+            "signals": [
+              "Efficiency optimization",
+              "Avoid skewed trees"
+            ],
+            "invariant": "parent[i] = find(parent[i]) (recursive flattening)"
+          }
+        ]
       }
     ]
   },
@@ -2028,9 +5601,43 @@
         "family": "Advanced Patterns",
         "difficulty": "Expert",
         "description": "Optimization via subproblems (1D).",
-        "definition": "Solving complex problems by breaking them down into simpler 1D subproblems.",
+        "definition": "Solving complex problems by breaking them down into simpler 1D subproblems and storing their results to avoid redundant calculations.",
+        "mentalModel": {
+          "analogy": "The Fibonacci Staircase",
+          "analogyImage": "dp_1d_analogy",
+          "realWorldExample": "Climbing stairs: To know how many ways to reach step N, you just need to know how many ways to reach step N-1 and N-2.",
+          "coreInsight": "State + Recurrence. Identify the State (dp[i]) and how it relates to previous states (dp[i-1], etc.)."
+        },
         "visualizerType": "dp_1d",
-        "microDrills": []
+        "relatedProblems": [
+          53,
+          70,
+          121,
+          139,
+          152
+        ],
+        "subPatterns": [
+          {
+            "id": "house_robber",
+            "title": "Decision Making",
+            "description": "Choice between two states (e.g. Rob or Skip).",
+            "signals": [
+              "Maximum profit",
+              "Cannot pick adjacent"
+            ],
+            "invariant": "dp[i] = max(dp[i-1], nums[i] + dp[i-2])"
+          },
+          {
+            "id": "knapsack_1d",
+            "title": "1D Knapsack / Coin Change",
+            "description": "Using 1D array to optimize space from 2D DP.",
+            "signals": [
+              "Fixed capacity",
+              "Reusable items"
+            ],
+            "invariant": "Inner loop typically runs backwards to avoid using same element twice."
+          }
+        ]
       },
       {
         "id": "dp_2d",
@@ -2038,9 +5645,53 @@
         "family": "Advanced Patterns",
         "difficulty": "Expert",
         "description": "Optimization via subproblems (2D Grid).",
-        "definition": "Solving complex problems using a 2D grid/table for subproblems.",
+        "definition": "Solving complex problems using a 2D grid/table for subproblems, often involving two strings or a grid search.",
+        "mentalModel": {
+          "analogy": "The Path across the Meadow",
+          "analogyImage": "dp_2d_analogy",
+          "realWorldExample": "Finding the shortest route from the top-left to the bottom-right of a city grid.",
+          "coreInsight": "State depends on two variables, i and j. Mapping relationships between two sequences (LCS, Edit Distance)."
+        },
         "visualizerType": "dp_2d",
-        "microDrills": []
+        "subPatterns": [
+          {
+            "id": "lcs",
+            "title": "Longest Common Subsequence",
+            "description": "Compare two strings for common sequences.",
+            "signals": [
+              "Two strings",
+              "Similarity metric"
+            ],
+            "invariant": "if (s1[i] == s2[j]) dp[i][j] = 1 + dp[i-1][j-1]"
+          }
+        ]
+      },
+      {
+        "id": "dp_strings",
+        "title": "DP on Strings",
+        "family": "Advanced Patterns",
+        "difficulty": "Expert",
+        "description": "Pattern matching and string transformations.",
+        "definition": "Specialized DP for strings, handling wildcards, regex, and palindromes.",
+        "mentalModel": {
+          "analogy": "The Spell Checker",
+          "analogyImage": "dp_strings_analogy",
+          "realWorldExample": "Google Search showing 'Did you mean...?' by calculating Edit Distance between your query and correct words.",
+          "coreInsight": "Comparing prefixes of two strings. The result for string lengths (i, j) depends on results for (i-1, j), (i, j-1), or (i-1, j-1)."
+        },
+        "visualizerType": "dp_strings",
+        "subPatterns": [
+          {
+            "id": "wildcard_matching",
+            "title": "Wildcard / Regex Matching",
+            "description": "Match strings with '*' and '?' or '.' tokens.",
+            "signals": [
+              "Regex support",
+              "Variable length matching"
+            ],
+            "invariant": "Recursive choices for '*' (match zero or match one)."
+          }
+        ]
       },
       {
         "id": "trie",
@@ -2048,9 +5699,26 @@
         "family": "Advanced Patterns",
         "difficulty": "Expert",
         "description": "Prefix tree for string reTRIEval.",
-        "definition": "A tree-like data structure used to store a dynamic set or associative array where the keys are usually strings.",
+        "definition": "A tree-like data structure used to store a dynamic set or associative array where the keys are usually strings, allowing for efficient prefix searches.",
+        "mentalModel": {
+          "analogy": "The Autocomplete Dictionary",
+          "analogyImage": "trie_analogy",
+          "realWorldExample": "A dictionary where you look up 'APP', then 'APPLE', then 'APPLY'; they all share the same prefix 'APP'.",
+          "coreInsight": "Each node represents a character. Shared prefixes share nodes, saving space and making prefix lookup O(L) where L is word length."
+        },
         "visualizerType": "trie",
-        "microDrills": []
+        "subPatterns": [
+          {
+            "id": "prefix_search",
+            "title": "Prefix / Word Search",
+            "description": "Check if any word starts with a given prefix.",
+            "signals": [
+              "Dictionary lookup",
+              "Autocomplete"
+            ],
+            "invariant": "Each node has a child mapping (Map or Array[26]) and an isEndOfWord boolean."
+          }
+        ]
       },
       {
         "id": "segment_tree",
@@ -2058,9 +5726,26 @@
         "family": "Advanced Patterns",
         "difficulty": "Expert",
         "description": "Tree for range queries.",
-        "definition": "A tree data structure for storing intervals or segments.",
+        "definition": "A tree data structure for storing intervals or segments, allowing for efficient range queries (sum, min, max) and point updates in O(log N).",
+        "mentalModel": {
+          "analogy": "The Tournament Bracket",
+          "analogyImage": "segment_tree_analogy",
+          "realWorldExample": "Tracking the high score in a leaderboard for specific regions of the list.",
+          "coreInsight": "Divide the range into halves. Each node stores the pre-calculated answer for its range. To query, combine answers from relevant sub-ranges."
+        },
         "visualizerType": "segment_tree",
-        "microDrills": []
+        "subPatterns": [
+          {
+            "id": "range_sum",
+            "title": "Range Sum Query",
+            "description": "Calculate sum in range [L, R] with updates.",
+            "signals": [
+              "Frequent updates",
+              "Range queries"
+            ],
+            "invariant": "Node value = leftChild.value + rightChild.value"
+          }
+        ]
       },
       {
         "id": "graph_advanced",
@@ -2068,9 +5753,37 @@
         "family": "Advanced Patterns",
         "difficulty": "Expert",
         "description": "Dijkstra, Prim, Kruskal.",
-        "definition": "Algorithms for finding the shortest path between nodes or the minimum spanning tree.",
+        "definition": "Advanced graph algorithms for finding the shortest path between nodes or the minimum spanning tree of a weighted graph.",
+        "mentalModel": {
+          "analogy": "The Postal Route Optimizer",
+          "analogyImage": "graph_advanced_analogy",
+          "realWorldExample": "Google Maps finding the fastest way home; National Grid connecting cities with minimum cable length.",
+          "coreInsight": "Use Priority Queues to always pick the 'cheapest' next step (Greedy + BFS logic)."
+        },
         "visualizerType": "graph_advanced",
-        "microDrills": []
+        "subPatterns": [
+          {
+            "id": "dijkstra",
+            "title": "Dijkstra's (Shortest Path)",
+            "description": "Find shortest path in graphs with non-negative weights.",
+            "signals": [
+              "Weighted graph",
+              "Single source shortest path"
+            ],
+            "invariant": "Once a node is popped from the Priority Queue, its shortest path from the source is finalized."
+          },
+          {
+            "id": "kruskals",
+            "title": "Kruskal's (Min Spanning Tree)",
+            "description": "Find minimum cost to connect all nodes using Union-Find.",
+            "signals": [
+              "Connect all nodes",
+              "Minimum cost",
+              "Edges weights"
+            ],
+            "invariant": "Sort edges by weight and add if they don't form a cycle (using DSU)."
+          }
+        ]
       },
       {
         "id": "string_matching",
@@ -2078,9 +5791,26 @@
         "family": "Advanced Patterns",
         "difficulty": "Expert",
         "description": "KMP, Rabin-Karp.",
-        "definition": "Algorithms to find occurrences of a pattern string within a text.",
+        "definition": "Algorithms used to find one or more occurrences of a pattern string within a larger text string efficiently.",
+        "mentalModel": {
+          "analogy": "The Search Engine Finder",
+          "analogyImage": "string_matching_analogy",
+          "realWorldExample": "Control+F search in a document; DNA sequence mapping.",
+          "coreInsight": "KMP: Use information from previous matches to avoid re-checking characters. Rabin-Karp: Use hashing to quickly compare substrings."
+        },
         "visualizerType": "string_matching",
-        "microDrills": []
+        "subPatterns": [
+          {
+            "id": "kmp",
+            "title": "KMP (Knuth-Morris-Pratt)",
+            "description": "Pattern matching in O(N+M) using LPS array.",
+            "signals": [
+              "Sub-pattern search",
+              "Linear time requirement"
+            ],
+            "invariant": "LPS[i] = length of the longest proper prefix of pattern[0..i] that is also a suffix of pattern[0..i]."
+          }
+        ]
       }
     ]
   }

@@ -1,11 +1,7 @@
+import React, { Suspense } from 'react'
 import { useStore } from '../../store/useStore'
-import { cn } from '../../utils/cn'
-import TwoPointerEngine from '../../visualization-engines/TwoPointerEngine'
-import SlidingWindowEngine from '../../visualization-engines/SlidingWindowEngine'
-import { BinarySearchComparison } from '../foundations/engines/SearchEngine/BinarySearchComparison'
-import { MonotonicStackComparison } from '../foundations/engines/MonotonicStack/MonotonicStackComparison'
-import FallbackEngine from '../visualization-engines/FallbackEngine'
-import { Play } from 'lucide-react'
+import { getEngine } from '../../registry/engineRegistry'
+import ErrorBoundary from '../common/ErrorBoundary'
 
 const VizPanel: React.FC = () => {
     const currentProblem = useStore(state => state.currentProblem)
@@ -14,102 +10,87 @@ const VizPanel: React.FC = () => {
 
     if (!currentProblem) return null
 
-    const steps = isBruteForce ? currentProblem.brute_force_steps : currentProblem.optimal_steps
-    const hasSteps = steps && steps.length > 0
-
-    if (!hasSteps && !compareMode) {
-        return (
-            <div className="flex-1 flex flex-col items-center justify-center p-12 text-center space-y-4">
-                <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/20">
-                    <Play size={24} />
-                </div>
-                <div className="space-y-1">
-                    <h3 className="text-sm font-bold text-white/40 uppercase tracking-widest">Readiness Check</h3>
-                    <p className="text-[10px] text-white/20 uppercase tracking-widest">Run visualization to generate algorithmic steps</p>
-                </div>
-            </div>
-        )
-    }
-
-    const complexity = currentProblem.complexity
-
     const renderEngine = (isBrute: boolean) => {
-        // Defensive check for steps before rendering engine
-        const currentSteps = isBrute ? currentProblem.brute_force_steps : currentProblem.optimal_steps;
-        if (!currentSteps || currentSteps.length === 0) {
+        const Engine = getEngine(currentProblem.algorithmType)
+
+        if (!Engine) {
             return (
-                <div className="flex-1 flex flex-col items-center justify-center p-12 text-center space-y-4 text-white/20">
-                    No steps available for this strategy.
+                <div className="flex items-center justify-center h-full text-white/20 italic text-sm">
+                    Visualization engine for {currentProblem.algorithmType} is under construction...
                 </div>
-            );
+            )
         }
 
-        switch (currentProblem.algorithmType) {
-            case 'sliding_window':
-                return <SlidingWindowEngine isBrute={isBrute} />
-            case 'two_pointer':
-                return <TwoPointerEngine isBrute={isBrute} />
-            case 'binary_search':
-                return <BinarySearchComparison mode="standard" />
-            case 'stack':
-                return <MonotonicStackComparison mode="next_greater" />
-            default:
-                return <FallbackEngine isBrute={isBrute} />
-        }
-    }
-
-    // Special Case: Comparison components handle their own layout
-    if (currentProblem.algorithmType === 'binary_search' || currentProblem.algorithmType === 'stack') {
         return (
-            <div className="flex-1 flex flex-col bg-white/[0.01] overflow-hidden relative">
-                {currentProblem.algorithmType === 'binary_search' ? (
-                    <BinarySearchComparison mode={currentProblem.id === 35 ? 'lower_bound' : 'standard'} />
-                ) : (
-                    <MonotonicStackComparison mode="next_greater" />
-                )}
-            </div>
+            <ErrorBoundary fallback={
+                <div className="flex flex-col items-center justify-center h-full text-red-400 bg-red-400/5 p-6 text-center border border-red-500/20 rounded-2xl">
+                    <span className="text-[10px] font-black uppercase tracking-widest mb-2">Engine Alert</span>
+                    <span className="text-xs font-bold leading-relaxed">The visualization logic crashed while rendering.</span>
+                    <span className="text-[8px] mt-2 opacity-40 uppercase">Isolating failure...</span>
+                </div>
+            }>
+                <Suspense fallback={
+                    <div className="flex items-center justify-center h-full">
+                        <div className="w-8 h-8 border-2 border-accent-blue/20 border-t-accent-blue rounded-full animate-spin" />
+                    </div>
+                }>
+                    <Engine isBrute={isBrute} />
+                </Suspense>
+            </ErrorBoundary>
         )
     }
 
     return (
-        <div className="flex-1 flex flex-col bg-white/[0.01] overflow-hidden relative">
+        <div className="flex-1 flex flex-col bg-[#050505] overflow-hidden relative border-none h-full">
+            {/* Grid Pattern Overlay */}
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none pattern-grid-lg" />
+
             {compareMode ? (
-                <div className="flex-1 flex divide-x divide-white/5">
-                    {/* Naive Column */}
-                    <div className="flex-1 flex flex-col">
-                        <div className="px-6 py-4 flex items-center justify-between border-b border-white/5 bg-white/[0.02]">
-                            <span className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">Naive Strategy</span>
-                            <span className="text-[10px] font-mono font-bold text-red-400/40">{complexity.brute}</span>
+                <div className="flex-1 flex flex-col relative z-10 h-full">
+                    {/* Comparison Insight Bar */}
+                    <div className="h-12 border-b border-white/5 bg-accent-blue/5 flex items-center justify-between px-10 shrink-0">
+                        <div className="flex items-center gap-3">
+                            <div className="w-1.5 h-1.5 rounded-full bg-accent-blue shadow-glow animate-pulse" />
+                            <span className="text-[10px] font-black text-accent-blue uppercase tracking-[0.2em]">Efficiency Analysis</span>
                         </div>
-                        <div className="flex-1 relative">
-                            {renderEngine(true)}
+                        <p className="text-[11px] text-white/50 font-medium italic">
+                            {currentProblem.algorithmType === 'two_pointers' ?
+                                "Optimal reduces O(N²) quadratic search to O(N) linear scan by leveraging sorted order." :
+                                currentProblem.algorithmType === 'sliding_window' ?
+                                    "Optimal eliminates redundant substring re-scans using a dynamic window." :
+                                    "The optimal strategy eliminates redundant calculations to improve performance."
+                            }
+                        </p>
+                        <div className="px-3 py-1 rounded-full border border-white/10 text-[9px] font-black text-white/30 uppercase tracking-widest">
+                            {currentProblem.complexity?.optimal?.time} vs {currentProblem.complexity?.brute?.time}
                         </div>
                     </div>
-                    {/* Refined Column */}
-                    <div className="flex-1 flex flex-col">
-                        <div className="px-6 py-4 flex items-center justify-between border-b border-white/5 bg-white/[0.02]">
-                            <span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em]">Optimal Strategy</span>
-                            <span className="text-[10px] font-mono font-bold text-green-400/60">{complexity.optimal}</span>
+
+                    <div className="flex-1 flex divide-x divide-white/5 relative h-full">
+                        {/* Brute/Naive Column */}
+                        <div className="flex-1 flex flex-col h-full">
+                            <div className="h-10 border-b border-white/5 flex items-center justify-center bg-red-500/5 shrink-0">
+                                <span className="text-[10px] font-bold text-red-400/60 uppercase tracking-widest">Brute Force Exploration</span>
+                            </div>
+                            <div className="flex-1 relative overflow-hidden h-full">
+                                {renderEngine(true)}
+                            </div>
                         </div>
-                        <div className="flex-1 relative">
-                            {renderEngine(false)}
+                        {/* Optimal/Refined Column */}
+                        <div className="flex-1 flex flex-col h-full">
+                            <div className="h-10 border-b border-white/5 flex items-center justify-center bg-accent-blue/5 shrink-0">
+                                <span className="text-[10px] font-bold text-accent-blue uppercase tracking-widest">Optimal Execution</span>
+                            </div>
+                            <div className="flex-1 relative overflow-hidden h-full">
+                                {renderEngine(false)}
+                            </div>
                         </div>
                     </div>
                 </div>
             ) : (
-                <div className="flex-1 flex flex-col">
-                    <div className="px-6 py-4 flex items-center justify-between border-b border-white/5 bg-white/[0.02]">
-                        <span className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">
-                            {isBruteForce ? 'Direct Strategy' : 'Optimal Pattern'}
-                        </span>
-                        <div className={cn(
-                            "px-3 py-1 rounded text-[10px] font-mono font-bold border",
-                            isBruteForce ? "border-white/5 text-white/20" : "bg-accent-blue/5 border-accent-blue/20 text-accent-blue"
-                        )}>
-                            {isBruteForce ? complexity.brute : complexity.optimal}
-                        </div>
-                    </div>
-                    <div className="flex-1 relative">
+                <div className="flex-1 flex flex-col relative z-10 w-full h-full min-h-0">
+                    {/* No header here since engine has its own 10% explanation bar */}
+                    <div className="flex-1 relative overflow-hidden h-full">
                         {renderEngine(isBruteForce)}
                     </div>
                 </div>

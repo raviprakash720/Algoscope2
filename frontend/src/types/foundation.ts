@@ -1,7 +1,24 @@
 export type FoundationFamily = 'Data Structures' | 'Core Patterns' | 'Advanced Patterns'
 export type FoundationDifficulty = 'Novice' | 'Adept' | 'Expert' | 'Master'
-export type VisualizerType = 'array' | 'string' | 'hash_map' | 'stack' | 'queue' | 'linked_list' | 'tree' | 'graph' | 'recursion' | 'formula' | 'two_pointer' | 'sliding_window'
+export type VisualizerType = 'array' | 'string' | 'hash_map' | 'stack' | 'queue' | 'linked_list' | 'binary_tree' | 'bst' | 'heap' | 'matrix' | 'prefix_sum' | 'bit_manipulation' | 'set' | 'deque' | 'trie' | 'union_find' | 'graph' | 'recursion' | 'formula' | 'two_pointer' | 'sliding_window'
 export type SubPatternId = 'fixed_window' | 'variable_window' | 'at_most_k' | 'exact_k' | 'opposite_direction' | 'same_direction' | 'fast_slow' | 'partition'
+
+export interface MentalModel {
+    analogy: string
+    analogyImage: string
+    realWorldExample: string
+    coreInsight: string
+    problemStatement?: {
+        definition: string
+        returnValue: string
+        constraints: string[]
+    }
+    efficiencyComparison?: {
+        bruteForce: string
+        optimal: string
+        gain: string
+    }
+}
 
 export interface ComplexityRecord {
     operation: string
@@ -67,21 +84,41 @@ export interface EdgeCase {
     }
 }
 
-export interface MentalModel {
-    analogy: string
-    analogyImage?: string
-    realWorldExample: string
-    coreInsight: string
-    problemStatement?: {
-        definition: string
-        returnValue: string
-        constraints: string[]
-    }
-    efficiencyComparison?: {
-        bruteForce: string
-        optimal: string
-        gain: string // e.g. "85%"
-    }
+export interface ProgressionLevel {
+    title: string
+    description: string
+    concepts: { title: string; explanation: string; visualId?: string }[]
+    problems: number[] // IDs from problems.json
+}
+
+export interface Comparison {
+    targetId: string
+    title: string
+    metrics: { label: string; values: { [key: string]: string } }[]
+    tradeoff: string
+}
+
+export interface InterviewSim {
+    commonMistakes: { title: string; explanation: string; warning: string }[]
+    constraints: string[]
+    practiceProblems: number[]
+}
+
+export interface DependencyNode {
+    id: string
+    label: string
+    type: 'root' | 'pattern'
+}
+
+export interface DependencyEdge {
+    from: string
+    to: string
+    label: string
+}
+
+export interface DependencyGraph {
+    nodes: DependencyNode[]
+    edges: DependencyEdge[]
 }
 
 export interface FoundationModule {
@@ -91,36 +128,61 @@ export interface FoundationModule {
     difficulty: FoundationDifficulty
     description: string
     definition: string
+    hero: {
+        analogy: string
+        analogyImage?: string
+        realWorldExample: string
+        whenToUse: string[]
+        quickComplexity: ComplexityRecord[]
+    }
+
+    // Core content
+    whatProblemItSolves: string
+    internalWorking: string
+    memoryRepresentation: string
+    staticVsDynamic?: string
+
+    // New Progression System
+    progression: {
+        fundamentals: ProgressionLevel
+        patterns: ProgressionLevel
+        advanced: ProgressionLevel
+    }
+
+    // Interactive & Visual Mapping
+    visualizerType: VisualizerType
+    visualizerId?: string
+    patternMapping: {
+        relatedPatterns: { id: string; label: string; reason: string }[]
+        dependencyGraph: DependencyGraph
+    }
+
+    // Comparison & Side-by-side
+    comparisons: Comparison[]
+
+    // Specialized Logic
+    deepDive?: { // Keeping for backward compatibility or internal technical specs
+        foundation: string
+        engine: string
+        storage: string
+        visualization: {
+            type: string
+            layers: { name: string; description: string }[]
+        }
+    }
+
+    // Legacy/Existing fields (refactoring slowly)
     mentalModel?: MentalModel
-    whatItIs: string
-    coreInvariant: string
-
-    // Technical Specs
     timeComplexity: ComplexityRecord[]
-
-    // Pattern Specifics
     recognitionSignals: string[]
     formulaPattern: string
     commonMistakes: string[]
     subPatterns: SubPattern[]
-
-    whenNotToUse?: string
-
-    // required for Phase 1
     edgeCases: EdgeCase[]
-
-    // Visualizer
-    visualizerType: VisualizerType
-    visualizerId?: string
-
-    // Drills
     microDrills: MicroDrill[]
-
-    // Interactive Recognition
     recognitionChallenges: RecognitionChallenge[]
 
-    // Relationships
-    prerequisites?: string[]
+    interviewSim?: InterviewSim
 }
 
 export interface FoundationCategory {

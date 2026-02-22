@@ -77,59 +77,83 @@ const TwoPointerCanvas: React.FC<Props> = ({ state, mode, stats, array, currentS
                     </AnimatePresence>
                 </div>
 
-                <div className="flex items-end gap-2 h-40">
+                <div className="flex items-end gap-2 h-40 relative">
+                    {/* Water Area for Container With Most Water */}
+                    {mode === 'container_most_water' && typeof state.left === 'number' && typeof state.right === 'number' && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{
+                                opacity: 1,
+                                left: `${(state.left * (100 / array.length))}%`,
+                                width: `${((state.right - state.left) * (100 / array.length))}%`,
+                                height: `${(Math.min(array[state.left], array[state.right]) / maxVal) * 80 + 20}%`
+                            }}
+                            className="absolute bottom-0 bg-accent-blue/20 border-t-2 border-accent-blue/40 z-0 rounded-t-sm"
+                        />
+                    )}
+
                     {array.map((val, idx) => {
                         const isLeft = state.left === idx
                         const isRight = state.right === idx
-                        const isSlow = state.slow === idx
-                        const isFast = state.fast === idx
-                        const isMid = state.mid === idx
+                        const isComparison = state.compareIndices?.includes(idx)
                         const isSwap = state.swapIndices?.includes(idx)
 
-                        let color = 'rgba(59, 130, 246, 0.3)' // Blue
-                        let borderColor = 'rgba(59, 130, 246, 0.6)'
+                        let color = 'rgba(255, 255, 255, 0.05)'
+                        let borderColor = 'rgba(255, 255, 255, 0.1)'
 
-                        if (mode === 'dnf_partition') {
-                            if (val === 0) { color = 'rgba(239, 68, 68, 0.3)'; borderColor = '#ef4444'; }
-                            else if (val === 1) { color = 'rgba(255, 255, 255, 0.1)'; borderColor = 'rgba(255, 255, 255, 0.4)'; }
-                            else if (val === 2) { color = 'rgba(59, 130, 246, 0.3)'; borderColor = '#3b82f6'; }
-                        }
+                        if (isLeft) { color = 'rgba(59, 130, 246, 0.2)'; borderColor = '#3b82f6'; }
+                        if (isRight) { color = 'rgba(236, 72, 153, 0.2)'; borderColor = '#ec4899'; }
+                        if (isComparison) { color = 'rgba(250, 204, 21, 0.2)'; borderColor = '#facc15'; }
 
                         return (
-                            <div key={idx} className="relative flex flex-col items-center group">
+                            <div key={idx} className="relative flex-1 flex flex-col items-center group h-full">
                                 <motion.div
                                     layout
                                     animate={{
                                         height: `${(val / maxVal) * 80 + 20}%`,
                                         backgroundColor: isSwap ? 'rgba(168, 85, 247, 0.4)' : color,
                                         borderColor: isSwap ? '#a855f7' : borderColor,
-                                        scale: isSwap ? 1.05 : 1,
+                                        scale: (isLeft || isRight) ? 1.05 : 1,
                                         y: isSwap ? -10 : 0
                                     }}
-                                    className="w-10 rounded-t-lg border-2 flex items-center justify-center transition-colors duration-300"
+                                    className="w-full rounded-t-lg border-2 flex items-center justify-center transition-colors duration-300 relative z-10"
                                 >
-                                    <span className="text-xs font-bold text-white/90">{val}</span>
+                                    <span className="text-[10px] font-bold text-white/90">{val}</span>
                                 </motion.div>
-                                <span className="text-[9px] font-mono text-white/30 mt-2">{idx}</span>
+                                <span className="text-[9px] font-mono text-white/20 mt-2">{idx}</span>
 
-                                {/* Pointers */}
+                                {/* Premium Pointers */}
                                 <AnimatePresence>
-                                    {(isLeft || isSlow) && (
-                                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute -bottom-10">
-                                            <div className="w-0.5 h-3 bg-accent-blue mx-auto" />
-                                            <div className="text-[10px] font-bold text-white bg-accent-blue px-2 py-0.5 rounded shadow-lg">{isSlow ? 'S' : 'L'}</div>
+                                    {isLeft && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: 10 }}
+                                            className="absolute -bottom-10 z-20"
+                                        >
+                                            <div className="flex flex-col items-center">
+                                                <div className="w-0.5 h-3 bg-accent-blue" />
+                                                <div className="px-2 py-0.5 rounded bg-accent-blue text-black text-[9px] font-black uppercase tracking-tighter shadow-glow-blue flex items-center gap-1">
+                                                    <span>L</span>
+                                                    <div className="w-1 h-1 rounded-full bg-black animate-pulse" />
+                                                </div>
+                                            </div>
                                         </motion.div>
                                     )}
-                                    {(isRight || isFast) && (
-                                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute -top-12">
-                                            <div className="text-[10px] font-bold text-white bg-red-500 px-2 py-0.5 rounded shadow-lg">{isFast ? 'F' : 'R'}</div>
-                                            <div className="w-0.5 h-3 bg-red-500 mx-auto" />
-                                        </motion.div>
-                                    )}
-                                    {isMid && (
-                                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute -bottom-10">
-                                            <div className="w-0.5 h-3 bg-purple-500 mx-auto" />
-                                            <div className="text-[10px] font-bold text-white bg-purple-500 px-2 py-0.5 rounded shadow-lg">M</div>
+                                    {isRight && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: 10 }}
+                                            className="absolute -bottom-10 z-20"
+                                        >
+                                            <div className="flex flex-col items-center">
+                                                <div className="w-0.5 h-3 bg-pink-500" />
+                                                <div className="px-2 py-0.5 rounded bg-pink-500 text-black text-[9px] font-black uppercase tracking-tighter shadow-glow-pink flex items-center gap-1">
+                                                    <span>R</span>
+                                                    <div className="w-1 h-1 rounded-full bg-black animate-pulse" />
+                                                </div>
+                                            </div>
                                         </motion.div>
                                     )}
                                 </AnimatePresence>

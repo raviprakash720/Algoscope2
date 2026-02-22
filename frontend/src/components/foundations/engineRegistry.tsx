@@ -6,6 +6,10 @@ import GraphEngine from './engines/GraphEngine.tsx'
 import FormulaEngine from './engines/FormulaEngine.tsx'
 import SortingEngine from './engines/SortingEngine.tsx'
 import StringVisualizer from './engines/structures/StringVisualizer'
+import HeapVisualizer from './engines/structures/HeapVisualizer'
+import MatrixVisualizer from './engines/structures/MatrixVisualizer'
+import PrefixSumVisualizer from './engines/structures/PrefixSumVisualizer'
+import BitVisualizer from './engines/structures/BitVisualizer'
 
 // Temporary: Map legacy components to ANY until they are refactored
 const legacyRegistry: Record<string, any> = {
@@ -39,4 +43,10 @@ export const foundationEngineRegistry: Record<string, PatternEngine<any, any> | 
     graph: (props) => <GraphEngine {...props} />,
     sorting: (props) => <SortingEngine {...props} />,
     formula: (props) => <FormulaEngine {...props} />,
+
+    // New Structures
+    heap: (_props) => <HeapVisualizer />,
+    matrix: (_props) => <MatrixVisualizer />,
+    prefix_sum: (_props) => <PrefixSumVisualizer />,
+    bit_manipulation: (_props) => <BitVisualizer />,
 }

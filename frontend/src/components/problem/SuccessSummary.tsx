@@ -1,6 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Trophy, Clock, Database, RotateCcw, ArrowRight, BookOpen, GraduationCap } from 'lucide-react'
+import { Trophy, Clock, Database, RotateCcw, ArrowRight, BookOpen, GraduationCap, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../../store/useStore'
 import { Problem, Step } from '../../types'
@@ -9,9 +9,10 @@ interface SuccessSummaryProps {
     problem: Problem
     step: Step
     onReset: () => void
+    onClose: () => void
 }
 
-const SuccessSummary: React.FC<SuccessSummaryProps> = ({ problem, step, onReset }) => {
+const SuccessSummary: React.FC<SuccessSummaryProps> = ({ problem, step, onReset, onClose }) => {
     const navigate = useNavigate()
     const problems = useStore(state => state.problems)
 
@@ -29,8 +30,16 @@ const SuccessSummary: React.FC<SuccessSummaryProps> = ({ problem, step, onReset 
         <motion.div
             initial={{ scale: 0.95, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            className="w-full glass-card border border-accent-blue/20 p-8 relative overflow-hidden shadow-2xl bg-black/40 backdrop-blur-md rounded-2xl"
+            className="w-full max-w-2xl glass-card border border-accent-blue/20 p-8 relative overflow-hidden shadow-2xl bg-black/80 backdrop-blur-xl rounded-2xl mx-auto"
         >
+            {/* Close Button */}
+            <button
+                onClick={onClose}
+                className="absolute top-6 right-6 p-2 text-white/20 hover:text-white hover:bg-white/5 rounded-lg transition-all z-20"
+            >
+                <X size={20} />
+            </button>
+
             {/* Background Glows */}
             <div className="absolute -top-12 -right-12 w-32 h-32 bg-accent-blue/10 rounded-full blur-[60px]" />
 
@@ -78,13 +87,13 @@ const SuccessSummary: React.FC<SuccessSummaryProps> = ({ problem, step, onReset 
                         icon={Clock}
                         color="text-orange-400"
                         label="Naive"
-                        value={problem.complexity.brute}
+                        value={problem.complexity.brute.time}
                     />
                     <KPICard
                         icon={Database}
                         color="text-accent-purple"
                         label="Memory"
-                        value={problem.complexity.space}
+                        value={problem.complexity.optimal.space}
                     />
                 </div>
             </div>

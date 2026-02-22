@@ -7,12 +7,14 @@ export type TwoPointerState = {
     pivotIndex?: number
     array: number[]
     swapIndices?: [number, number]
+    compareIndices?: number[]
     conditionMet: boolean
     explanation: string
     currentSum?: number
     target?: number
     hasCycle?: boolean
     area?: number // For Container
+    maxArea?: number // For Container
 }
 
 export function runTwoPointers(
@@ -67,7 +69,16 @@ export function runContainerMostWater(arr: number[]): TwoPointerState[] {
         const h = Math.min(arr[l], arr[r])
         const area = h * (r - l)
         maxA = Math.max(maxA, area)
-        states.push({ left: l, right: r, array: [...arr], conditionMet: true, area, explanation: `Height: min(${arr[l]}, ${arr[r]}) = ${h}. Width: ${r - l}. Area: ${area}. Max: ${maxA}.` })
+        states.push({
+            left: l,
+            right: r,
+            array: [...arr],
+            conditionMet: true,
+            area,
+            maxArea: maxA,
+            compareIndices: [l, r],
+            explanation: `Height: min(${arr[l]}, ${arr[r]}) = ${h}. Width: ${r - l}. Area: ${area}. Max: ${maxA}.`
+        })
         if (arr[l] < arr[r]) l++; else r--
     }
     return states

@@ -49,9 +49,14 @@ const ProblemCard: React.FC<ProblemCardProps> = ({ problem, stats }) => {
 
                 {/* Body: Title and Primary Pattern */}
                 <div className="flex-1">
-                    <h3 className="text-2xl font-bold text-white/90 mb-3 group-hover:text-white transition-colors leading-tight">
+                    <h3 className="text-2xl font-bold text-white/90 mb-1 group-hover:text-white transition-colors leading-tight">
                         {problem.title}
                     </h3>
+                    {(problem.primaryPattern === 'Two Pointers' || problem.algorithmType === 'two_pointer' || problem.algorithmType === 'two_pointers') && (
+                        <p className="text-[11px] text-accent-blue/60 mb-3 font-medium italic">
+                            Move two indices intelligently to reduce search space.
+                        </p>
+                    )}
 
                     <div className="flex items-center gap-2 mb-8">
                         <span className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-[10px] font-bold text-white/40 uppercase tracking-widest">

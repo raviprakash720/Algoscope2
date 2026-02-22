@@ -5,28 +5,52 @@
     "slug": "two-sum",
     "difficulty": "Easy",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
-      "Array"
+      "Array",
+      "Hash Table",
+      "Two Pointers"
     ],
-    "primaryPattern": "Array",
+    "primaryPattern": "Two Pointers",
     "shortPatternReason": "Requires finding a pair with a specific sum.",
     "time_complexity": "O(n)",
     "space_complexity": "O(n)",
-    "problem_statement": "Standard LeetCode problem: Two Sum.",
+    "problem_statement": "Given an array of integers `nums` and an integer `target`, return the indices of the two numbers such that they add up to the specified `target` value.\n\nYou may assume that each input would have exactly one solution, and you may not use the same element twice. You can return the answer in any order. The challenge lies in optimizing the search from a naive quadratic approach to a linear-time complexity using space-time trade-offs.",
     "constraints": [
-      "N <= 10^5",
-      "Elements are integers."
+      "2 <= nums.length <= 10^4",
+      "-10^9 <= nums[i] <= 10^9",
+      "-10^9 <= target <= 10^9",
+      "Exactly one valid solution exists."
     ],
-    "examples": [],
-    "brute_force_explanation": "Check all possible combinations O(n\u00b2 or worse).",
-    "optimal_explanation": "Use the Array pattern for O(n) or O(log n).",
-    "brute_force_steps": [],
-    "optimal_steps": [],
+    "examples": [
+      {
+        "input": "nums = [2, 7, 11, 15], target = 9",
+        "output": "[0, 1]",
+        "explanation": "The target is 9. We check the numbers at indices 0 and 1: 2 + 7 = 9. Since they sum to the target, we return their indices [0, 1]. In the optimal solution, we only need a single pass to identify this match."
+      },
+      {
+        "input": "nums = [3, 2, 4], target = 6",
+        "output": "[1, 2]",
+        "explanation": "The target is 6. Checking 3 + 2 = 5 (No), then 3 + 4 = 7 (No), then 2 + 4 = 6 (Yes). We return [1, 2]."
+      }
+    ],
+    "brute_force_explanation": "The Brute Force approach, often called the 'Naive' solution, is a fundamental starting point. It involves a blind search through the entire problem space without leveraging any inherent properties of the data. In the context of Two Sum, this means manually checking every single possible pair of numbers to see if they sum to the target. We implement this using two nested loops: an outer loop that picks a reference element, and an inner loop that scans all subsequent elements. While this guarantees finding a solution if it exists, it performs $O(N^2)$ operations. For a list of 10,000 numbers, this could result in up to 100 million comparisons, making it computationally expensive and slow for real-world applications.",
+    "optimal_explanation": "The Optimal approach is where we apply algorithmic patterns to 'work smarter, not harder.' By first sorting the array, we transform a chaotic search into an ordered one. Sorting allows us to use the Two Pointers pattern, which is significantly more efficient. We place one pointer at the extreme left (minimum) and another at the extreme right (maximum). If their sum is too small, we move the left pointer inward to increase the value. If it's too large, we move the right pointer inward to decrease it. This method 'shrinks' the search space in a single pass ($O(N)$) after sorting ($O(N log N)$), effectively ignoring millions of irrelevant pairs that the Brute Force approach would waste time checking.",
+    "intuition": "The core intuition is that ORDER IS LEVERAGE. In an unsorted array, you have no predictable way to know if moving to the next element will increase or decrease your total sum. However, once sorted, the data becomes a 'monotonic' landscape. Moving L -> Right always increases or stays the same, and moving R -> Left always decreases or stays the same. This predictability is what allows us to eliminate the need for nested loops and solve the problem in a fraction of the time.",
+    "scenarios": [
+      "Finding pairs in a sorted dataset",
+      "Budget allocation problems",
+      "Target weight balancing"
+    ],
     "complexity": {
-      "brute": "O(n\u00b2)",
-      "optimal": "O(n)",
-      "space": "O(n)"
+      "brute": {
+        "time": "O(N\u00b2)",
+        "space": "O(1)"
+      },
+      "optimal": {
+        "time": "O(N log N)",
+        "space": "O(1)"
+      }
     },
     "patternSignals": [
       "Requires Array approach.",
@@ -51,7 +75,272 @@
         "1. Sort",
         "2. Two Pointers"
       ]
+    },
+    "pseudocode": {
+      "brute": "for i from 0 to n-1:\n    for j from i+1 to n-1:\n        if nums[i] + nums[j] == target:\n            return [i, j]",
+      "optimal": "map = {} // val -> index\nfor i from 0 to n-1:\n    diff = target - nums[i]\n    if diff in map:\n        return [map[diff], i]\n    map[nums[i]] = i"
+    },
+    "external_links": {
+      "leetcode": "https://leetcode.com/problems/two-sum/"
+    },
+    "input_settings": {
+      "input1": {
+        "label": "Custom Workspace (Array)",
+        "placeholder": "[2, 7, 11, 15]"
+      },
+      "input2": {
+        "label": "Target Sum Constraint",
+        "placeholder": "9"
+      }
     }
+  },
+  {
+    "id": 2,
+    "title": "Add Two Numbers",
+    "slug": "add-two-numbers",
+    "difficulty": "Medium",
+    "algorithmType": "linked_list",
+    "status": "complete",
+    "tags": [
+      "Linked List",
+      "Math",
+      "Recursion"
+    ],
+    "primaryPattern": "Linked List",
+    "shortPatternReason": "Simulating manual digit-by-digit addition with carry handling.",
+    "time_complexity": "O(max(m, n))",
+    "space_complexity": "O(max(m, n))",
+    "problem_statement": "You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order, and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list.\n\nYou may assume the two numbers do not contain any leading zero, except the number 0 itself. The core challenge is managing the 'carry' value that propagates from one digit to the next, much like manual elementary addition.",
+    "constraints": [
+      "The number of nodes in each linked list is in the range [1, 100].",
+      "0 <= Node.val <= 9",
+      "It is guaranteed that the list represents a number that does not have leading zeros."
+    ],
+    "examples": [
+      {
+        "input": "l1 = [2,4,3], l2 = [5,6,4]",
+        "output": "[7,0,8]",
+        "explanation": "342 + 465 = 807. We add the units (2+5=7), then the tens (4+6=10, carry 1), then the hundreds (3+4+1=8)."
+      }
+    ],
+    "brute_force_explanation": "A common mistake is attempting to convert the entire linked list into a large integer, adding them, and then converting back to a list. While intuitive, this approach is fundamentally flawed for high-fidelity systems: standard 64-bit integers overflow quickly (around 20 digits). For a problem that guarantees lists up to 100 nodes, conversion to a native integer will result in catastrophic precision loss.",
+    "optimal_explanation": "The optimal approach simulates manual 'column-by-column' addition from the least significant digit (LSD) to the most significant. Because the problem reverse-stores the digits (Head = Units, Next = Tens), we traverse from Head to Tail. We maintain a 'carry' state that propagates to the next pair of nodes. This ensures O(max(M, N)) efficiency and handles numbers of infinite length.",
+    "intuition": "LSD-FIRST TRAVERSAL. By storing digits in reverse, the problem creators simplified the logic: the Head is always the starting point for addition. We simulate a hardware adder, where each node pair produces a digit and a carry for the next stage.",
+    "scenarios": [
+      "Large number arithmetic",
+      "Arbitrary precision calculators",
+      "Data stream merging"
+    ],
+    "complexity": {
+      "brute": {
+        "time": "O(N)",
+        "space": "O(N)"
+      },
+      "optimal": {
+        "time": "O(N)",
+        "space": "O(N)"
+      }
+    },
+    "brute_force_steps": [
+      {
+        "step": 1,
+        "description": "Initialize pointers to heads of both lists (l1 and l2) and carry to 0.",
+        "state": {
+          "phase": "init",
+          "pointers": {
+            "l1": 0,
+            "l2": 0
+          },
+          "customState": {
+            "carry": 0,
+            "sum": 0
+          },
+          "result": []
+        }
+      },
+      {
+        "step": 2,
+        "description": "Add digits: 2 (l1) + 5 (l2) = 7. No carry. Move to next nodes.",
+        "state": {
+          "phase": "searching",
+          "pointers": {
+            "l1": 1,
+            "l2": 1
+          },
+          "customState": {
+            "carry": 0,
+            "sum": 7
+          },
+          "result": [
+            7
+          ]
+        }
+      },
+      {
+        "step": 3,
+        "description": "Add digits: 4 (l1) + 6 (l2) = 10. Set carry to 1. Move to next nodes.",
+        "state": {
+          "phase": "searching",
+          "pointers": {
+            "l1": 2,
+            "l2": 2
+          },
+          "customState": {
+            "carry": 1,
+            "sum": 10
+          },
+          "result": [
+            7,
+            0
+          ]
+        }
+      },
+      {
+        "step": 4,
+        "description": "Add digits: 3 (l1) + 4 (l2) + 1 (carry) = 8. No carry. Traversal finished.",
+        "state": {
+          "phase": "found",
+          "pointers": {
+            "l1": null,
+            "l2": null
+          },
+          "customState": {
+            "carry": 0,
+            "sum": 8
+          },
+          "result": [
+            7,
+            0,
+            8
+          ]
+        }
+      }
+    ],
+    "optimal_steps": [
+      {
+        "step": 1,
+        "description": "Start parallel traversal. Initialize carry = 0.",
+        "state": {
+          "phase": "init",
+          "pointers": {
+            "l1": 0,
+            "l2": 0
+          },
+          "customState": {
+            "carry": 0,
+            "sum": 0
+          },
+          "result": []
+        }
+      },
+      {
+        "step": 2,
+        "description": "Process heads: 2 + 5 = 7. Append 7 to result list.",
+        "state": {
+          "phase": "searching",
+          "pointers": {
+            "l1": 1,
+            "l2": 1
+          },
+          "customState": {
+            "carry": 0,
+            "sum": 7
+          },
+          "result": [
+            7
+          ]
+        }
+      },
+      {
+        "step": 3,
+        "description": "Process next: 4 + 6 = 10. Digit 0, Carry 1.",
+        "state": {
+          "phase": "searching",
+          "pointers": {
+            "l1": 2,
+            "l2": 2
+          },
+          "customState": {
+            "carry": 1,
+            "sum": 10
+          },
+          "result": [
+            7,
+            0
+          ]
+        }
+      },
+      {
+        "step": 4,
+        "description": "Process final: 3 + 4 + 1 = 8. Sum complete.",
+        "state": {
+          "phase": "found",
+          "pointers": {
+            "l1": null,
+            "l2": null
+          },
+          "customState": {
+            "carry": 0,
+            "sum": 8
+          },
+          "result": [
+            7,
+            0,
+            8
+          ]
+        }
+      }
+    ],
+    "thinking_guide": {
+      "first_principles": [
+        "Simulate manual addition process digit by digit."
+      ],
+      "pattern_signals": [
+        "Linked list traversal",
+        "Carry propagation"
+      ],
+      "naive_approach": [
+        "Convert to integer, add, convert back (risky for overflow)."
+      ],
+      "approach_blueprint": [
+        "1. Iterate through lists",
+        "2. Add digits + carry",
+        "3. Update carry",
+        "4. Create new nodes"
+      ]
+    },
+    "pseudocode": {
+      "brute": "// Naive: Convert to int (Limited by precision)\nn1 = list_to_int(l1)\nn2 = list_to_int(l2)\nreturn int_to_list(n1 + n2)",
+      "optimal": "carry = 0\nwhile l1 or l2 or carry:\n    v1 = l1.val if l1 else 0\n    v2 = l2.val if l2 else 0\n    sum = v1 + v2 + carry\n    carry = sum // 10\n    append(sum % 10) to result"
+    },
+    "external_links": {
+      "leetcode": "https://leetcode.com/problems/add-two-numbers/"
+    },
+    "input_settings": {
+      "input1": {
+        "label": "List 1 (Digits Reversed)",
+        "placeholder": "[2, 4, 3]"
+      },
+      "input2": {
+        "label": "List 2 (Digits Reversed)",
+        "placeholder": "[5, 6, 4]"
+      }
+    },
+    "efficiencyGain": "Direct traversal avoids integer overflow and scales to arbitrary lengths (O(N) vs O(N) but memory-safe).",
+    "real_time_applications": [
+      {
+        "title": "BigInt Architectures",
+        "description": "How modern engines (V8, Python) handle numbers larger than 64 bits using 'limb' arrays (similar to linked lists)."
+      },
+      {
+        "title": "Financial Ledger Systems",
+        "description": "Ensuring zero precision loss when calculating large-scale transactions (e.g., national debts or micro-cent rounding)."
+      },
+      {
+        "title": "Cryptography",
+        "description": "Large prime number arithmetic used in RSA and Elliptic Curve encryption where keys exceed 2048 bits."
+      }
+    ]
   },
   {
     "id": 3,
@@ -59,29 +348,163 @@
     "slug": "longest-substring-without-repeating-characters",
     "difficulty": "Medium",
     "algorithmType": "sliding_window",
-    "status": "new",
+    "status": "complete",
     "tags": [
+      "String",
+      "Hash Table",
       "Sliding Window"
     ],
     "primaryPattern": "Sliding Window",
-    "shortPatternReason": "Contiguous segment check for uniqueness.",
+    "shortPatternReason": "Finding the widest contiguous range meeting a uniqueness constraint.",
     "time_complexity": "O(n)",
     "space_complexity": "O(min(m, n))",
-    "problem_statement": "Standard LeetCode problem: Longest Substring Without Repeating Characters.",
+    "problem_statement": "Given a string `s`, find the length of the longest substring without repeating characters.\n\nThe challenge is to efficiently track a moving 'window' of characters and shrink it immediately whenever a duplicate is encountered, ensuring we only ever check valid, unique substrings.",
     "constraints": [
-      "N <= 10^5",
-      "Elements are integers."
+      "0 <= s.length <= 5 * 10^4",
+      "s consists of English letters, digits, symbols and spaces."
     ],
-    "examples": [],
-    "brute_force_explanation": "Check all possible combinations O(n\u00b2 or worse).",
-    "optimal_explanation": "Use the Sliding Window pattern for O(n) or O(log n).",
-    "brute_force_steps": [],
-    "optimal_steps": [],
+    "examples": [
+      {
+        "input": "s = 'abcabcbb'",
+        "output": "3",
+        "explanation": "The answer is 'abc', with the length of 3."
+      },
+      {
+        "input": "s = 'bbbbb'",
+        "output": "1",
+        "explanation": "The answer is 'b', with the length of 1."
+      }
+    ],
+    "brute_force_explanation": "A naive solution would check every possible substring ($O(N^2)$) and, for each one, verify if it has duplicate characters ($O(N)$). This results in a cubic $O(N^3)$ complexity, which is painfully slow for long strings. It repeats the same character checks over and over without 'remembering' what it already knows.",
+    "optimal_explanation": "The Sliding Window pattern allows us to solve this in a single pass. We use two pointers (Left and Right) to define our window. As we move the Right pointer, we add characters to a Frequency Map. If we hit a duplicate, we shrink the window by moving the Left pointer until the duplicate is gone. This 'dynamic resizing' ensures we only visit each character twice at most.",
+    "intuition": "SHRINK TO FIT. Think of the window like a flexible elastic band. It stretches as long as it finds new characters, but snaps back (shrinks) the moment it hits a constraint. This 'greedy expansion' with 'lazy shrinking' is the heart of the sliding window pattern.",
+    "scenarios": [
+      "Network packet window sizing",
+      "Log analysis for unique events",
+      "Genomic sequence matching"
+    ],
     "complexity": {
-      "brute": "O(n\u00b2)",
-      "optimal": "O(n)",
-      "space": "O(min(m, n))"
+      "brute": {
+        "time": "O(N²)",
+        "space": "O(N)"
+      },
+      "optimal": {
+        "time": "O(N)",
+        "space": "O(min(M, N))"
+      }
     },
+    "brute_force_steps": [
+      {
+        "step": 1,
+        "description": "Examine substring 'a'. Unique characters: {a}. Length = 1.",
+        "state": {
+          "phase": "searching",
+          "windowRange": [
+            0,
+            0
+          ],
+          "mapState": {
+            "a": true
+          },
+          "customState": {
+            "currentLen": 1
+          }
+        }
+      },
+      {
+        "step": 2,
+        "description": "Examine substring 'ab'. Unique characters: {a, b}. Length = 2.",
+        "state": {
+          "phase": "searching",
+          "windowRange": [
+            0,
+            1
+          ],
+          "mapState": {
+            "a": true,
+            "b": true
+          },
+          "customState": {
+            "currentLen": 2
+          }
+        }
+      },
+      {
+        "step": 3,
+        "description": "Examine substring 'abc'. Unique characters: {a, b, c}. Length = 3.",
+        "state": {
+          "phase": "found",
+          "windowRange": [
+            0,
+            2
+          ],
+          "mapState": {
+            "a": true,
+            "b": true,
+            "c": true
+          },
+          "customState": {
+            "currentLen": 3
+          }
+        }
+      }
+    ],
+    "optimal_steps": [
+      {
+        "step": 1,
+        "description": "Window expands: Right pointer at 'a'. Map: {a: 0}. Max length: 1.",
+        "state": {
+          "phase": "searching",
+          "windowRange": [
+            0,
+            0
+          ],
+          "mapState": {
+            "a": true
+          },
+          "customState": {
+            "currentLen": 1
+          }
+        }
+      },
+      {
+        "step": 2,
+        "description": "Window expands: Right pointer at 'b'. Map: {a: 0, b: 1}. Max length: 2.",
+        "state": {
+          "phase": "searching",
+          "windowRange": [
+            0,
+            1
+          ],
+          "mapState": {
+            "a": true,
+            "b": true
+          },
+          "customState": {
+            "currentLen": 2
+          }
+        }
+      },
+      {
+        "step": 3,
+        "description": "Window expands: Right pointer at 'c'. Map: {a: 0, b: 1, c: 2}. Max length: 3.",
+        "state": {
+          "phase": "found",
+          "windowRange": [
+            0,
+            2
+          ],
+          "mapState": {
+            "a": true,
+            "b": true,
+            "c": true
+          },
+          "customState": {
+            "currentLen": 3
+          }
+        }
+      }
+    ],
     "patternSignals": [
       "Requires Sliding Window approach.",
       "Contiguous segment check for uniqueness."
@@ -105,7 +528,588 @@
         "1. Traverse",
         "2. Process"
       ]
-    }
+    },
+    "pseudocode": {
+      "brute": "for i from 0 to n-1:\n    for j from i to n-1:\n        if isUnique(s[i:j+1]):\n            maxLen = max(maxLen, j-i+1)",
+      "optimal": "l = 0, maxLen = 0, map = {}\nfor r from 0 to n-1:\n    if s[r] in map:\n        l = max(l, map[s[r]] + 1)\n    map[s[r]] = r\n    maxLen = max(maxLen, r-l+1)"
+    },
+    "external_links": {
+      "leetcode": "https://leetcode.com/problems/longest-substring-without-repeating-characters/"
+    },
+    "input_settings": {
+      "input1": {
+        "label": "Input Sequence (String)",
+        "placeholder": "\"abcabcbb\""
+      },
+      "input2": {
+        "label": "Unique Constraint Type",
+        "placeholder": "All ASCII"
+      }
+    },
+    "efficiencyGain": "Sliding Window reduces redundant checks, achieving O(N) linear time versus O(N³) cubic time.",
+    "real_time_applications": [
+      {
+        "title": "Network Congestion Control",
+        "description": "TCP uses sliding windows to manage data flow and detect packet loss without re-calculating the entire stream."
+      },
+      {
+        "title": "Autocomplete Engines",
+        "description": "Identifying the longest valid prefix in massive dictionaries as users type in real-time."
+      },
+      {
+        "title": "Genomic Sequencing",
+        "description": "Finding non-repetitive DNA sequences in billions of base pairs to identify unique genetic markers."
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Median of Two Sorted Arrays",
+    "slug": "median-of-two-sorted-arrays",
+    "difficulty": "Hard",
+    "algorithmType": "binary_search",
+    "status": "complete",
+    "tags": [
+      "Array",
+      "Binary Search",
+      "Divide and Conquer"
+    ],
+    "primaryPattern": "Binary Search",
+    "shortPatternReason": "Partitioning search space to find the middle element in logarithmic time.",
+    "time_complexity": "O(log(min(m, n)))",
+    "space_complexity": "O(1)",
+    "problem_statement": "Given two sorted arrays `nums1` and `nums2` of size `m` and `n` respectively, return the median of the two sorted arrays. The overall run time complexity should be `O(log (m+n))`.",
+    "constraints": [
+      "nums1.length == m",
+      "nums2.length == n",
+      "0 <= m, n <= 1000",
+      "1 <= m + n <= 2000",
+      "-10^6 <= nums1[i], nums2[i] <= 10^6"
+    ],
+    "examples": [
+      {
+        "input": "nums1 = [1,3], nums2 = [2]",
+        "output": "2.00000",
+        "explanation": "merged array = [1,2,3] and median is 2."
+      }
+    ],
+    "brute_force_explanation": "Merge both arrays into a single sorted array and pick the middle element. While O(M+N) time is acceptable for small arrays, it fails the O(log(M+N)) requirement for truly large-scale datasets.",
+    "optimal_explanation": "Leverage Binary Search to partition the two arrays simultaneously. By ensuring the elements on the left side of the partitions are always smaller than those on the right, we can find the median in logarithmic time without merging.",
+    "intuition": "DIVIDE AND CONQUER. We're not looking for a value, but a 'cut' point. By cutting the smaller array, we instantly know where the cut must be in the larger array to keep the total halves equal.",
+    "scenarios": [
+      "Optimizing database merges",
+      "High-frequency trade matching",
+      "Real-time sensor data fusion"
+    ],
+    "complexity": {
+      "brute": {
+        "time": "O(M+N)",
+        "space": "O(M+N)"
+      },
+      "optimal": {
+        "time": "O(log(min(M, N)))",
+        "space": "O(1)"
+      }
+    },
+    "pseudocode": {
+      "brute": "merged = sort(nums1 + nums2)\nif even: return (merged[mid] + merged[mid-1])/2\nelse: return merged[mid]",
+      "optimal": "ensure nums1 is shorter\nlow, high = 0, len(nums1)\nwhile low <= high:\n    partitionX = (low + high) // 2\n    partitionY = (total + 1) // 2 - partitionX\n    if maxLeftX <= minRightY and maxLeftY <= minRightX:\n        return median calculation\n    high/low = adjust bounds"
+    },
+    "external_links": {
+      "leetcode": "https://leetcode.com/problems/median-of-two-sorted-arrays/"
+    },
+    "input_settings": {
+      "input1": {
+        "label": "Array 1 (Sorted)",
+        "placeholder": "[1, 3]"
+      },
+      "input2": {
+        "label": "Array 2 (Sorted)",
+        "placeholder": "[2]"
+      }
+    },
+    "efficiencyGain": "Logarithmic complexity scaling ensures high performance even with arrays containing millions of elements.",
+    "real_time_applications": [
+      {
+        "title": "Adexchange Bid Sorting",
+        "description": "Rapidly finding the median bid price across multiple sorted streams to set real-time floors."
+      },
+      {
+        "title": "Parallel DB Joins",
+        "description": "Coordinating data partitions between distributed nodes where data is already sorted by primary key."
+      },
+      {
+        "title": "Autonomous Path Median",
+        "description": "Synthesizing depth-sensor streams (LIDAR) into a median safety distance calculation in milliseconds."
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Longest Palindromic Substring",
+    "slug": "longest-palindromic-substring",
+    "difficulty": "Medium",
+    "algorithmType": "two_pointer",
+    "status": "complete",
+    "tags": [
+      "String",
+      "Dynamic Programming"
+    ],
+    "primaryPattern": "Expand Around Center",
+    "shortPatternReason": "Exploiting palindromic symmetry by expanding outward from each character as a potential center.",
+    "time_complexity": "O(n²)",
+    "space_complexity": "O(1)",
+    "problem_statement": "Given a string `s`, return the longest palindromic substring in `s`. A palindrome reads the same forwards and backwards. The challenge is to identify the global maximum palindrome without checking every possible substring (O(N³)).",
+    "constraints": [
+      "1 <= s.length <= 1000",
+      "s consists of only digits and English letters."
+    ],
+    "examples": [
+      {
+        "input": "s = 'babad'",
+        "output": "'bab'",
+        "explanation": "'aba' is also a valid answer."
+      }
+    ],
+    "brute_force_explanation": "A naive approach checks every possible substring ($O(N^2)$) and, for each, verify if it is a palindrome ($O(N)$). This leads to an $O(N^3)$ complexity, which becomes unusable as the string length approaches 1,000.",
+    "optimal_explanation": "The 'Expand Around Center' pattern treats each character (and each gap between characters) as a potential center of a palindrome. By expanding outward as long as characters match, we find the longest palindrome for each center in $O(N)$ time, totaling $O(N^2)$ for the whole string with zero extra space.",
+    "intuition": "SYMMETRY IS THE KEY. Instead of building strings and checking them, we start from a single point and 'verify symmetry' in both directions simultaneously. This leverages the definition of a palindrome to prune millions of unnecessary checks.",
+    "scenarios": [
+      "DNA sequence analysis",
+      "Pattern matching in text editors",
+      "Data compression algorithms"
+    ],
+    "complexity": {
+      "brute": {
+        "time": "O(N³)",
+        "space": "O(1)"
+      },
+      "optimal": {
+        "time": "O(N²)",
+        "space": "O(1)"
+      }
+    },
+    "pseudocode": {
+      "brute": "for i from 0 to n-1:\n    for j from i to n-1:\n        if isPalindrome(s[i:j+1]):\n            update maxStr",
+      "optimal": "for i from 0 to n-1:\n    len1 = expand(s, i, i) // odd\n    len2 = expand(s, i, i+1) // even\n    update maxRange if len1 or len2 is larger"
+    },
+    "external_links": {
+      "leetcode": "https://leetcode.com/problems/longest-palindromic-substring/"
+    },
+    "input_settings": {
+      "input1": {
+        "label": "Input Sequence (String)",
+        "placeholder": "\"babad\""
+      },
+      "input2": {
+        "label": "Case Sensitivity",
+        "placeholder": "Sensitive"
+      }
+    },
+    "efficiencyGain": "Reducing cubic time to quadratic time by leveraging symmetry, saving thousands of operations on even medium-sized strings.",
+    "real_time_applications": [
+      {
+        "title": "Bioinformatics Linkages",
+        "description": "Identifying inverted repeats in genetic sequences which often indicate critical biological functions."
+      },
+      {
+        "title": "Compiler Syntax Trees",
+        "description": "Used in lexers to identify symmetric tokens or mirrored structures in recursive descent parsing."
+      },
+      {
+        "title": "Network Protocol Palindromes",
+        "description": "Detecting specific data packet patterns that serve as 'headers' or 'footers' in low-latency stream protocols."
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "title": "Zigzag Conversion",
+    "slug": "zigzag-conversion",
+    "difficulty": "Medium",
+    "algorithmType": "array",
+    "status": "complete",
+    "tags": [
+      "String"
+    ],
+    "primaryPattern": "Cyclic Traversal",
+    "shortPatternReason": "Simulating the zigzag motion by iterating through string and rows in a bouncing cycle.",
+    "time_complexity": "O(n)",
+    "space_complexity": "O(n)",
+    "problem_statement": "The string \"PAYPALISHIRING\" is written in a zigzag pattern on a given number of rows. This problem asks you to simulate this layout and then read the result row by row.",
+    "constraints": [
+      "1 <= s.length <= 1000",
+      "s consists of English letters (lower-case and upper-case), ',' and '.'.",
+      "1 <= numRows <= 1000"
+    ],
+    "examples": [
+      {
+        "input": "s = 'PAYPALISHIRING', numRows = 3",
+        "output": "'PAHNAPLSIIGYIR'",
+        "explanation": "P   A   H   N\nA P L S I I G\nY   I   R"
+      }
+    ],
+    "brute_force_explanation": "A brute force approach would involve creating a 2D matrix of size (numRows, s.length) and manually placing characters. However, this wastes significant space as most matrix cells will be empty.",
+    "optimal_explanation": "Instead of a full matrix, we use an array of strings (one for each row). We traverse the input string once, adding each character to the current row and 'bouncing' the row direction whenever we hit the top or bottom row.",
+    "intuition": "THE BOUNCING BALL. Imagine a ball bouncing between the first and last row as it travels left to right. We don't need to know the horizontal position, only the current row and the direction of the bounce.",
+    "scenarios": [
+      "Text rendering in limited space",
+      "Data obfuscation/Transposition ciphers",
+      "Waveform visualization"
+    ],
+    "complexity": {
+      "brute": {
+        "time": "O(N)",
+        "space": "O(N * numRows)"
+      },
+      "optimal": {
+        "time": "O(N)",
+        "space": "O(N)"
+      }
+    },
+    "pseudocode": {
+      "brute": "matrix = createMatrix(numRows, n)\nfill matrix in zigzag order\nresult = read matrix row by row",
+      "optimal": "rows = array of strings\nfor char in s:\n    rows[currRow] += char\n    if currRow == 0 or currRow == max: direction *= -1\n    currRow += direction"
+    },
+    "external_links": {
+      "leetcode": "https://leetcode.com/problems/zigzag-conversion/"
+    },
+    "input_settings": {
+      "input1": {
+        "label": "Input String",
+        "placeholder": "\"PAYPALISHIRING\""
+      },
+      "input2": {
+        "label": "Number of Rows",
+        "placeholder": "3"
+      }
+    },
+    "efficiencyGain": "Reducing space complexity from O(N*K) to O(N) by using row-level accumulation instead of a sparse 2D matrix.",
+    "real_time_applications": [
+      {
+        "title": "Data Serialization",
+        "description": "Rearranging data streams for specific hardware pipelines that read parallel chunks row-by-row."
+      },
+      {
+        "title": "OLED Display Refresh",
+        "description": "Optimizing scan-line updates for unconventional display geometries where pixels are addressed in non-linear zigzags."
+      },
+      {
+        "title": "Classic Transposition Ciphers",
+        "description": "Implementing 'Rail Fence' ciphers used in historical cryptography for basic message encryption."
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "title": "Reverse Integer",
+    "slug": "reverse-integer",
+    "difficulty": "Easy",
+    "algorithmType": "array",
+    "status": "complete",
+    "tags": [
+      "Math"
+    ],
+    "primaryPattern": "Digit Manipulation",
+    "shortPatternReason": "Using basic arithmetic (modulo/division) to reverse digits without using expensive string conversions.",
+    "time_complexity": "O(log(x))",
+    "space_complexity": "O(1)",
+    "problem_statement": "Given a signed 32-bit integer `x`, return `x` with its digits reversed. If reversing `x` causes the value to go outside the signed 32-bit integer range, return 0.",
+    "constraints": [
+      "-2^31 <= x <= 2^31 - 1"
+    ],
+    "examples": [
+      {
+        "input": "x = 123",
+        "output": "321"
+      }
+    ],
+    "brute_force_explanation": "A common mistake is converting the number to a string, reversing the string, and converting it back. This is slow and can fail significantly on overflow before the conversion even happens.",
+    "optimal_explanation": "Repeatedly extract the last digit using `x % 10` and append it to the result `res = res * 10 + lastDigit`. This process is done in a loop until `x` becomes 0, with checks for overflow at each step.",
+    "intuition": "POP AND PUSH. Think of the number as a stack of digits. We 'pop' from the end of the original number and 'push' to the beginning of the new reverse number in a single movement.",
+    "scenarios": [
+      "Endianness conversion",
+      "Bit-level field reversal",
+      "Mathematical sequence analysis"
+    ],
+    "complexity": {
+      "brute": {
+        "time": "O(log X)",
+        "space": "O(log X)"
+      },
+      "optimal": {
+        "time": "O(log X)",
+        "space": "O(1)"
+      }
+    },
+    "pseudocode": {
+      "brute": "s = str(abs(x))\nrev = s.reverse()\nif out_of_bounds: return 0\nreturn int(rev)",
+      "optimal": "while x != 0:\n    pop = x % 10\n    if about_to_overflow: return 0\n    res = res * 10 + pop\n    x /= 10"
+    },
+    "external_links": {
+      "leetcode": "https://leetcode.com/problems/reverse-integer/"
+    },
+    "input_settings": {
+      "input1": {
+        "label": "Input Integer",
+        "placeholder": "123"
+      },
+      "input2": {
+        "label": "Overflow Boundary",
+        "placeholder": "32-bit"
+      }
+    },
+    "efficiencyGain": "Avoiding O(log X) extra space for string storage and the overhead of multiple type conversions.",
+    "real_time_applications": [
+      {
+        "title": "Low-level Bitstream Reversal",
+        "description": "Reversing packet headers or field orders in networking protocols where speed is critical."
+      },
+      {
+        "title": "Legacy System Migrations",
+        "description": "Transforming data between Big-Endian and Little-Endian format in older embedded architectures."
+      },
+      {
+        "title": "Decimal Arithmetic Verification",
+        "description": "Checking numeric properties in accounting software where precise digit-level control is required."
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "title": "String to Integer (atoi)",
+    "slug": "string-to-integer-atoi",
+    "difficulty": "Medium",
+    "algorithmType": "array",
+    "status": "complete",
+    "tags": [
+      "String"
+    ],
+    "primaryPattern": "Deterministic Finite Automata",
+    "shortPatternReason": "Handling complex edge case states (whitespace, signs, non-digits) using a linear scan.",
+    "time_complexity": "O(n)",
+    "space_complexity": "O(1)",
+    "problem_statement": "Implement the `myAtoi(string s)` function, which converts a string to a 32-bit signed integer. It must handle leading whitespace, signs, and ignore non-digit characters following the number.",
+    "constraints": [
+      "0 <= s.length <= 200",
+      "s consists of English letters, digits, ' ', '+', '-', and '.'."
+    ],
+    "examples": [
+      {
+        "input": "s = ' -42'",
+        "output": "-42",
+        "explanation": "Leading spaces are ignored, sign is detected."
+      }
+    ],
+    "brute_force_explanation": "Checking the string multiple times (once for spaces, once for sign, once for digits) leads to redundant processing and complex conditional logic.",
+    "optimal_explanation": "Use a single-pass implementation that mimics a simple State Machine. Start in 'Whitespace' state, move to 'Sign' state, then finally to 'Digit' state, maintaining the result and checking for overflow on every character.",
+    "intuition": "CHARACTER VALIDATION. Instead of looking for a number, look for why a character should *stop* being a number. It's a process of elimination: first skip spaces, then confirm direction (sign), then harvest digits until any noise appears.",
+    "scenarios": [
+      "CLI argument parsing",
+      "HTTP Header extraction",
+      "Data ingestion from CSV/TXT"
+    ],
+    "complexity": {
+      "brute": {
+        "time": "O(N)",
+        "space": "O(N)"
+      },
+      "optimal": {
+        "time": "O(N)",
+        "space": "O(1)"
+      }
+    },
+    "pseudocode": {
+      "brute": "s = s.strip()\nsign = get_sign(s)\ndigits = extract_digits(s)\nreturn clampTo32Bit(digits)",
+      "optimal": "skipSpaces(s)\nif +/-: sign = val\nwhile isDigit(s[i]):\n    res = res * 10 + s[i]\n    if overflow: return limit\nreturn res * sign"
+    },
+    "external_links": {
+      "leetcode": "https://leetcode.com/problems/string-to-integer-atoi/"
+    },
+    "input_settings": {
+      "input1": {
+        "label": "Input String",
+        "placeholder": "\"  -42 with words\""
+      },
+      "input2": {
+        "label": "Digit Clamp Target",
+        "placeholder": "32-bit Signed"
+      }
+    },
+    "efficiencyGain": "Reducing memory overhead by processing characters in-place rather than allocating new strings for stripping and filtering.",
+    "real_time_applications": [
+      {
+        "title": "Compiler Lexical Analysis",
+        "description": "Transforming ASCII source code into internal numeric types for faster computation in compilers."
+      },
+      {
+        "title": "Financial Transaction Parsing",
+        "description": "Processing raw text logs from banking mainframes where numbers are often padded with spaces or extra symbols."
+      },
+      {
+        "title": "Embedded Input Handling",
+        "description": "Translating user input from keypads or serial monitors into control variables for micro-controllers."
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "title": "Palindrome Number",
+    "slug": "palindrome-number",
+    "difficulty": "Easy",
+    "algorithmType": "array",
+    "status": "complete",
+    "tags": [
+      "Math"
+    ],
+    "primaryPattern": "Half-Reversal",
+    "shortPatternReason": "Reversing only half of the integer to compare against the first half, preventing overflow issues.",
+    "time_complexity": "O(log(n))",
+    "space_complexity": "O(1)",
+    "problem_statement": "Given an integer `x`, return `true` if `x` is a palindrome, and `false` otherwise. A negative number is never a palindrome.",
+    "constraints": [
+      "-2^31 <= x <= 2^31 - 1"
+    ],
+    "examples": [
+      {
+        "input": "x = 121",
+        "output": "true"
+      },
+      {
+        "input": "x = -121",
+        "output": "false"
+      }
+    ],
+    "brute_force_explanation": "Converting the integer to a string and checking if the string is a palindrome is simple but slow and expensive in terms of memory.",
+    "optimal_explanation": "Reverse the second half of the number and compare it with the first half. We know we've reached the middle when our reversed number becomes greater than or equal to the remaining original number.",
+    "intuition": "MEETING IN THE MIDDLE. You don't need to rebuild the whole house to see if it's symmetrical. Just check if the back door is in the same place as the front door relative to the center.",
+    "scenarios": [
+      "Fast mathematical property checks",
+      "Network ID verification",
+      "Pattern discovery in large datasets"
+    ],
+    "complexity": {
+      "brute": {
+        "time": "O(log N)",
+        "space": "O(log N)"
+      },
+      "optimal": {
+        "time": "O(log N)",
+        "space": "O(1)"
+      }
+    },
+    "pseudocode": {
+      "brute": "s = str(x)\nreturn s == s.reverse()",
+      "optimal": "if x < 0: return False\nrev = 0\nwhile x > rev:\n    rev = rev * 10 + x % 10\n    x /= 10\nreturn x == rev or x == rev / 10"
+    },
+    "external_links": {
+      "leetcode": "https://leetcode.com/problems/palindrome-number/"
+    },
+    "input_settings": {
+      "input1": {
+        "label": "Input Integer",
+        "placeholder": "121"
+      },
+      "input2": {
+        "label": "Base System",
+        "placeholder": "Decimal (Base 10)"
+      }
+    },
+    "efficiencyGain": "Eliminating string allocation and half of the iteration count by stopping at the numeric center.",
+    "real_time_applications": [
+      {
+        "title": "In-Memory ID Validation",
+        "description": "Rapidly verifying symmetric auto-generated IDs in distributed databases before processing more expensive queries."
+      },
+      {
+        "title": "Graphic Symmetry Engines",
+        "description": "Checking for mirror points in 2D coordinate maps to optimize rendering of symmetrical objects."
+      },
+      {
+        "title": "Financial Checksumming",
+        "description": "Using palindromic properties as simple, fast initial validation for certain data packet structures."
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "title": "Regular Expression Matching",
+    "slug": "regular-expression-matching",
+    "difficulty": "Hard",
+    "algorithmType": "dynamic_programming",
+    "status": "complete",
+    "tags": [
+      "String",
+      "Dynamic Programming",
+      "Recursion"
+    ],
+    "primaryPattern": "Top-Down Memoization",
+    "shortPatternReason": "Breaking down wildcard matching into overlapping subproblems solved recursively with caching.",
+    "time_complexity": "O(S*P)",
+    "space_complexity": "O(S*P)",
+    "problem_statement": "Implement regular expression matching with support for '.' and '*' where '.' matches any single character and '*' matches zero or more of the preceding element.",
+    "constraints": [
+      "1 <= s.length <= 20",
+      "1 <= p.length <= 20",
+      "s consists of lowercase English letters.",
+      "p consists of lowercase English letters, '.', and '*'."
+    ],
+    "examples": [
+      {
+        "input": "s = 'aa', p = 'a*'",
+        "output": "true"
+      }
+    ],
+    "brute_force_explanation": "A pure recursive approach without memoization explores the same sub-paths multiple times, exponential complexity that will hang on even slightly complex patterns.",
+    "optimal_explanation": "Use Dynamic Programming (Table) or Recursion with Memoization. For each pair (i, j), we check if the current characters match. If the next character in pattern is '*', we have two choices: skip the '*' or continue matching with the same '*' element.",
+    "intuition": "DECISION BRANCHES. Wildcards are just choices. '*' means 'I can be empty' OR 'I can be one of my previous self'. We explore both branches and if either leads to a match, the whole thing matches.",
+    "scenarios": [
+      "Search engines",
+      "Log filtering",
+      "Security rule validation"
+    ],
+    "complexity": {
+      "brute": {
+        "time": "O((S+P)*2^(S+P/2))",
+        "space": "O(S+P)"
+      },
+      "optimal": {
+        "time": "O(S*P)",
+        "space": "O(S*P)"
+      }
+    },
+    "pseudocode": {
+      "brute": "match(s, p):\n    if not p: return not s\n    first_match = s and p[0] in {s[0], '.'}\n    if len(p) >= 2 and p[1] == '*':\n        return match(s, p[2:]) or (first_match and match(s[1:], p))\n    else:\n        return first_match and match(s[1:], p[1:])",
+      "optimal": "dp = matrix[s+1][p+1]\ndp[last][last] = True\nfor i from s to 0:\n    for j from p-1 to 0:\n        // similar logic to recursive but fills table"
+    },
+    "external_links": {
+      "leetcode": "https://leetcode.com/problems/regular-expression-matching/"
+    },
+    "input_settings": {
+      "input1": {
+        "label": "Input String (s)",
+        "placeholder": "\"aa\""
+      },
+      "input2": {
+        "label": "Regex Pattern (p)",
+        "placeholder": "\"a*\""
+      }
+    },
+    "efficiencyGain": "From exponential to polynomial time by caching results of sub-matches, handling deep recursion depths in real-world patterns.",
+    "real_time_applications": [
+      {
+        "title": "WAF (Web Application Firewalls)",
+        "description": "Rapidly matching incoming request patterns against known attack signatures (SQLi, XSS) using regex optimizations."
+      },
+      {
+        "title": "Text Editor Search/Replace",
+        "description": "Powers the core find-in-files functionality in IDEs like VS Code where patterns must match across thousands of lines."
+      },
+      {
+        "title": "Routing Engines",
+        "description": "Used in frameworks like Express or Django to translate URL patterns (e.g., /user/*) into specific function calls."
+      }
+    ]
   },
   {
     "id": 11,
@@ -113,51 +1117,93 @@
     "slug": "container-with-most-water",
     "difficulty": "Medium",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
-      "Two Pointer"
+      "Array",
+      "Two Pointers"
     ],
-    "primaryPattern": "Two Pointer",
-    "shortPatternReason": "Shrinking search space by moving pointers inward.",
+    "primaryPattern": "Two Pointers",
+    "shortPatternReason": "Searching for maximum area by narrowing the distance between the tallest possible vertical lines.",
     "time_complexity": "O(n)",
     "space_complexity": "O(1)",
-    "problem_statement": "Standard LeetCode problem: Container With Most Water.",
+    "problem_statement": "You are given an integer array `height` of length `n`. There are n vertical lines drawn such that the two endpoints of the `ith` line are `(i, 0)` and `(i, height[i])`. Find two lines that together with the x-axis form a container, such that the container contains the most water. Return the maximum amount of water a container can store.",
     "constraints": [
-      "N <= 10^5",
-      "Elements are integers."
+      "n == height.length",
+      "2 <= n <= 10^5",
+      "0 <= height[i] <= 10^4"
     ],
-    "examples": [],
-    "brute_force_explanation": "Check all possible combinations O(n\u00b2 or worse).",
-    "optimal_explanation": "Use the Two Pointer pattern for O(n) or O(log n).",
-    "brute_force_steps": [],
-    "optimal_steps": [],
+    "examples": [
+      {
+        "input": "height = [1,8,6,2,5,4,8,3,7]",
+        "output": "49",
+        "explanation": "The max area is found between indices 1 and 8 (heights 8 and 7), width = 7, area = 7 * 7 = 49."
+      }
+    ],
+    "brute_force_explanation": "Checking every possible pair of lines (i, j) to calculate the area and keeping track of the maximum. This requires O(n\u00b2) time which is too slow for large inputs.",
+    "optimal_explanation": "Use two pointers starting at both ends of the array. Calculate the current area and move the pointer that points to the shorter line inward. Since the width is already decreasing, the only way to potentially find a larger area is to find a taller line.",
+    "intuition": "GREEDY NARROWING. The area is limited by the shorter line. To find a larger area while the width decreases, we MUST find a taller line. Thus, we always move the pointer pointing to the shorter line.",
+    "scenarios": [
+      "Optimizing physical storage containers",
+      "Resource allocation in networking",
+      "Financial portfolio optimization"
+    ],
     "complexity": {
-      "brute": "O(n\u00b2)",
-      "optimal": "O(n)",
-      "space": "O(1)"
+      "brute": {
+        "time": "O(N\u00b2)",
+        "space": "O(1)"
+      },
+      "optimal": {
+        "time": "O(N)",
+        "space": "O(1)"
+      }
     },
-    "patternSignals": [
-      "Requires Two Pointer approach.",
-      "Shrinking search space by moving pointers inward."
-    ],
-    "edgeCases": [
-      "Empty input",
-      "Small input",
-      "Large values"
+    "pseudocode": {
+      "brute": "maxArea = 0\nfor i in 0..n:\n    for j in i+1..n:\n        area = min(h[i], h[j]) * (j - i)\n        maxArea = max(maxArea, area)\nreturn maxArea",
+      "optimal": "l = 0, r = n-1, maxArea = 0\nwhile l < r:\n    area = min(h[l], h[r]) * (r - l)\n    maxArea = max(maxArea, area)\n    if h[l] < h[r]: l++\n    else: r--\nreturn maxArea"
+    },
+    "external_links": {
+      "leetcode": "https://leetcode.com/problems/container-with-most-water/"
+    },
+    "input_settings": {
+      "input1": {
+        "label": "Line Heights Array",
+        "placeholder": "[1,8,6,2,5,4,8,3,7]"
+      },
+      "input2": {
+        "label": "Goal Area",
+        "placeholder": "Maximize"
+      }
+    },
+    "efficiencyGain": "Reducing search space from O(N\u00b2) pairs to O(N) by eliminating pairs that can't possibly exceed the current maximum.",
+    "real_time_applications": [
+      {
+        "title": "Logistics & Warehousing",
+        "description": "Optimizing the placement of partitions in bulk storage units to maximize volumetric capacity."
+      },
+      {
+        "title": "Bandwidth Throttling",
+        "description": "Calculating peak data throughput between two time points in a fluctuating network signal."
+      },
+      {
+        "title": "Supply Chain Fluidity",
+        "description": "Determining the limiting factor in a multi-stage manufacturing pipeline by finding the 'shortest' resource line."
+      }
     ],
     "thinking_guide": {
       "first_principles": [
-        "Solve Container With Most Water using first principles."
+        "Find the two vertical lines that, together with the x-axis, form a container that stores the maximum amount of water."
       ],
       "pattern_signals": [
-        "Shrinking search space by moving pointers inward."
+        "Area depends on width and the height of the shorter line.",
+        "Moving the taller line inward never helps (width decreases, potential height is still limited by the same short line)."
       ],
       "naive_approach": [
-        "Iterative brute force."
+        "Calculate area for all n(n-1)/2 pairs."
       ],
       "approach_blueprint": [
-        "1. Sort",
-        "2. Two Pointers"
+        "1. Start with max width (left = 0, right = n-1).",
+        "2. Calculate area and update global max.",
+        "3. Move the pointer pointing to the shorter line to seek higher potential."
       ]
     }
   },
@@ -167,7 +1213,7 @@
     "slug": "3sum",
     "difficulty": "Medium",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Two Pointer"
     ],
@@ -175,43 +1221,54 @@
     "shortPatternReason": "Sorted array traversal with fixed element and two pointers.",
     "time_complexity": "O(n\u00b2)",
     "space_complexity": "O(log n) to O(n)",
-    "problem_statement": "Standard LeetCode problem: 3Sum.",
-    "constraints": [
-      "N <= 10^5",
-      "Elements are integers."
-    ],
-    "examples": [],
-    "brute_force_explanation": "Check all possible combinations O(n\u00b2 or worse).",
-    "optimal_explanation": "Use the Two Pointer pattern for O(n) or O(log n).",
+    "problem_statement": "Given an integer array `nums`, return all the triplets `[nums[i], nums[j], nums[k]]` such that `i != j`, `i != k`, and `j != k`, and `nums[i] + nums[j] + nums[k] == 0`. The solution set must not contain duplicate triplets.",
+    "brute_force_explanation": "Use three nested loops to check every unique triplet. This results in O(N^3) time complexity, which is acceptable only for very small N (e.g., N < 500).",
+    "optimal_explanation": "Sort the array first. Iterate through the array with a fixed pointer `i`, and use the Two Pointers pattern (`left` and `right`) for the remaining part to find pairs that sum to `-nums[i]`. This reduces the complexity to O(N^2).",
     "brute_force_steps": [],
     "optimal_steps": [],
     "complexity": {
-      "brute": "O(n\u00b2)",
-      "optimal": "O(n\u00b2)",
-      "space": "O(log n) to O(n)"
+      "brute": {
+        "time": "O(N^3)",
+        "space": "O(1)"
+      },
+      "optimal": {
+        "time": "O(N^2)",
+        "space": "O(log N)"
+      }
     },
     "patternSignals": [
-      "Requires Two Pointer approach.",
-      "Sorted array traversal with fixed element and two pointers."
+      "Finding multiple elements that satisfy a sum condition.",
+      "Requirement to avoid duplicates (Sorting helps here).",
+      "Reducing O(N^3) to O(N^2) suggests fixing one element and solving for two."
     ],
     "edgeCases": [
-      "Empty input",
-      "Small input",
-      "Large values"
+      "No triplets found.",
+      "Duplicate numbers in input.",
+      "Array with fewer than 3 elements."
     ],
     "thinking_guide": {
       "first_principles": [
-        "Solve 3Sum using first principles."
+        "A + B + C = 0 is equivalent to A + B = -C.",
+        "If we fix C, the problem becomes Two Sum.",
+        "Sorting helps in both avoiding duplicates and using the Two Pointers pattern."
       ],
       "pattern_signals": [
-        "Sorted array traversal with fixed element and two pointers."
+        "Sum of three numbers.",
+        "Result set must not contain duplicates."
       ],
       "naive_approach": [
-        "Iterative brute force."
+        "Three nested loops to try all combinations."
       ],
       "approach_blueprint": [
-        "1. Sort",
-        "2. Two Pointers"
+        "1. Sort the array `nums`.",
+        "2. Iterate `i` from 0 to n-2:",
+        "   a. If `nums[i] > 0`, break (sum can't be 0).",
+        "   b. If `i > 0` and `nums[i] == nums[i-1]`, continue (skip value duplicate).",
+        "   c. Set `low = i + 1`, `high = n - 1`.",
+        "   d. While `low < high`:",
+        "      i. Calculate `sum = nums[i] + nums[low] + nums[high]`.",
+        "      ii. If `sum < 0`, `low++`. If `sum > 0`, `high--`.",
+        "      iii. If `sum == 0`, add triplet, `low++`, `high--`, then skip internal duplicates."
       ]
     }
   },
@@ -221,7 +1278,7 @@
     "slug": "valid-parentheses",
     "difficulty": "Easy",
     "algorithmType": "stack",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Stack"
     ],
@@ -229,43 +1286,53 @@
     "shortPatternReason": "LIFO behavior for matching brackets.",
     "time_complexity": "O(n)",
     "space_complexity": "O(n)",
-    "problem_statement": "Standard LeetCode problem: Valid Parentheses.",
-    "constraints": [
-      "N <= 10^5",
-      "Elements are integers."
-    ],
-    "examples": [],
-    "brute_force_explanation": "Check all possible combinations O(n\u00b2 or worse).",
-    "optimal_explanation": "Use the Stack pattern for O(n) or O(log n).",
+    "problem_statement": "Given a string `s` containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.\n\nAn input string is valid if:\n1. Open brackets must be closed by the same type of brackets.\n2. Open brackets must be closed in the correct order.",
+    "brute_force_explanation": "We could try to repeatedly find matching adjacent pairs '()', '[]', '{}' and remove them until the string is empty or no pairs are left. This is inefficient (O(N^2)).",
+    "optimal_explanation": "Use a Stack. Iterate through the string; push open brackets onto the stack. When a closing bracket is encountered, check if it matches the top of the stack. If so, pop. If not (or stack is empty), it's invalid. At end, stack must be empty.",
     "brute_force_steps": [],
     "optimal_steps": [],
     "complexity": {
-      "brute": "O(n\u00b2)",
-      "optimal": "O(n)",
-      "space": "O(n)"
+      "brute": {
+        "time": "O(N^2)",
+        "space": "O(N)"
+      },
+      "optimal": {
+        "time": "O(N)",
+        "space": "O(N)"
+      }
     },
     "patternSignals": [
-      "Requires Stack approach.",
-      "LIFO behavior for matching brackets."
+      "Processing nested structures.",
+      "\"Last opened, first closed\" logic (LIFO).",
+      "Validation of pairs."
     ],
     "edgeCases": [
-      "Empty input",
-      "Small input",
-      "Large values"
+      "Single character input (invalid).",
+      "String starting with closing bracket.",
+      "Empty string (valid or invalid depending if empty input allowed)."
     ],
     "thinking_guide": {
       "first_principles": [
-        "Solve Valid Parentheses using first principles."
+        "Every closing bracket needs a corresponding unmatched opening bracket immediately before it.",
+        "If we see an opener, we remember it.",
+        "If we see a closer, it MUST match the most recently remembered opener."
       ],
       "pattern_signals": [
-        "LIFO behavior for matching brackets."
+        "Nested elements (Parentheses).",
+        "LIFO order requirement naturally maps to a Stack."
       ],
       "naive_approach": [
-        "Iterative brute force."
+        "Replace '()', '{}', '[]' iteratively until string stops changing."
       ],
       "approach_blueprint": [
-        "1. Traverse",
-        "2. Process"
+        "1. Initialize an empty stack.",
+        "2. Map closing brackets to opening ones: `) -> (`, etc.",
+        "3. Loop char in s:",
+        "   a. If char is opener, push to stack.",
+        "   b. If char is closer:",
+        "      i. If stack empty or top doesn't match, return False.",
+        "      ii. Else, pop from stack.",
+        "4. Return True if stack is empty, else False."
       ]
     }
   },
@@ -275,7 +1342,7 @@
     "slug": "merge-two-sorted-lists",
     "difficulty": "Easy",
     "algorithmType": "linked_list",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Linked List"
     ],
@@ -283,43 +1350,54 @@
     "shortPatternReason": "Pointer manipulation in sorted sequences.",
     "time_complexity": "O(n+m)",
     "space_complexity": "O(1)",
-    "problem_statement": "Standard LeetCode problem: Merge Two Sorted Lists.",
-    "constraints": [
-      "N <= 10^5",
-      "Elements are integers."
-    ],
-    "examples": [],
-    "brute_force_explanation": "Check all possible combinations O(n\u00b2 or worse).",
-    "optimal_explanation": "Use the Linked List pattern for O(n) or O(log n).",
+    "problem_statement": "You are given the heads of two sorted linked lists `list1` and `list2`. Merge the two lists in a one sorted list. The list should be made by splicing together the nodes of the first two lists. Return the head of the merged linked list.",
+    "brute_force_explanation": "Copy all values from both lists into an array, sort the array, and then create a new linked list from the sorted values. Inefficient space usage.",
+    "optimal_explanation": "Use the Two Pointer pattern (or Iterative Merge). Maintain a 'dummy' head and a 'current' pointer. Compare the heads of `list1` and `list2`. Attach the smaller node to 'current', and move the pointer forward. Repeat until one list is exhausted, then attach the remainder.",
     "brute_force_steps": [],
     "optimal_steps": [],
     "complexity": {
-      "brute": "O(n\u00b2)",
-      "optimal": "O(n+m)",
-      "space": "O(1)"
+      "brute": {
+        "time": "O((N+M) log (N+M))",
+        "space": "O(N+M)"
+      },
+      "optimal": {
+        "time": "O(N+M)",
+        "space": "O(1)"
+      }
     },
     "patternSignals": [
-      "Requires Linked List approach.",
-      "Pointer manipulation in sorted sequences."
+      "Two sorted inputs to be combined.",
+      "Preserving order during combination.",
+      "Linked List structure implies pointer manipulation."
     ],
     "edgeCases": [
-      "Empty input",
-      "Small input",
-      "Large values"
+      "One list is empty (return the other).",
+      "Both lists empty.",
+      "Values identical in both lists."
     ],
     "thinking_guide": {
       "first_principles": [
-        "Solve Merge Two Sorted Lists using first principles."
+        "Since both lists are sorted, the smallest global element is guaranteed to be at the head of one of the two lists.",
+        "We can greedily pick the smallest head and append it."
       ],
       "pattern_signals": [
-        "Pointer manipulation in sorted sequences."
+        "Merging sorted sequences (like Merge Sort step).",
+        "Iterative pointer traversal."
       ],
       "naive_approach": [
-        "Iterative brute force."
+        "Collect, Sort, Rebuild."
       ],
       "approach_blueprint": [
-        "1. Traverse",
-        "2. Process"
+        "1. Create `dummy` node and `tail` pointer starting at `dummy`.",
+        "2. While `list1` and `list2` are not null:",
+        "   a. If `list1.val < list2.val`:",
+        "      i. `tail.next = list1`, `list1 = list1.next`.",
+        "   b. Else:",
+        "      i. `tail.next = list2`, `list2 = list2.next`.",
+        "   c. `tail = tail.next`.",
+        "3. If `list1` exists, `tail.next = list1`.",
+        "4. If `list2` exists, `tail.next = list2`.",
+        "5. Return `dummy.next`."
       ]
     }
   },
@@ -329,7 +1407,7 @@
     "slug": "search-in-rotated-sorted-array",
     "difficulty": "Medium",
     "algorithmType": "binary_search",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Binary Search"
     ],
@@ -337,43 +1415,56 @@
     "shortPatternReason": "Logarithmic search in modified sorted space.",
     "time_complexity": "O(log n)",
     "space_complexity": "O(1)",
-    "problem_statement": "Standard LeetCode problem: Search in Rotated Sorted Array.",
-    "constraints": [
-      "N <= 10^5",
-      "Elements are integers."
-    ],
-    "examples": [],
-    "brute_force_explanation": "Check all possible combinations O(n\u00b2 or worse).",
-    "optimal_explanation": "Use the Binary Search pattern for O(n) or O(log n).",
+    "problem_statement": "Given a sorted array of distinct integers `nums` that is rotated at some unknown pivot index, and an integer `target`, return the index of `target` if it is in simple `nums`, or `-1` if it is not.\n\nExample: `nums` = `[4,5,6,7,0,1,2]` (rotated at index 3) and `target` = `0`, return `4`.",
+    "brute_force_explanation": "Scan the entire array linearly to find the target. This ignores the sorted property and takes O(N) time.",
+    "optimal_explanation": "Use a modified Binary Search. Even though the array is rotated, at least one half (left or right) is always sorted. Determine which half is sorted, check if the target lies within that range, and discard the other half. This achieves O(log N).",
     "brute_force_steps": [],
     "optimal_steps": [],
     "complexity": {
-      "brute": "O(n\u00b2)",
-      "optimal": "O(log n)",
-      "space": "O(1)"
+      "brute": {
+        "time": "O(N)",
+        "space": "O(1)"
+      },
+      "optimal": {
+        "time": "O(log N)",
+        "space": "O(1)"
+      }
     },
     "patternSignals": [
-      "Requires Binary Search approach.",
-      "Logarithmic search in modified sorted space."
+      "Sorted array that has been rotated.",
+      "Requirement for O(log N) time complexity.",
+      "Searching for a specific target value."
     ],
     "edgeCases": [
-      "Empty input",
-      "Small input",
-      "Large values"
+      "Array not rotated (sorted normally).",
+      "Empty array or single element.",
+      "Duplicate values (if allowed, worst case O(N))."
     ],
     "thinking_guide": {
       "first_principles": [
-        "Solve Search in Rotated Sorted Array using first principles."
+        "Binary Search relies on the ability to discard half the search space.",
+        "In a rotated array, the midpoint splits the array into two parts: one sorted, one not.",
+        "We can always determine which side is sorted by comparing `nums[mid]` with `nums[left]`."
       ],
       "pattern_signals": [
-        "Logarithmic search in modified sorted space."
+        "\"Sorted array\" usually implies Binary Search.",
+        "\"Rotated\" implies we can't use standard BS directly, but must adapt condition logic."
       ],
       "naive_approach": [
-        "Iterative brute force."
+        "Iterate through the array from index 0 to N-1.",
+        "Return index if found, else -1."
       ],
       "approach_blueprint": [
-        "1. Traverse",
-        "2. Process"
+        "1. Initialize `left` = 0, `right` = n-1.",
+        "2. Loop while `left <= right`:",
+        "   a. Calculate `mid`.",
+        "   b. If `nums[mid] == target`, return `mid`.",
+        "   c. Check if Left Half is sorted (`nums[left] <= nums[mid]`):",
+        "      i. If target is in range [`nums[left]`, `nums[mid]`), move `right = mid - 1`.",
+        "      ii. Else, move `left = mid + 1`.",
+        "   d. Else (Right Half is sorted):",
+        "      i. If target is in range (`nums[mid]`, `nums[right]`], move `left = mid + 1`.",
+        "      ii. Else, move `right = mid - 1`."
       ]
     }
   },
@@ -383,7 +1474,7 @@
     "slug": "permutations",
     "difficulty": "Medium",
     "algorithmType": "recursion",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Backtracking"
     ],
@@ -391,43 +1482,52 @@
     "shortPatternReason": "Generating all possible orderings recursively.",
     "time_complexity": "O(n * n!)",
     "space_complexity": "O(n)",
-    "problem_statement": "Standard LeetCode problem: Permutations.",
-    "constraints": [
-      "N <= 10^5",
-      "Elements are integers."
-    ],
-    "examples": [],
-    "brute_force_explanation": "Check all possible combinations O(n\u00b2 or worse).",
-    "optimal_explanation": "Use the Backtracking pattern for O(n) or O(log n).",
+    "problem_statement": "Given an array `nums` of distinct integers, return all the possible permutations. You can return the answer in any order.",
+    "brute_force_explanation": "The 'brute force' is essentially the recursive backtracking solution itself, as generating all permutations requires visiting every leaf of the decision tree.",
+    "optimal_explanation": "Use Backtracking to build permutations incrementally. Maintain a 'used' set or swap elements in-place to ensure each number is used once per permutation. Backtrack (undo choice) to explore other branches.",
     "brute_force_steps": [],
     "optimal_steps": [],
     "complexity": {
-      "brute": "O(n\u00b2)",
-      "optimal": "O(n * n!)",
-      "space": "O(n)"
+      "brute": {
+        "time": "O(N * N!)",
+        "space": "O(N!)"
+      },
+      "optimal": {
+        "time": "O(N * N!)",
+        "space": "O(N)"
+      }
     },
     "patternSignals": [
-      "Requires Backtracking approach.",
-      "Generating all possible orderings recursively."
+      "\"All possible\" arrangements or subsets.",
+      "Input size N is small (N <= 10 usually).",
+      "Ordering matters (Permutations vs Combinations)."
     ],
     "edgeCases": [
-      "Empty input",
-      "Small input",
-      "Large values"
+      "Empty array.",
+      "Single element.",
+      "Duplicate numbers (if not distinct)."
     ],
     "thinking_guide": {
       "first_principles": [
-        "Solve Permutations using first principles."
+        "A permutation is an ordered arrangement.",
+        "We have N choices for the first position, N-1 for the second, and so on.",
+        "This suggests a tree structure where each path from root to leaf is a valid permutation."
       ],
       "pattern_signals": [
-        "Generating all possible orderings recursively."
+        "\"Return all possible...\" indicates exhaustive search.",
+        "Constraint N is small (Permutations of 10! is huge) suggests N <= 10."
       ],
       "naive_approach": [
-        "Iterative brute force."
+        "Nested loops (only works for fixed N, impossible for dynamic N)."
       ],
       "approach_blueprint": [
-        "1. Traverse",
-        "2. Process"
+        "1. Define a recursive function `backtrack(curr_path)`.",
+        "2. Base Case: If `len(curr_path) == N`, add copy of path to results.",
+        "3. Recursive Step: Iterate through all numbers:",
+        "   a. If number not in `curr_path` (or not marked used):",
+        "      i. Mark used / Add to path.",
+        "      ii. Call `backtrack`.",
+        "      iii. Unmark used / Remove from path (Backtrack)."
       ]
     }
   },
@@ -436,8 +1536,8 @@
     "title": "Rotate Image",
     "slug": "rotate-image",
     "difficulty": "Medium",
-    "algorithmType": "two_init",
-    "status": "new",
+    "algorithmType": "array",
+    "status": "complete",
     "tags": [
       "Array"
     ],
@@ -445,43 +1545,48 @@
     "shortPatternReason": "Layer-by-layer matrix transformation.",
     "time_complexity": "O(n\u00b2)",
     "space_complexity": "O(1)",
-    "problem_statement": "Standard LeetCode problem: Rotate Image.",
-    "constraints": [
-      "N <= 10^5",
-      "Elements are integers."
-    ],
-    "examples": [],
-    "brute_force_explanation": "Check all possible combinations O(n\u00b2 or worse).",
-    "optimal_explanation": "Use the Array pattern for O(n) or O(log n).",
+    "problem_statement": "You are given an `n x n` 2D matrix representing an image, rotate the image by 90 degrees (clockwise).\n\nYou have to rotate the image **in-place**, which means you have to modify the input 2D matrix directly.",
+    "brute_force_explanation": "Create a new N x N matrix. Copy elements such that `new_matrix[j][n-1-i] = matrix[i][j]`. Space complexity is O(N^2).",
+    "optimal_explanation": "Perform the rotation in two steps: a Transpose (swap `matrix[i][j]` with `matrix[j][i]`) followed by a Horizontal Reflection (reverse each row). This achieves the rotation in-place using O(1) extra space.",
     "brute_force_steps": [],
     "optimal_steps": [],
     "complexity": {
-      "brute": "O(n\u00b2)",
-      "optimal": "O(n\u00b2)",
-      "space": "O(1)"
+      "brute": {
+        "time": "O(N^2)",
+        "space": "O(N^2)"
+      },
+      "optimal": {
+        "time": "O(N^2)",
+        "space": "O(1)"
+      }
     },
     "patternSignals": [
-      "Requires Array approach.",
-      "Layer-by-layer matrix transformation."
+      "\"In-place\" modification of a matrix.",
+      "Spatial transformation (Rotate, Reflect).",
+      "Coordinate mapping: (row, col) -> (col, n-1-row)."
     ],
     "edgeCases": [
-      "Empty input",
-      "Small input",
-      "Large values"
+      "1x1 Matrix.",
+      "Non-square matrix (though problem specifies n x n)."
     ],
     "thinking_guide": {
       "first_principles": [
-        "Solve Rotate Image using first principles."
+        "A 90-degree clockwise rotation moves the top row to the right column.",
+        "Mathematically: Element at (row, col) moves to (col, n-1-row).",
+        "In-place operation usually implies swapping."
       ],
       "pattern_signals": [
-        "Layer-by-layer matrix transformation."
+        "Matrix manipulation.",
+        "Linear Algebra properties (Transpose)."
       ],
       "naive_approach": [
-        "Iterative brute force."
+        "Use a second matrix to map the coordinates manually."
       ],
       "approach_blueprint": [
-        "1. Traverse",
-        "2. Process"
+        "1. Transpose the matrix: Swap `matrix[i][j]` and `matrix[j][i]` for all `i < j`.",
+        "   - The diagonal stays the same.",
+        "2. Reverse each row of the transposed matrix.",
+        "   - This converts the Transpose into a 90-degree Rotation."
       ]
     }
   },
@@ -490,8 +1595,8 @@
     "title": "Group Anagrams",
     "slug": "group-anagrams",
     "difficulty": "Medium",
-    "algorithmType": "two_pointer",
-    "status": "new",
+    "algorithmType": "hash_table",
+    "status": "complete",
     "tags": [
       "Array"
     ],
@@ -499,43 +1604,50 @@
     "shortPatternReason": "Categorizing strings by sorted key or frequency frequency.",
     "time_complexity": "O(n * k log k)",
     "space_complexity": "O(n * k)",
-    "problem_statement": "Standard LeetCode problem: Group Anagrams.",
-    "constraints": [
-      "N <= 10^5",
-      "Elements are integers."
-    ],
-    "examples": [],
-    "brute_force_explanation": "Check all possible combinations O(n\u00b2 or worse).",
-    "optimal_explanation": "Use the Array pattern for O(n) or O(log n).",
+    "problem_statement": "Given an array of strings `strs`, group the anagrams together. You can return the answer in any order. An Anagram is a word or phrase formed by rearranging the letters of a different word or phrase, typically using all the original letters exactly once.",
+    "brute_force_explanation": "Compare every string with every other string to check if they are anagrams. O(N^2 * L log L). Very slow.",
+    "optimal_explanation": "Use a Hash Map where the key is the sorted version of the string (or a character count signature) and the value is a list of original strings. Iterate once through the input.",
     "brute_force_steps": [],
     "optimal_steps": [],
     "complexity": {
-      "brute": "O(n\u00b2)",
-      "optimal": "O(n * k log k)",
-      "space": "O(n * k)"
+      "brute": {
+        "time": "O(N^2 * L)",
+        "space": "O(N)"
+      },
+      "optimal": {
+        "time": "O(N * L log L)",
+        "space": "O(N * L)"
+      }
     },
     "patternSignals": [
-      "Requires Array approach.",
-      "Categorizing strings by sorted key or frequency frequency."
+      "\"Group\" items by some property.",
+      "Anagrams = exact same character counts.",
+      "Frequency Map or Sorting can canonicalize data."
     ],
     "edgeCases": [
-      "Empty input",
-      "Small input",
-      "Large values"
+      "Empty strings.",
+      "Strings with unicode characters.",
+      "Single string input."
     ],
     "thinking_guide": {
       "first_principles": [
-        "Solve Group Anagrams using first principles."
+        "Two strings are anagrams if they have the same characters in the same quantities.",
+        "Sorting both strings results in identical sequences: 'cat' -> 'act', 'tca' -> 'act'.",
+        "This sorted form can serve as a unique ID (Key)."
       ],
       "pattern_signals": [
-        "Categorizing strings by sorted key or frequency frequency."
+        "Matching or Grouping strings based on content, not order.",
+        "Hash Map is perfect for grouping by Key."
       ],
       "naive_approach": [
-        "Iterative brute force."
+        "Nested loop to pair up anagrams."
       ],
       "approach_blueprint": [
-        "1. Sort",
-        "2. Two Pointers"
+        "1. Initialize an empty Hash Map.",
+        "2. Iterate through each string `s` in `strs`:",
+        "   a. Create a key by sorting `s`: `key = sort(s)`.",
+        "   b. Append `s` to the list at `map[key]`.",
+        "3. Return all values from the map."
       ]
     }
   },
@@ -545,7 +1657,7 @@
     "slug": "maximum-subarray",
     "difficulty": "Medium",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Dynamic Programming"
     ],
@@ -564,9 +1676,14 @@
     "brute_force_steps": [],
     "optimal_steps": [],
     "complexity": {
-      "brute": "O(n\u00b2)",
-      "optimal": "O(n)",
-      "space": "O(1)"
+      "brute": {
+        "time": "O(N\u00b2)",
+        "space": "O(1)"
+      },
+      "optimal": {
+        "time": "O(N)",
+        "space": "O(1)"
+      }
     },
     "patternSignals": [
       "Requires Dynamic Programming approach.",
@@ -599,7 +1716,7 @@
     "slug": "jump-game",
     "difficulty": "Medium",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Greedy"
     ],
@@ -618,9 +1735,14 @@
     "brute_force_steps": [],
     "optimal_steps": [],
     "complexity": {
-      "brute": "O(n\u00b2)",
-      "optimal": "O(n)",
-      "space": "O(1)"
+      "brute": {
+        "time": "O(2^N)",
+        "space": "O(N)"
+      },
+      "optimal": {
+        "time": "O(N)",
+        "space": "O(1)"
+      }
     },
     "patternSignals": [
       "Requires Greedy approach.",
@@ -653,7 +1775,7 @@
     "slug": "merge-intervals",
     "difficulty": "Medium",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Array"
     ],
@@ -672,9 +1794,14 @@
     "brute_force_steps": [],
     "optimal_steps": [],
     "complexity": {
-      "brute": "O(n\u00b2)",
-      "optimal": "O(n log n)",
-      "space": "O(n)"
+      "brute": {
+        "time": "O(N\u00b2)",
+        "space": "O(N)"
+      },
+      "optimal": {
+        "time": "O(N log N)",
+        "space": "O(N)"
+      }
     },
     "patternSignals": [
       "Requires Array approach.",
@@ -707,7 +1834,7 @@
     "slug": "climbing-stairs",
     "difficulty": "Easy",
     "algorithmType": "recursion",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Dynamic Programming"
     ],
@@ -726,9 +1853,14 @@
     "brute_force_steps": [],
     "optimal_steps": [],
     "complexity": {
-      "brute": "O(n\u00b2)",
-      "optimal": "O(n)",
-      "space": "O(1)"
+      "brute": {
+        "time": "O(2^N)",
+        "space": "O(N)"
+      },
+      "optimal": {
+        "time": "O(N)",
+        "space": "O(1)"
+      }
     },
     "patternSignals": [
       "Requires Dynamic Programming approach.",
@@ -761,7 +1893,7 @@
     "slug": "search-a-2d-matrix",
     "difficulty": "Medium",
     "algorithmType": "binary_search",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Binary Search"
     ],
@@ -780,9 +1912,14 @@
     "brute_force_steps": [],
     "optimal_steps": [],
     "complexity": {
-      "brute": "O(n\u00b2)",
-      "optimal": "O(log(m*n))",
-      "space": "O(1)"
+      "brute": {
+        "time": "O(N*M)",
+        "space": "O(1)"
+      },
+      "optimal": {
+        "time": "O(log(N*M))",
+        "space": "O(1)"
+      }
     },
     "patternSignals": [
       "Requires Binary Search approach.",
@@ -815,7 +1952,7 @@
     "slug": "sort-colors",
     "difficulty": "Medium",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Two Pointer"
     ],
@@ -869,7 +2006,7 @@
     "slug": "minimum-window-substring",
     "difficulty": "Hard",
     "algorithmType": "sliding_window",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Sliding Window"
     ],
@@ -923,7 +2060,7 @@
     "slug": "subsets",
     "difficulty": "Medium",
     "algorithmType": "recursion",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Backtracking"
     ],
@@ -977,7 +2114,7 @@
     "slug": "word-search",
     "difficulty": "Medium",
     "algorithmType": "graph",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Backtracking"
     ],
@@ -1031,7 +2168,7 @@
     "slug": "binary-tree-inorder-traversal",
     "difficulty": "Easy",
     "algorithmType": "tree",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Recursion"
     ],
@@ -1085,7 +2222,7 @@
     "slug": "validate-binary-search-tree",
     "difficulty": "Medium",
     "algorithmType": "tree",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Recursion"
     ],
@@ -1139,7 +2276,7 @@
     "slug": "binary-tree-level-order-traversal",
     "difficulty": "Medium",
     "algorithmType": "tree",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Graph (BFS/DFS)"
     ],
@@ -1193,7 +2330,7 @@
     "slug": "maximum-depth-of-binary-tree",
     "difficulty": "Easy",
     "algorithmType": "tree",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Recursion"
     ],
@@ -1247,7 +2384,7 @@
     "slug": "construct-binary-tree-from-preorder-and-inorder-traversal",
     "difficulty": "Medium",
     "algorithmType": "tree",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Recursion"
     ],
@@ -1301,7 +2438,7 @@
     "slug": "best-time-to-buy-and-sell-stock",
     "difficulty": "Easy",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Dynamic Programming"
     ],
@@ -1355,7 +2492,7 @@
     "slug": "binary-tree-maximum-path-sum",
     "difficulty": "Hard",
     "algorithmType": "tree",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Recursion"
     ],
@@ -1404,12 +2541,87 @@
     }
   },
   {
+    "id": 125,
+    "title": "Valid Palindrome",
+    "slug": "valid-palindrome",
+    "difficulty": "Easy",
+    "algorithmType": "two_pointer",
+    "status": "complete",
+    "tags": [
+      "Two Pointers",
+      "String"
+    ],
+    "primaryPattern": "Two Pointers",
+    "shortPatternReason": "Comparing characters from both ends moving inward.",
+    "time_complexity": "O(n)",
+    "space_complexity": "O(1)",
+    "problem_statement": "A phrase is a palindrome if, after converting all uppercase letters into lowercase letters and removing all non-alphanumeric characters, it reads the same forward and backward. Alphanumeric characters include letters and numbers.\n\nGiven a string `s`, return `true` if it is a palindrome, or `false` otherwise.",
+    "constraints": [
+      "1 <= s.length <= 2 * 10^5",
+      "s consists only of printable ASCII characters."
+    ],
+    "examples": [
+      {
+        "input": "s = \"A man, a plan, a canal: Panama\"",
+        "output": "true",
+        "explanation": "\"amanaplanacanalpanama\" is a palindrome."
+      }
+    ],
+    "brute_force_explanation": "Filter the string to keep only alphanumeric characters, reverse it, and compare with the original filtered string. This requires O(N) extra space.",
+    "optimal_explanation": "Use Two Pointers. Initialize one pointer at the start and one at the end. Move them towards each other, skipping non-alphanumeric characters. If characters at pointers don't match, return false. If they meet, return true. O(1) space.",
+    "brute_force_steps": [],
+    "optimal_steps": [],
+    "complexity": {
+      "brute": {
+        "time": "O(N)",
+        "space": "O(N)"
+      },
+      "optimal": {
+        "time": "O(N)",
+        "space": "O(1)"
+      }
+    },
+    "patternSignals": [
+      "Looking for symmetry in a sequence.",
+      "Input contains 'noise' (non-alphanumeric) to skip.",
+      "O(1) space requirement suggests pointers."
+    ],
+    "edgeCases": [
+      "Empty string (technically valid).",
+      "String with only non-alphanumeric chars (valid).",
+      "Case sensitivity (must ignore case)."
+    ],
+    "thinking_guide": {
+      "first_principles": [
+        "A palindrome is symmetric around its center.",
+        "We can verify symmetry by comparing the first and last valid characters, then the second and second-to-last, etc.",
+        "We can skip invalid characters on the fly."
+      ],
+      "pattern_signals": [
+        "Symmetry check.",
+        "Two Pointers moving inward."
+      ],
+      "naive_approach": [
+        "Clean string, Reverse, Compare."
+      ],
+      "approach_blueprint": [
+        "1. Initialize `left` = 0, `right` = n-1.",
+        "2. While `left < right`:",
+        "   a. Move `left` forward until alphanumeric.",
+        "   b. Move `right` backward until alphanumeric.",
+        "   c. If `lower(s[left]) != lower(s[right])`, return False.",
+        "   d. `left++`, `right--`.",
+        "3. Return True."
+      ]
+    }
+  },
+  {
     "id": 128,
     "title": "Longest Consecutive Sequence",
     "slug": "longest-consecutive-sequence",
     "difficulty": "Medium",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Array"
     ],
@@ -1463,7 +2675,7 @@
     "slug": "clone-graph",
     "difficulty": "Medium",
     "algorithmType": "graph",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Graph (BFS/DFS)"
     ],
@@ -1517,7 +2729,7 @@
     "slug": "word-break",
     "difficulty": "Medium",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Dynamic Programming"
     ],
@@ -1571,7 +2783,7 @@
     "slug": "linked-list-cycle",
     "difficulty": "Easy",
     "algorithmType": "linked_list",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Two Pointer"
     ],
@@ -1625,7 +2837,7 @@
     "slug": "lru-cache",
     "difficulty": "Medium",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Queue"
     ],
@@ -1679,7 +2891,7 @@
     "slug": "maximum-product-subarray",
     "difficulty": "Medium",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Dynamic Programming"
     ],
@@ -1733,7 +2945,7 @@
     "slug": "find-minimum-in-rotated-sorted-array",
     "difficulty": "Medium",
     "algorithmType": "binary_search",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Binary Search"
     ],
@@ -1787,7 +2999,7 @@
     "slug": "min-stack",
     "difficulty": "Easy",
     "algorithmType": "stack",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Stack"
     ],
@@ -1841,7 +3053,7 @@
     "slug": "intersection-of-two-linked-lists",
     "difficulty": "Easy",
     "algorithmType": "linked_list",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Two Pointer"
     ],
@@ -1895,7 +3107,7 @@
     "slug": "majority-element",
     "difficulty": "Easy",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Array"
     ],
@@ -1949,7 +3161,7 @@
     "slug": "house-robber",
     "difficulty": "Medium",
     "algorithmType": "recursion",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Dynamic Programming"
     ],
@@ -2003,7 +3215,7 @@
     "slug": "number-of-islands",
     "difficulty": "Medium",
     "algorithmType": "graph",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Graph (BFS/DFS)"
     ],
@@ -2057,7 +3269,7 @@
     "slug": "reverse-linked-list",
     "difficulty": "Easy",
     "algorithmType": "linked_list",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Two Pointer"
     ],
@@ -2111,7 +3323,7 @@
     "slug": "course-schedule",
     "difficulty": "Medium",
     "algorithmType": "graph",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Graph (BFS/DFS)"
     ],
@@ -2165,7 +3377,7 @@
     "slug": "implement-trie",
     "difficulty": "Medium",
     "algorithmType": "tree",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Recursion"
     ],
@@ -2219,7 +3431,7 @@
     "slug": "kth-largest-element-in-an-array",
     "difficulty": "Medium",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Heap / Priority Queue"
     ],
@@ -2273,7 +3485,7 @@
     "slug": "contains-duplicate",
     "difficulty": "Easy",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Array"
     ],
@@ -2327,7 +3539,7 @@
     "slug": "invert-binary-tree",
     "difficulty": "Easy",
     "algorithmType": "tree",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Recursion"
     ],
@@ -2381,7 +3593,7 @@
     "slug": "kth-smallest-element-in-a-bst",
     "difficulty": "Medium",
     "algorithmType": "tree",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Recursion"
     ],
@@ -2435,7 +3647,7 @@
     "slug": "implement-queue-using-stacks",
     "difficulty": "Easy",
     "algorithmType": "stack",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Queue"
     ],
@@ -2489,7 +3701,7 @@
     "slug": "palindrome-linked-list",
     "difficulty": "Easy",
     "algorithmType": "linked_list",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Two Pointer"
     ],
@@ -2543,7 +3755,7 @@
     "slug": "lowest-common-ancestor-of-a-binary-tree",
     "difficulty": "Medium",
     "algorithmType": "tree",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Recursion"
     ],
@@ -2597,7 +3809,7 @@
     "slug": "product-of-array-except-self",
     "difficulty": "Medium",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Prefix Sum"
     ],
@@ -2651,7 +3863,7 @@
     "slug": "sliding-window-maximum",
     "difficulty": "Hard",
     "algorithmType": "sliding_window",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Sliding Window"
     ],
@@ -2705,7 +3917,7 @@
     "slug": "search-a-2d-matrix-ii",
     "difficulty": "Medium",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Two Pointer"
     ],
@@ -2759,7 +3971,7 @@
     "slug": "valid-anagram",
     "difficulty": "Easy",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Array"
     ],
@@ -2813,7 +4025,7 @@
     "slug": "move-zeroes",
     "difficulty": "Easy",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Two Pointer"
     ],
@@ -2821,43 +4033,50 @@
     "shortPatternReason": "In-place swapping to maintain order.",
     "time_complexity": "O(n)",
     "space_complexity": "O(1)",
-    "problem_statement": "Standard LeetCode problem: Move Zeroes.",
-    "constraints": [
-      "N <= 10^5",
-      "Elements are integers."
-    ],
-    "examples": [],
-    "brute_force_explanation": "Check all possible combinations O(n\u00b2 or worse).",
-    "optimal_explanation": "Use the Two Pointer pattern for O(n) or O(log n).",
+    "problem_statement": "Given an integer array `nums`, move all `0`'s to the end of it while maintaining the relative order of the non-zero elements.\n\nNote that you must do this in-place without making a copy of the array.",
+    "brute_force_explanation": "Create a new array, copy all non-zero elements first, then fill the rest with zeros. This violates the 'in-place' constraint (O(N) space).",
+    "optimal_explanation": "Use a 'Writer' pointer (or 'Last Non-Zero Found At' index). Iterate through the array with a 'Reader' pointer. If `nums[reader]` is non-zero, swap it with `nums[writer]` and increment `writer`. All zeros will naturally be pushed to the end.",
     "brute_force_steps": [],
     "optimal_steps": [],
     "complexity": {
-      "brute": "O(n\u00b2)",
-      "optimal": "O(n)",
-      "space": "O(1)"
+      "brute": {
+        "time": "O(N)",
+        "space": "O(N)"
+      },
+      "optimal": {
+        "time": "O(N)",
+        "space": "O(1)"
+      }
     },
     "patternSignals": [
-      "Requires Two Pointer approach.",
-      "In-place swapping to maintain order."
+      "Processing array in-place.",
+      "Maintaining relative order of specific elements.",
+      "Filtering or partitioning data."
     ],
     "edgeCases": [
-      "Empty input",
-      "Small input",
-      "Large values"
+      "Array with no zeros.",
+      "Array with all zeros.",
+      "Empty array."
     ],
     "thinking_guide": {
       "first_principles": [
-        "Solve Move Zeroes using first principles."
+        "We want non-zeroes to be at the front.",
+        "We can keep track of where the next non-zero *should* go.",
+        "If we see a non-zero, we put it in that spot and advance the spot."
       ],
       "pattern_signals": [
-        "In-place swapping to maintain order."
+        "Partitioning array into two regions: [Non-Zeroes | Zeroes].",
+        "Two Pointer (Reader/Writer) pattern."
       ],
       "naive_approach": [
-        "Iterative brute force."
+        "Count zeroes, remove them, append them at end (Python specific, often O(N^2))."
       ],
       "approach_blueprint": [
-        "1. Sort",
-        "2. Two Pointers"
+        "1. Initialize `writer` = 0.",
+        "2. Iterate `reader` from 0 to n-1:",
+        "   a. If `nums[reader] != 0`:",
+        "      i. Swap `nums[writer]` and `nums[reader]`.",
+        "      ii. `writer++`."
       ]
     }
   },
@@ -2867,7 +4086,7 @@
     "slug": "find-the-duplicate-number",
     "difficulty": "Medium",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Two Pointer"
     ],
@@ -2921,7 +4140,7 @@
     "slug": "find-median-from-data-stream",
     "difficulty": "Hard",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Heap / Priority Queue"
     ],
@@ -2975,7 +4194,7 @@
     "slug": "longest-increasing-subsequence",
     "difficulty": "Medium",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Dynamic Programming"
     ],
@@ -3029,7 +4248,7 @@
     "slug": "coin-change",
     "difficulty": "Medium",
     "algorithmType": "recursion",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Dynamic Programming"
     ],
@@ -3083,7 +4302,7 @@
     "slug": "top-k-frequent-elements",
     "difficulty": "Medium",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Heap / Priority Queue"
     ],
@@ -3137,7 +4356,7 @@
     "slug": "decode-string",
     "difficulty": "Medium",
     "algorithmType": "stack",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Stack"
     ],
@@ -3191,7 +4410,7 @@
     "slug": "partition-equal-subset-sum",
     "difficulty": "Medium",
     "algorithmType": "recursion",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Dynamic Programming"
     ],
@@ -3245,7 +4464,7 @@
     "slug": "find-all-anagrams-in-a-string",
     "difficulty": "Medium",
     "algorithmType": "sliding_window",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Sliding Window"
     ],
@@ -3299,7 +4518,7 @@
     "slug": "diameter-of-binary-tree",
     "difficulty": "Easy",
     "algorithmType": "tree",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Recursion"
     ],
@@ -3353,7 +4572,7 @@
     "slug": "subarray-sum-equals-k",
     "difficulty": "Medium",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Prefix Sum"
     ],
@@ -3407,7 +4626,7 @@
     "slug": "binary-search",
     "difficulty": "Easy",
     "algorithmType": "binary_search",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Binary Search"
     ],
@@ -3461,7 +4680,7 @@
     "slug": "daily-temperatures",
     "difficulty": "Medium",
     "algorithmType": "stack",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Stack"
     ],
@@ -3515,7 +4734,7 @@
     "slug": "rotting-oranges",
     "difficulty": "Medium",
     "algorithmType": "graph",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Graph (BFS/DFS)"
     ],
@@ -3569,7 +4788,7 @@
     "slug": "pattern-drill-67",
     "difficulty": "Easy",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Greedy"
     ],
@@ -3596,7 +4815,7 @@
     "slug": "pattern-drill-68",
     "difficulty": "Medium",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Prefix Sum"
     ],
@@ -3623,7 +4842,7 @@
     "slug": "pattern-drill-69",
     "difficulty": "Easy",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Dynamic Programming"
     ],
@@ -3650,7 +4869,7 @@
     "slug": "pattern-drill-70",
     "difficulty": "Medium",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Array"
     ],
@@ -3677,7 +4896,7 @@
     "slug": "pattern-drill-71",
     "difficulty": "Easy",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Two Pointer"
     ],
@@ -3704,7 +4923,7 @@
     "slug": "pattern-drill-72",
     "difficulty": "Medium",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Sliding Window"
     ],
@@ -3731,7 +4950,7 @@
     "slug": "pattern-drill-73",
     "difficulty": "Easy",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Binary Search"
     ],
@@ -3758,7 +4977,7 @@
     "slug": "pattern-drill-74",
     "difficulty": "Medium",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Recursion"
     ],
@@ -3785,7 +5004,7 @@
     "slug": "pattern-drill-75",
     "difficulty": "Easy",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Backtracking"
     ],
@@ -3812,7 +5031,7 @@
     "slug": "pattern-drill-76",
     "difficulty": "Medium",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Stack"
     ],
@@ -3839,7 +5058,7 @@
     "slug": "pattern-drill-77",
     "difficulty": "Easy",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Queue"
     ],
@@ -3866,7 +5085,7 @@
     "slug": "pattern-drill-78",
     "difficulty": "Medium",
     "algorithmType": "two_pointer",
-    "status": "new",
+    "status": "complete",
     "tags": [
       "Linked List"
     ],
