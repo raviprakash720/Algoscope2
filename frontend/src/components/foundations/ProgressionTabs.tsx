@@ -81,7 +81,7 @@ export const ProgressionTabs: React.FC<Props> = ({ activeLevel, onLevelChange })
                         </div>
 
                         {isActive && (
-                            <div className="w-1.5 h-1.5 rounded-full bg-accent-blue shadow-[0_0_10px_#0070f3]" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-accent-blue shadow-[0_0_10px_#EC4186]" />
                         )}
                     </button>
                 );

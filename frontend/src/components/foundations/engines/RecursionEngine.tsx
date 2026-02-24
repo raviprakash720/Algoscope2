@@ -72,7 +72,7 @@ const RecursionEngine: React.FC<Props> = ({ moduleId }) => {
                 <div className="flex items-center gap-4">
                     <button
                         onClick={() => setStatus('running')}
-                        className="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition-transform"
+                        className="w-12 h-12 rounded-full bg-gradient-to-br from-[#EC4186] to-[#EE544A] text-white flex items-center justify-center hover:scale-105 transition-transform shadow-[0_5px_15px_rgba(236,65,134,0.3)]"
                     >
                         <Play size={20} className="ml-1" />
                     </button>
@@ -86,7 +86,7 @@ const RecursionEngine: React.FC<Props> = ({ moduleId }) => {
                             status === 'running' ? `Expanding call stack (Step ${step}/7)...` : 'Recursive expansion complete.'}
                     </p>
                 </div>
-                <div className="flex items-center gap-2 p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-500">
+                <div className="flex items-center gap-2 p-2 rounded-lg bg-[#EE544A]/10 border border-[#EE544A]/20 text-[#EE544A]">
                     <Zap size={14} />
                     <span className="text-[10px] font-bold uppercase tracking-wider">Recursive Stack</span>
                 </div>

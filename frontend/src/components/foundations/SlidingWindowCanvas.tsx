@@ -30,11 +30,11 @@ export const SlidingWindowCanvas: React.FC<Props> = ({ state, array }) => {
                         >
                             {state.outgoing}
                         </motion.span>
-                        <Plus size={16} className="text-green-400" />
+                        <Plus size={16} className="text-[#EE544A]" />
                         <motion.span
                             key={`in-${state.incoming}`}
-                            initial={{ scale: 1.3, color: '#10b981' }}
-                            animate={{ scale: 1, color: '#34d399' }}
+                            initial={{ scale: 1.3, color: '#FFFFFF' }}
+                            animate={{ scale: 1, color: '#EE544A' }}
                             className="font-bold"
                         >
                             {state.incoming}
@@ -89,12 +89,12 @@ export const SlidingWindowCanvas: React.FC<Props> = ({ state, array }) => {
 
                             <motion.div
                                 className={`w-16 h-16 rounded-xl flex items-center justify-center text-xl font-bold transition-all ${isOutgoing
-                                        ? 'bg-red-500/40 border-2 border-red-500 text-white shadow-lg shadow-red-500/50'
-                                        : isIncoming
-                                            ? 'bg-green-500/40 border-2 border-green-500 text-white shadow-lg shadow-green-500/50'
-                                            : isInWindow
-                                                ? 'bg-accent-blue/20 border-2 border-accent-blue text-white'
-                                                : 'bg-white/5 border border-white/10 text-white/40'
+                                    ? 'bg-red-500/40 border-2 border-red-500 text-white shadow-lg shadow-red-500/50'
+                                    : isIncoming
+                                        ? 'bg-[#EE544A]/40 border-2 border-[#EE544A] text-white shadow-lg shadow-[#EE544A]/50'
+                                        : isInWindow
+                                            ? 'bg-[#EC4186]/20 border-2 border-[#EC4186] text-white shadow-[0_0_15px_rgba(236,65,134,0.3)]'
+                                            : 'bg-white/5 border border-white/10 text-white/40'
                                     }`}
                                 animate={
                                     isOutgoing ? { scale: [1, 0.9, 1], x: [-5, 0] } :
@@ -113,7 +113,7 @@ export const SlidingWindowCanvas: React.FC<Props> = ({ state, array }) => {
             {/* Status Display */}
             <div className="text-center space-y-2">
                 {state.isInitializing ? (
-                    <div className="text-sm text-green-400 font-mono">
+                    <div className="text-sm text-[#EE544A] font-mono">
                         Initializing first window...
                     </div>
                 ) : (
@@ -124,11 +124,11 @@ export const SlidingWindowCanvas: React.FC<Props> = ({ state, array }) => {
             </div>
 
             {/* Current Sum Display */}
-            <div className="p-4 rounded-xl bg-black/40 border border-green-500/20 text-center">
+            <div className="p-4 rounded-xl bg-black/40 border border-[#EE544A]/20 text-center">
                 <div className="text-xs text-white/60 mb-1">Current Sum</div>
                 <motion.div
                     key={state.currentSum}
-                    initial={{ scale: 1.2, color: '#10b981' }}
+                    initial={{ scale: 1.2, color: '#FFFFFF' }}
                     animate={{ scale: 1, color: '#ffffff' }}
                     className="text-3xl font-bold font-mono"
                 >

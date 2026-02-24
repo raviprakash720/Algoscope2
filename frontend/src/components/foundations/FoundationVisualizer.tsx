@@ -135,7 +135,7 @@ const FoundationVisualizer: React.FC<Props> = ({ type, moduleId, mode, edgeCase,
                     </div>
 
                     {/* Universal Controls */}
-                    <div className="h-20 mt-6 flex items-center justify-between px-8 bg-[#0f1115] border border-white/5 rounded-2xl">
+                    <div className="h-20 mt-6 flex items-center justify-between px-8 bg-[#2b0d38] border border-white/5 rounded-2xl">
                         <div className="flex items-center gap-4">
                             <button onClick={handleReset} className="p-3 rounded-xl hover:bg-white/5 text-white/40 hover:text-white transition-colors">
                                 <RotateCcw size={18} />

@@ -87,7 +87,7 @@ const BinarySearchCanvas: React.FC<Props> = ({ state, mode: _mode }) => {
                                                     ? 'rgba(52, 211, 153, 0.2)'
                                                     : 'rgba(255, 255, 255, 0.05)',
                                         borderColor: isFound
-                                            ? '#10b981'
+                                            ? '#FFFFFF'
                                             : isMid
                                                 ? '#ec4899'
                                                 : isRelevant

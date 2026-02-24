@@ -73,7 +73,7 @@ export const LinkedListEngine: React.FC<Props> = ({
                                 </div>
                                 {/* Pointer Part */}
                                 <div className="w-8 bg-white/5 flex items-center justify-center">
-                                    <div className={`w-2 h-2 rounded-full ${node.next ? 'bg-accent-blue shadow-[0_0_5px_#0070f3]' : 'bg-red-500/50'}`} />
+                                    <div className={`w-2 h-2 rounded-full ${node.next ? 'bg-accent-blue shadow-[0_0_5px_#EC4186]' : 'bg-red-500/50'}`} />
                                 </div>
                             </div>
 

@@ -7,21 +7,23 @@ export default {
     theme: {
         extend: {
             colors: {
-                background: '#040507',
-                foreground: '#ffffff',
-                'glass-dark': 'rgba(10, 10, 10, 0.6)',
-                'glass-light': 'rgba(255, 255, 255, 0.03)',
+                background: '#38124A',
+                foreground: '#FFFFFF',
+                'glass-dark': 'rgba(20, 5, 30, 0.6)',
+                'glass-light': 'rgba(255, 255, 255, 0.05)',
                 accent: {
-                    blue: '#00B0FA',
-                    purple: '#A855F7',
-                    cyan: '#2DD4BF',
-                    glow: 'rgba(0, 176, 250, 0.4)',
+                    pink: '#EC4186',
+                    orange: '#EE544A',
+                    purple: '#EC4186',
+                    blue: '#EC4186',
+                    cyan: '#EE544A',
+                    glow: 'rgba(236, 65, 134, 0.4)',
                 }
             },
             boxShadow: {
-                'glow': '0 0 20px rgba(0, 176, 250, 0.4)',
-                'glow-purple': '0 0 20px rgba(168, 85, 247, 0.4)',
-                'premium': '0 10px 40px -10px rgba(0, 0, 0, 0.5)',
+                'glow': '0 0 20px rgba(236, 65, 134, 0.4)',
+                'glow-orange': '0 0 20px rgba(238, 84, 74, 0.4)',
+                'premium': '0 10px 40px -10px rgba(20, 5, 30, 0.8)',
             },
             animation: {
                 'blob': 'blob 7s infinite',

@@ -22,18 +22,18 @@ export const SlidingWindowPanel: React.FC<Props> = ({
 
     if (!currentState) {
         return (
-            <div className="p-8 rounded-3xl bg-green-500/[0.05] border border-green-500/20 flex items-center justify-center h-full">
+            <div className="p-8 rounded-3xl bg-[#EE544A]/[0.05] border border-[#EE544A]/20 flex items-center justify-center h-full">
                 <p className="text-white/40">No states to display</p>
             </div>
         )
     }
 
     return (
-        <div className="p-6 rounded-2xl bg-green-500/[0.05] border border-green-500/20 flex flex-col h-full max-h-[600px]">
+        <div className="p-6 rounded-2xl bg-[#EE544A]/[0.05] border border-[#EE544A]/20 flex flex-col h-full max-h-[600px]">
             {/* Header */}
             <div className="mb-4">
                 <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                    <span className="text-xl">🟢</span> Sliding Window
+                    <span className="text-xl">🟧</span> Sliding Window
                 </h3>
                 <p className="text-xs text-white/60 mt-1">Update only outgoing and incoming</p>
             </div>
@@ -46,21 +46,21 @@ export const SlidingWindowPanel: React.FC<Props> = ({
             {/* Stats */}
             <div className="space-y-3">
                 {/* Primary Stats */}
-                <div className="p-4 rounded-xl bg-black/40 border border-green-500/20">
+                <div className="p-4 rounded-xl bg-black/40 border border-[#EE544A]/20">
                     <div className="grid grid-cols-3 gap-3 text-center">
                         <div>
-                            <div className="text-[9px] uppercase tracking-widest text-green-400 mb-1">Step</div>
-                            <div className="text-lg font-bold text-green-400 font-mono">
+                            <div className="text-[9px] uppercase tracking-widest text-[#EE544A] mb-1">Step</div>
+                            <div className="text-lg font-bold text-[#EE544A] font-mono">
                                 {currentState.step + 1}/{states.length}
                             </div>
                         </div>
                         <div>
-                            <div className="text-[9px] uppercase tracking-widest text-green-400 mb-1">Operations</div>
+                            <div className="text-[9px] uppercase tracking-widest text-[#EE544A] mb-1">Operations</div>
                             <motion.div
                                 key={currentState.operationCount}
                                 initial={{ scale: 1.2 }}
                                 animate={{ scale: 1 }}
-                                className="text-lg font-bold text-green-400 font-mono"
+                                className="text-lg font-bold text-[#EE544A] font-mono"
                             >
                                 {currentState.operationCount}
                             </motion.div>
@@ -98,10 +98,10 @@ export const SlidingWindowPanel: React.FC<Props> = ({
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="p-3 rounded-xl bg-green-500/10 border border-green-500/30 text-center"
+                        className="p-3 rounded-xl bg-[#EE544A]/10 border border-[#EE544A]/30 text-center"
                     >
                         <div className="text-[9px] uppercase tracking-widest text-white/60 mb-1">Final Answer</div>
-                        <div className="text-2xl font-bold text-green-400 font-mono">
+                        <div className="text-2xl font-bold text-[#EE544A] font-mono">
                             {Math.max(...array.slice(0, array.length - (stats.numWindows ?? 0) + 1 + (stats.numWindows ?? 0)).map((_, i) =>
                                 array.slice(i, i + (array.length - (stats.numWindows ?? 0) + 1)).reduce((a, b) => a + b, 0)
                             ).filter((_, i) => i < (stats.numWindows ?? 0)))}

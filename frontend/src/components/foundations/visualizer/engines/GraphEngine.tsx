@@ -66,7 +66,7 @@ export const GraphEngine: React.FC<Props> = ({
                                     y1={source.y}
                                     x2={`${target.x}%`}
                                     y2={target.y}
-                                    stroke={isHighlighted ? '#a855f7' : '#0070f3'}
+                                    stroke={isHighlighted ? '#EC4186' : '#EC4186'}
                                     strokeWidth={isHighlighted ? 3 : 2}
                                     strokeOpacity={isHighlighted ? 0.6 : 0.2}
                                     markerEnd={type === 'directed' ? "url(#arrowhead)" : ""}

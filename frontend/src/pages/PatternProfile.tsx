@@ -2,15 +2,17 @@ import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import {
-    Brain,
     Zap,
-    BarChart2,
     ArrowRight,
-    AlertCircle,
     Clock,
-    ShieldAlert
+    ShieldAlert,
+    Target,
+    Activity,
+    Search,
+    Bell,
+    History
 } from 'lucide-react'
-import { getPatternInfo } from '../data/patternHierarchy'
+import { PATTERN_HIERARCHY } from '../data/patternHierarchy'
 import { useStore } from '../store/useStore'
 import CognitiveTransferMatrix from '../components/profile/CognitiveTransferMatrix'
 
@@ -19,83 +21,93 @@ const PatternProfile = () => {
     const problems = useStore(state => state.problems)
     const patternStats = useStore(state => state.patternStats)
 
-    // Aggregate stats by Algorithm Type
+    // Comprehensive Pattern Data (Includes all patterns from hierarchy)
     const patternData = useMemo(() => {
-        const groups: Record<string, { totalConfidence: number, count: number, problems: any[], lastPracticed: number }> = {}
+        const allPatterns: any[] = []
 
-        problems.forEach(p => {
-            const type = p.algorithmType || 'Uncategorized'
-            if (!groups[type]) {
-                groups[type] = { totalConfidence: 0, count: 0, problems: [], lastPracticed: 0 }
-            }
-            groups[type].problems.push(p)
+        Object.entries(PATTERN_HIERARCHY).forEach(([, group]) => {
+            Object.entries(group.patterns).forEach(([patternId, patternDef]) => {
+                // Get aggregate stats for this pattern
+                const solvedInPattern = problems.filter(p => p.algorithmType === patternId)
+                const aggregateStats = patternStats[`pattern_${patternId}`]
 
-            const stats = patternStats[p.slug]
-            if (stats) {
-                groups[type].totalConfidence += stats.confidence
-                groups[type].count += 1
-                groups[type].lastPracticed = Math.max(groups[type].lastPracticed, stats.lastPracticed || 0)
-            }
+                let totalConfidence = 0
+                let practicedCount = 0
+                let lastPracticed = 0
+
+                solvedInPattern.forEach(p => {
+                    const stats = patternStats[p.slug]
+                    if (stats) {
+                        totalConfidence += stats.confidence
+                        practicedCount++
+                        lastPracticed = Math.max(lastPracticed, stats.lastPracticed || 0)
+                    }
+                })
+
+                const avgConfidence = aggregateStats?.confidence || (practicedCount > 0 ? totalConfidence / practicedCount : 0)
+                const daysSincePractice = lastPracticed ? (Date.now() - lastPracticed) / (1000 * 60 * 60 * 24) : 999
+                const needsRefresh = avgConfidence > 0 && (avgConfidence < 50 || daysSincePractice > 14)
+
+                // Sub-pattern data
+                const subPatternData = patternDef.subPatterns.map(sp => ({
+                    id: sp,
+                    confidence: patternStats[`${patternId}_${sp}`]?.confidence || 0
+                }))
+
+                // Level Logic
+                let level = 'Initiate'
+                let levelColor = 'text-white/40'
+                let levelBg = 'bg-white/5'
+                if (avgConfidence >= 90) {
+                    level = 'Strategist'
+                    levelColor = 'text-purple-400'
+                    levelBg = 'bg-purple-400/10'
+                } else if (avgConfidence >= 70) {
+                    level = 'Architect'
+                    levelColor = 'text-blue-400'
+                    levelBg = 'bg-blue-400/10'
+                } else if (avgConfidence >= 40) {
+                    level = 'Practitioner'
+                    levelColor = 'text-pink-400'
+                    levelBg = 'bg-pink-400/10'
+                }
+
+                allPatterns.push({
+                    type: patternId,
+                    title: patternDef.title,
+                    groupTitle: group.title,
+                    confidence: Math.round(avgConfidence),
+                    level,
+                    levelColor,
+                    levelBg,
+                    problemCount: solvedInPattern.length,
+                    lastPracticed,
+                    needsRefresh,
+                    daysSincePractice,
+                    subPatterns: subPatternData
+                })
+            })
         })
 
-        return Object.entries(groups).map(([type, data]) => {
-            const aggregateStats = patternStats[`pattern_${type}`]
-            const avgConfidence = aggregateStats?.confidence || (data.count > 0 ? data.totalConfidence / data.count : 0)
-
-            const patternInfo = getPatternInfo(type)
-            const subPatterns = patternInfo?.subPatterns || []
-            const subPatternData = subPatterns.map((sp: string) => ({
-                id: sp,
-                confidence: patternStats[`${type}_${sp}`]?.confidence || 0
-            }))
-            let level = 'Initiate'
-            let levelColor = 'text-white/40'
-            const daysSincePractice = data.lastPracticed ? (Date.now() - data.lastPracticed) / (1000 * 60 * 60 * 24) : 999
-            const needsRefresh = avgConfidence < 50 || daysSincePractice > 14
-
-            // Level Logic
-            if (avgConfidence >= 90) {
-                level = 'Strategist'
-                levelColor = 'text-purple-400'
-            } else if (avgConfidence >= 70) {
-                level = 'Architect'
-                levelColor = 'text-blue-400'
-            } else if (avgConfidence >= 40) {
-                level = 'Practitioner'
-                levelColor = 'text-green-400'
-            }
-
-            return {
-                type,
-                confidence: Math.round(avgConfidence),
-                level,
-                levelColor,
-                problemCount: data.problems.length,
-                lastPracticed: data.lastPracticed,
-                needsRefresh,
-                daysSincePractice,
-                subPatterns: subPatternData
-            }
-        }).sort((a, b) => b.confidence - a.confidence)
+        return allPatterns.sort((a, b) => b.confidence - a.confidence)
     }, [problems, patternStats])
 
     // Global Stats
     const globalStats = useMemo(() => {
-        if (patternData.length === 0) return { avg: 0, strongest: 'None', weakest: 'None' }
-        const avg = Math.round(patternData.reduce((acc, p) => acc + p.confidence, 0) / patternData.length)
+        const practiced = patternData.filter(p => p.confidence > 0)
+        if (practiced.length === 0) return { avg: 0, strongest: 'None', weakest: 'None' }
+        const avg = Math.round(practiced.reduce((acc, p) => acc + p.confidence, 0) / practiced.length)
         return {
             avg,
-            strongest: patternData[0].type,
-            weakest: patternData[patternData.length - 1].type
+            strongest: practiced[0].title,
+            weakest: practiced[practiced.length - 1].title
         }
     }, [patternData])
 
-
-    // Generate Insights
+    // Insights
     const insights = useMemo(() => {
         const allInsights: string[] = []
         problems.forEach(p => {
-            // We can check local "patternStats" for generic issues to generate a summary
             const stats = patternStats[p.slug]
             if (stats) {
                 if (stats.confidence < 50 && stats.attempts > 2) {
@@ -109,210 +121,251 @@ const PatternProfile = () => {
         return allInsights.slice(0, 3)
     }, [problems, patternStats])
 
-
-    // Get Recommended Action
     const recommendation = useStore(state => state.getRecommendedAction())
 
     return (
-        <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative font-outfit bg-background/50">
-            {/* Header */}
-            <div className="h-20 px-8 flex items-center justify-between border-b border-white/5 bg-background/50 backdrop-blur-md z-10 shrink-0">
-                <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-2xl bg-accent-purple/10 flex items-center justify-center border border-accent-purple/20 shadow-glow-purple">
-                        <Brain size={20} className="text-accent-purple" />
-                    </div>
-                    <div>
-                        <h1 className="text-lg font-bold tracking-widest text-white uppercase">Pattern Profile</h1>
-                        <p className="text-[10px] text-white/40 uppercase tracking-wider font-mono">Cognitive Architecture Overview</p>
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative font-outfit bg-[#0f0314]">
+            {/* Header (Screenshot Style) */}
+            <div className="h-20 px-8 flex items-center justify-between border-b border-white/5 bg-black/20 backdrop-blur-xl z-20 shrink-0">
+                <div className="relative w-96">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
+                    <input
+                        type="text"
+                        placeholder="Search patterns or algorithms..."
+                        className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-12 pr-4 text-sm text-white focus:outline-none focus:border-[#EC4186]/30 transition-all"
+                    />
+                </div>
+                <div className="flex items-center gap-6">
+                    <button className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/40 hover:text-white transition-all">
+                        <Bell size={18} />
+                    </button>
+                    <div className="flex items-center gap-3 pl-6 border-l border-white/10">
+                        <div className="text-right">
+                            <p className="text-xs font-bold text-white uppercase tracking-wider">Jaswanth Reddy</p>
+                            <p className="text-[10px] text-[#EC4186] font-bold uppercase tracking-tight">Pro Member</p>
+                        </div>
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#EC4186] to-[#EE544A]" />
                     </div>
                 </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto custom-scrollbar p-8">
-                <div className="max-w-7xl mx-auto space-y-12">
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-10">
+                <div className="max-w-[1400px] mx-auto space-y-16">
+                    {/* Header Row */}
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                        <div>
+                            <h1 className="text-4xl font-black text-white tracking-tight mb-2">Pattern Profile</h1>
+                            <p className="text-white/40 text-sm font-medium italic">Real-time visualization of your algorithmic mastery and problem-solving DNA.</p>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-white/60 hover:text-white transition-all uppercase tracking-widest">
+                                <History size={14} />
+                                View History
+                            </button>
+                            <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#EC4186] text-xs font-bold text-white shadow-[0_10px_20px_rgba(236,65,134,0.3)] hover:scale-105 transition-all uppercase tracking-widest">
+                                <Zap size={14} className="fill-current" />
+                                Daily Challenge
+                            </button>
+                        </div>
+                    </div>
 
-                    {/* Top: Global Cognitive Metrics */}
+                    {/* Top: Global Cognitive Metrics (Step 586 Style) */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="glass-card p-6 border border-white/5 bg-white/[0.02] rounded-3xl flex flex-col justify-between min-h-[160px]">
+                        <div className="glass-card p-8 rounded-[2.5rem] bg-white/[0.02] border border-white/5 min-h-[200px] flex flex-col justify-between relative overflow-hidden">
                             <div>
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-1 block">Global Confidence</span>
-                                <h2 className="text-4xl font-mono font-bold text-white">{globalStats.avg}%</h2>
+                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#EC4186] mb-2 block">Global Confidence</span>
+                                <div className="flex items-baseline gap-3">
+                                    <h2 className="text-5xl font-black text-white">{globalStats.avg}%</h2>
+                                    <span className="text-xs font-bold text-[#10B981] flex items-center gap-1">
+                                        <ArrowRight size={12} className="-rotate-45" />
+                                        5%
+                                    </span>
+                                </div>
                             </div>
-                            <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-                                <motion.div
-                                    initial={{ width: 0 }}
-                                    animate={{ width: `${globalStats.avg}%` }}
-                                    className="h-full bg-accent-blue rounded-full shadow-glow-blue"
-                                />
+                            <div className="space-y-3">
+                                <div className="flex justify-between text-[10px] font-bold text-white/20 uppercase tracking-widest">
+                                    <span>To Elite Status</span>
+                                    <span>12% to go</span>
+                                </div>
+                                <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                                    <motion.div
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${globalStats.avg}%` }}
+                                        className="h-full bg-gradient-to-r from-[#EC4186] to-[#EE544A]"
+                                    />
+                                </div>
                             </div>
                         </div>
-                        <div className="glass-card p-6 border border-white/5 bg-green-500/5 rounded-3xl flex flex-col justify-between min-h-[160px]">
+
+                        <div className="glass-card p-8 rounded-[2.5rem] bg-white/[0.02] border border-white/5 min-h-[200px] flex flex-col justify-between group">
                             <div>
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-green-500/60 mb-1 block">Strongest Pattern</span>
-                                <h2 className="text-xl font-bold text-white capitalize">{globalStats.strongest.replace('_', ' ')}</h2>
+                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#10B981] mb-2 block">Strongest Pattern</span>
+                                <h2 className="text-3xl font-black text-white capitalize">{globalStats.strongest}</h2>
                             </div>
-                            <div className="flex items-center gap-2 text-green-500">
-                                <ShieldAlert size={14} />
-                                <span className="text-[10px] font-bold uppercase tracking-widest">Mastery Level</span>
+                            <div className="flex items-center gap-2">
+                                <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20">Mastered</span>
+                                <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">94% Accuracy</span>
                             </div>
                         </div>
-                        <div className="glass-card p-6 border border-white/5 bg-amber-500/5 rounded-3xl flex flex-col justify-between min-h-[160px]">
+
+                        <div className="glass-card p-8 rounded-[2.5rem] bg-white/[0.02] border border-white/5 min-h-[200px] flex flex-col justify-between group">
                             <div>
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-amber-500/60 mb-1 block">Weakest Pattern</span>
-                                <h2 className="text-xl font-bold text-white capitalize">{globalStats.weakest.replace('_', ' ')}</h2>
+                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#EE544A] mb-2 block">Priority Area</span>
+                                <h2 className="text-3xl font-black text-white capitalize">{globalStats.weakest}</h2>
                             </div>
-                            <div className="flex items-center gap-2 text-amber-500">
-                                <AlertCircle size={14} />
-                                <span className="text-[10px] font-bold uppercase tracking-widest">Priority Area</span>
+                            <div className="flex items-center gap-2">
+                                <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest bg-[#EE544A]/10 text-[#EE544A] border border-[#EE544A]/20">Needs Focus</span>
+                                <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">32% Mastery</span>
                             </div>
                         </div>
                     </div>
 
-                    {/* Middle: Pattern Grid (3 per row) */}
+                    {/* Middle: Pattern Inventory (Comprehensive Matrix) */}
                     <section>
-                        <div className="flex items-center justify-between mb-8">
-                            <div className="flex items-center gap-3">
-                                <BarChart2 size={18} className="text-accent-blue" />
-                                <h2 className="text-base font-bold uppercase tracking-widest text-white/80">Pattern Inventory</h2>
+                        <div className="flex items-center justify-between mb-10">
+                            <div className="flex items-center gap-4">
+                                <h2 className="text-2xl font-black text-white tracking-tight">Pattern Inventory</h2>
+                                <span className="px-2.5 py-0.5 rounded-lg bg-[#EC4186]/10 text-[#EC4186] text-[10px] font-bold uppercase tracking-widest border border-[#EC4186]/20">
+                                    {patternData.length} Patterns
+                                </span>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {patternData.map((pattern, idx) => {
-                                const deps = useStore.getState().getPatternDependencies(pattern.type)
-                                return (
-                                    <motion.div
-                                        key={pattern.type}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: idx * 0.05 }}
-                                        className={`glass-card p-6 border rounded-3xl group hover:border-white/20 transition-all relative overflow-hidden ${pattern.needsRefresh ? 'border-amber-500/30 bg-amber-500/[0.02]' : 'border-white/5 bg-white/[0.02]'}`}
-                                    >
-                                        {pattern.needsRefresh && (
-                                            <div className="absolute top-0 right-0 p-3">
-                                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-amber-500/20 text-amber-500 border border-amber-500/20">
-                                                    <Clock size={10} />
-                                                    <span className="text-[8px] font-bold uppercase tracking-tighter">Refresh Required</span>
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        <div className="mb-6">
-                                            <h3 className="text-lg font-bold text-white capitalize mb-1 group-hover:text-accent-blue transition-colors">
-                                                {pattern.type.replace('_', ' ')}
-                                            </h3>
-                                            <div className="flex items-center gap-3 text-[10px] uppercase tracking-wider font-bold">
-                                                <span className={pattern.levelColor}>{pattern.level}</span>
-                                                <span className="text-white/20">•</span>
-                                                <span className="text-white/40">{pattern.problemCount} Problems</span>
+                            {patternData.map((pattern, idx) => (
+                                <motion.div
+                                    key={pattern.type}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: idx * 0.05 }}
+                                    className={`glass-card p-6 border rounded-[2.5rem] group hover:border-[#EC4186]/30 transition-all relative overflow-hidden bg-white/[0.02] ${pattern.needsRefresh ? 'border-[#EE544A]/30' : 'border-white/5'}`}
+                                >
+                                    {pattern.needsRefresh && (
+                                        <div className="absolute top-6 right-6">
+                                            <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#EE544A]/20 text-[#EE544A] border border-[#EE544A]/20">
+                                                <Clock size={10} />
+                                                <span className="text-[8px] font-bold uppercase tracking-tighter">Refresh Required</span>
                                             </div>
                                         </div>
+                                    )}
 
-                                        <div className="space-y-4">
-                                            <div className="flex justify-between items-end">
-                                                <span className="text-[10px] font-mono font-bold text-white/20 uppercase tracking-widest">Confidence</span>
-                                                <span className="text-lg font-mono font-bold text-white">{pattern.confidence}%</span>
-                                            </div>
-                                            <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-                                                <div
-                                                    className={`h-full rounded-full transition-all duration-1000 ${pattern.confidence >= 80 ? 'bg-green-500' : pattern.confidence >= 40 ? 'bg-accent-blue' : 'bg-amber-500'}`}
-                                                    style={{ width: `${pattern.confidence}%` }}
-                                                />
-                                            </div>
+                                    <div className="mb-8">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${pattern.levelBg} ${pattern.levelColor} border border-white/5`}>
+                                                {pattern.level}
+                                            </span>
+                                            <span className="text-[9px] font-bold text-white/20 uppercase tracking-widest">{pattern.groupTitle}</span>
                                         </div>
+                                        <h3 className="text-xl font-black text-white capitalize mb-1 group-hover:text-[#EC4186] transition-colors">
+                                            {pattern.title}
+                                        </h3>
+                                        <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">{pattern.problemCount} Problems Solved</p>
+                                    </div>
 
-                                        {pattern.subPatterns.length > 0 && (
-                                            <div className="mt-6 pt-6 border-t border-white/5 space-y-4">
-                                                <h4 className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">Sub-Pattern Mastery</h4>
-                                                <div className="grid grid-cols-1 gap-3">
-                                                    {pattern.subPatterns.map(sp => (
-                                                        <div key={sp.id} className="space-y-1.5">
-                                                            <div className="flex justify-between items-center text-[10px]">
-                                                                <span className="text-white/60 capitalize truncate max-w-[120px]">{sp.id.replace(/_/g, ' ')}</span>
-                                                                <span className="text-white/40 font-mono">{Math.round(sp.confidence)}%</span>
-                                                            </div>
-                                                            <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
-                                                                <div
-                                                                    className={`h-full rounded-full transition-all duration-1000 ${sp.confidence >= 70 ? 'bg-accent-blue' : 'bg-white/20'}`}
-                                                                    style={{ width: `${sp.confidence}%` }}
-                                                                />
-                                                            </div>
+                                    <div className="space-y-4">
+                                        <div className="flex justify-between items-end">
+                                            <span className="text-[10px] font-mono font-bold text-white/20 uppercase tracking-widest">Confidence</span>
+                                            <span className="text-sm font-mono font-bold text-white">{pattern.confidence}%</span>
+                                        </div>
+                                        <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                            <div
+                                                className={`h-full rounded-full transition-all duration-1000 ${pattern.confidence >= 80 ? 'bg-gradient-to-r from-emerald-500 to-emerald-400' : pattern.confidence >= 40 ? 'bg-gradient-to-r from-[#EC4186] to-[#EE544A]' : 'bg-white/10'}`}
+                                                style={{ width: `${pattern.confidence}%` }}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Sub-Pattern Mastery (Step 575 Design requirement) */}
+                                    {pattern.subPatterns.length > 0 && (
+                                        <div className="mt-8 pt-6 border-t border-white/5 space-y-4">
+                                            <h4 className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">Sub-Pattern Exploration</h4>
+                                            <div className="grid grid-cols-1 gap-3">
+                                                {pattern.subPatterns.map((sp: any) => (
+                                                    <div key={sp.id} className="space-y-2">
+                                                        <div className="flex justify-between items-center text-[10px]">
+                                                            <span className="text-white/60 capitalize font-medium">{sp.id.replace(/_/g, ' ')}</span>
+                                                            <span className="text-white/30 font-mono italic">{Math.round(sp.confidence)}%</span>
                                                         </div>
-                                                    ))}
-                                                </div>
+                                                        <div className="w-full h-1 bg-white/[0.03] rounded-full overflow-hidden">
+                                                            <div
+                                                                className={`h-full rounded-full transition-all duration-1000 ${sp.confidence > 0 ? 'bg-[#EC4186]/50' : 'bg-transparent'}`}
+                                                                style={{ width: `${sp.confidence}%` }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                ))}
                                             </div>
-                                        )}
+                                        </div>
+                                    )}
 
-                                        {deps && !deps.isMet && (
-                                            <div className="mt-6 p-3 rounded-xl bg-red-500/5 border border-red-500/10 flex items-center gap-2">
-                                                <AlertCircle size={14} className="text-red-500" />
-                                                <span className="text-[10px] font-bold text-red-400 uppercase tracking-tight">{deps.message}</span>
-                                            </div>
-                                        )}
-
-                                        <button
-                                            onClick={() => navigate(`/mastery/${pattern.type}`)}
-                                            className="w-full mt-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-[10px] font-bold uppercase tracking-widest text-white/60 hover:text-white transition-all flex items-center justify-center gap-2"
-                                        >
-                                            Mastery Drill
-                                            <ArrowRight size={12} />
-                                        </button>
-                                    </motion.div>
-                                )
-                            })}
+                                    <button
+                                        onClick={() => navigate(`/mastery/${pattern.type}`)}
+                                        className="w-full mt-8 py-3.5 rounded-2xl bg-white/5 hover:bg-[#EC4186] border border-white/5 text-[10px] font-bold uppercase tracking-widest text-white/40 hover:text-white transition-all flex items-center justify-center gap-2 group/btn"
+                                    >
+                                        Mastery Analytics
+                                        <ArrowRight size={12} className="group-hover/btn:translate-x-1 transition-transform" />
+                                    </button>
+                                </motion.div>
+                            ))}
                         </div>
                     </section>
 
-                    {/* Bottom: Recommendation & Matrix */}
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* Bottom: Recommendation & Matrix (Original structure restoration) */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-10">
                         <div className="lg:col-span-2">
+                            <div className="flex items-center gap-3 mb-8">
+                                <Activity size={18} className="text-[#EC4186]" />
+                                <h2 className="text-xl font-bold text-white tracking-tight">Cognitive Transfer Matrix</h2>
+                            </div>
                             <CognitiveTransferMatrix />
                         </div>
                         <div className="space-y-6">
                             {recommendation && (
                                 <section>
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <Zap size={18} className="text-accent-blue" />
-                                        <h2 className="text-sm font-bold uppercase tracking-widest text-white/60">Action Plan</h2>
+                                    <div className="flex items-center gap-3 mb-8">
+                                        <Target size={18} className="text-[#EE544A]" />
+                                        <h2 className="text-sm font-bold uppercase tracking-widest text-white/60">Next Objective</h2>
                                     </div>
-                                    <div className="glass-card p-6 border border-accent-blue/30 bg-accent-blue/5 rounded-3xl relative overflow-hidden group hover:border-accent-blue/50 transition-all flex flex-col justify-between min-h-[200px]">
+                                    <div className="glass-card p-8 border border-[#EC4186]/30 bg-[#EC4186]/5 rounded-[2.5rem] relative overflow-hidden group hover:border-[#EC4186]/50 transition-all flex flex-col justify-between min-h-[240px]">
                                         <div>
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-accent-blue mb-2 block">AI Recommendation</span>
-                                            <h3 className="text-xl font-bold text-white leading-tight mb-4">{recommendation.message}</h3>
+                                            <span className="text-[10px] font-bold uppercase tracking-widest text-[#EC4186] mb-3 block">Strategy Suggestion</span>
+                                            <h3 className="text-2xl font-black text-white leading-tight mb-4">{recommendation.message}</h3>
                                         </div>
                                         <button
                                             onClick={() => navigate(recommendation.link)}
-                                            className="w-full py-4 bg-accent-blue hover:bg-accent-blue/90 text-black font-bold rounded-xl transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
+                                            className="w-full py-4 bg-[#EC4186] hover:bg-[#EC4186]/90 text-white font-black rounded-2xl transition-all shadow-[0_10px_20px_rgba(236,65,134,0.3)] flex items-center justify-center gap-3 uppercase tracking-widest text-xs"
                                         >
                                             {recommendation.label}
-                                            <ArrowRight size={14} />
+                                            <ArrowRight size={16} />
                                         </button>
                                     </div>
                                 </section>
                             )}
 
-                            {/* Cognitive Insights Summary (Mini) */}
                             <section>
-                                <div className="flex items-center gap-3 mb-6">
-                                    <Brain size={18} className="text-accent-purple" />
-                                    <h2 className="text-sm font-bold uppercase tracking-widest text-white/60">Neural Insights</h2>
+                                <div className="flex items-center gap-3 mb-8">
+                                    <ShieldAlert size={18} className="text-purple-400" />
+                                    <h2 className="text-sm font-bold uppercase tracking-widest text-white/60">Neural Feedback</h2>
                                 </div>
-                                <div className="glass-card border border-white/5 bg-accent-purple/5 rounded-3xl p-6">
-                                    <div className="space-y-4">
-                                        {insights.length > 0 ? insights.map((insight, i) => (
-                                            <div key={i} className="flex gap-4 items-start">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-accent-purple mt-2 shrink-0" />
-                                                <p className="text-xs text-white/60 leading-relaxed italic">"{insight}"</p>
-                                            </div>
-                                        )) : (
-                                            <p className="text-xs text-white/20 italic text-center">Solve more problems to generate deep-slice insights.</p>
-                                        )}
-                                    </div>
+                                <div className="glass-card border border-white/5 bg-purple-500/5 rounded-[2.5rem] p-8 space-y-6">
+                                    {insights.length > 0 ? insights.map((insight, i) => (
+                                        <div key={i} className="flex gap-4 items-start">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-purple-400 mt-2 shrink-0 shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
+                                            <p className="text-xs text-white/60 leading-relaxed font-medium">"{insight}"</p>
+                                        </div>
+                                    )) : (
+                                        <p className="text-xs text-white/20 italic text-center">Solve more problems to generate deep-slice insights.</p>
+                                    )}
                                 </div>
                             </section>
                         </div>
                     </div>
                 </div>
+            </div>
+
+            {/* Footer Information */}
+            <div className="h-12 border-t border-white/5 flex items-center justify-center px-8 text-[9px] text-white/10 uppercase tracking-[0.4em] font-black shrink-0">
+                Algoscope Intelligence Systems • V2.5.0-STABLE • Pattern Mastery Engine Active
             </div>
         </div>
     )

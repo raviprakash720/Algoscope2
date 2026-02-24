@@ -45,10 +45,10 @@ export const AnimationControls: React.FC<Props> = ({
                     {!isPlaying ? (
                         <button
                             onClick={onPlay}
-                            className="px-4 py-2 rounded-lg bg-accent-blue/20 hover:bg-accent-blue/30 border border-accent-blue/30 transition-colors flex items-center gap-2"
+                            className="px-4 py-2 rounded-lg bg-[#EC4186]/10 hover:bg-[#EC4186]/20 border border-[#EC4186]/30 transition-colors flex items-center gap-2"
                             title="Play"
                         >
-                            <Play size={16} className="text-accent-blue" fill="currentColor" />
+                            <Play size={16} className="text-[#EC4186]" fill="currentColor" />
                             <span className="text-sm font-medium text-white">Play</span>
                         </button>
                     ) : (
@@ -107,7 +107,7 @@ export const AnimationControls: React.FC<Props> = ({
                                 key={option.value}
                                 onClick={() => onSpeedChange(option.value)}
                                 className={`px-3 py-1 rounded-lg text-sm font-mono transition-colors ${speed === option.value
-                                    ? 'bg-accent-blue/30 text-accent-blue border border-accent-blue/50'
+                                    ? 'bg-[#EC4186]/20 text-[#EC4186] border border-[#EC4186]/40 shadow-[0_0_10px_rgba(236,65,134,0.2)]'
                                     : 'bg-white/5 text-white/60 border border-white/10 hover:bg-white/10'
                                     }`}
                             >
@@ -122,7 +122,7 @@ export const AnimationControls: React.FC<Props> = ({
             {totalSteps > 0 && (
                 <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
                     <div
-                        className="h-full bg-accent-blue transition-all duration-300 ease-out"
+                        className="h-full bg-gradient-to-r from-[#EC4186] to-[#EE544A] transition-all duration-300 ease-out"
                         style={{ width: `${progress}%` }}
                     />
                 </div>

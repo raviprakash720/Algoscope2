@@ -70,7 +70,7 @@ const MonotonicStackCanvas: React.FC<Props> = ({ state }) => {
                                                 : inStack
                                                     ? stackColor
                                                     : 'rgba(255, 255, 255, 0.1)',
-                                        borderColor: isCurrent ? '#3b82f6' : isBeingCompared ? '#ef4444' : inStack ? '#a855f7' : 'rgba(255,255,255,0.1)',
+                                        borderColor: isCurrent ? '#EE544A' : isBeingCompared ? '#ef4444' : inStack ? '#EC4186' : 'rgba(255,255,255,0.1)',
                                         opacity: isProcessed ? 0.3 : 1
                                     }}
                                     className="w-full rounded-t-lg border-2 flex items-center justify-center transition-colors mb-2"

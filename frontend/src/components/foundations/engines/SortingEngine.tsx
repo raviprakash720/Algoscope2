@@ -105,9 +105,9 @@ const SortingEngine: React.FC<Props> = ({ moduleId }) => {
 
     // Utility to get bar color
     const getBarColor = (index: number) => {
-        if (pointers.active === index) return 'bg-accent-blue shadow-glow-blue'
-        if (pointers.comparing === index) return 'bg-amber-400 shadow-glow-amber'
-        if (pointers.sorted >= 0 && index >= pointers.sorted) return 'bg-emerald-500/50'
+        if (pointers.active === index) return 'bg-[#EC4186] shadow-[0_0_15px_rgba(236,65,134,0.4)]'
+        if (pointers.comparing === index) return 'bg-[#EE544A] shadow-[0_0_15px_rgba(238,84,74,0.4)]'
+        if (pointers.sorted >= 0 && index >= pointers.sorted) return 'bg-[#EE544A]/40'
         return 'bg-white/10'
     }
 
@@ -137,7 +137,7 @@ const SortingEngine: React.FC<Props> = ({ moduleId }) => {
                 <div className="flex items-center gap-4">
                     <button
                         onClick={() => setStatus(status === 'running' ? 'paused' : 'running')}
-                        className="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition-transform"
+                        className="w-12 h-12 rounded-full bg-gradient-to-br from-[#EC4186] to-[#EE544A] text-white flex items-center justify-center hover:scale-105 transition-transform shadow-[0_5px_15px_rgba(236,65,134,0.3)]"
                     >
                         {status === 'running' ? <Pause size={20} /> : <Play size={20} className="ml-1" />}
                     </button>
@@ -164,10 +164,10 @@ const SortingEngine: React.FC<Props> = ({ moduleId }) => {
                             max="1000"
                             value={status === 'running' ? speed : 1050 - speed}
                             onChange={(e) => setSpeed(1050 - parseInt(e.target.value))}
-                            className="w-32 accent-accent-blue"
+                            className="w-32 accent-[#EC4186]"
                         />
                     </div>
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-500">
+                    <div className="flex items-center gap-2 p-2 rounded-lg bg-[#EE544A]/10 border border-[#EE544A]/20 text-[#EE544A]">
                         <Zap size={14} />
                         <span className="text-[10px] font-bold uppercase tracking-wider">Live</span>
                     </div>

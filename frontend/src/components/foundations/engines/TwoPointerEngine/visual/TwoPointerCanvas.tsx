@@ -57,10 +57,10 @@ const TwoPointerCanvas: React.FC<Props> = ({ state, mode }) => {
                         const isSwap = state.swapIndices?.includes(idx)
 
                         // Partition Colors
-                        let color = '#3b82f6' // Default Blue
+                        let color = '#EE544A' // Default Blue
                         if (mode === 'partition') {
                             if (isPivot) color = '#f59e0b' // Amber Pivot
-                            else if (state.left !== null && idx < state.left) color = '#10b981' // Green (Smaller)
+                            else if (state.left !== null && idx < state.left) color = '#FFFFFF' // Green (Smaller)
                             else if (state.left !== null && idx >= state.left && idx < (state.pivotIndex || 0)) color = '#ef4444' // Red (Larger)
                         }
 

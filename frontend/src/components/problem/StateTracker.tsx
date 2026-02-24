@@ -36,13 +36,13 @@ const StateTracker: React.FC = () => {
 
         displayVariables.push({ label: 'PTR', value: (pointers.i != null) ? pointers.i : (pointers.index ?? 0) })
         displayVariables.push({ label: 'VAL', value: currentVal || '?' })
-        displayVariables.push({ label: 'COMPLEMENT', value: customState.complement ?? complement, color: 'text-accent-blue' })
-        displayVariables.push({ label: 'LOOKUP', value: currentState.phase === 'found' ? 'SUCCESS' : 'SCANNING', color: currentState.phase === 'found' ? 'text-green-400' : 'text-white/40' })
+        displayVariables.push({ label: 'COMPLEMENT', value: customState.complement ?? complement, color: 'text-[#EC4186]' })
+        displayVariables.push({ label: 'LOOKUP', value: currentState.phase === 'found' ? 'SUCCESS' : 'SCANNING', color: currentState.phase === 'found' ? 'text-[#EE544A]' : 'text-white/40' })
         displayVariables.push({ label: 'MAP_SIZE', value: Object.keys(currentState.mapState || {}).length })
     }
 
     return (
-        <div className="h-full flex flex-col bg-[#050505] border-l border-white/10 overflow-hidden shadow-2xl">
+        <div className="h-full flex flex-col bg-[#1b062b] border-l border-white/10 overflow-hidden shadow-2xl">
             {/* Header */}
             <div className="p-8 border-b border-white/10 shrink-0 bg-white/[0.03]">
                 <div className="flex items-center gap-3">
@@ -69,8 +69,8 @@ const StateTracker: React.FC = () => {
                                 >
                                     <motion.div
                                         key={`${variable.label}-${variable.value}`}
-                                        initial={{ opacity: 0.8, backgroundColor: 'rgba(56, 189, 248, 0.2)' }}
-                                        animate={{ opacity: 0, backgroundColor: 'rgba(56, 189, 248, 0)' }}
+                                        initial={{ opacity: 0.8, backgroundColor: 'rgba(236, 65, 134, 0.2)' }}
+                                        animate={{ opacity: 0, backgroundColor: 'rgba(236, 65, 134, 0)' }}
                                         transition={{ duration: 0.8 }}
                                         className="absolute inset-0 pointer-events-none"
                                     />
@@ -96,10 +96,10 @@ const StateTracker: React.FC = () => {
             <div className="p-6 border-t border-white/10 bg-white/[0.02] shrink-0">
                 <div className="flex items-center justify-between text-[9px] font-mono text-white/30 uppercase tracking-[0.2em] font-black">
                     <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-glow animate-pulse" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#EE544A] shadow-[0_0_8px_rgba(238,84,74,0.6)] animate-pulse" />
                         <span>Live Runtime</span>
                     </div>
-                    <span className="text-accent-blue/40">Step {currentStepIndex + 1}</span>
+                    <span className="text-[#EC4186]/80 font-bold">Step {currentStepIndex + 1}</span>
                 </div>
             </div>
         </div>

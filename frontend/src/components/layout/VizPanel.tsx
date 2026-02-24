@@ -31,7 +31,7 @@ const VizPanel: React.FC = () => {
             }>
                 <Suspense fallback={
                     <div className="flex items-center justify-center h-full">
-                        <div className="w-8 h-8 border-2 border-accent-blue/20 border-t-accent-blue rounded-full animate-spin" />
+                        <div className="w-8 h-8 border-2 border-[#EC4186]/20 border-t-[#EC4186] rounded-full animate-spin" />
                     </div>
                 }>
                     <Engine isBrute={isBrute} />
@@ -41,17 +41,17 @@ const VizPanel: React.FC = () => {
     }
 
     return (
-        <div className="flex-1 flex flex-col bg-[#050505] overflow-hidden relative border-none h-full">
+        <div className="flex-1 flex flex-col bg-[#1b062b] overflow-hidden relative border-none h-full">
             {/* Grid Pattern Overlay */}
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none pattern-grid-lg" />
 
             {compareMode ? (
                 <div className="flex-1 flex flex-col relative z-10 h-full">
                     {/* Comparison Insight Bar */}
-                    <div className="h-12 border-b border-white/5 bg-accent-blue/5 flex items-center justify-between px-10 shrink-0">
+                    <div className="h-12 border-b border-white/5 bg-[#EC4186]/5 flex items-center justify-between px-10 shrink-0">
                         <div className="flex items-center gap-3">
-                            <div className="w-1.5 h-1.5 rounded-full bg-accent-blue shadow-glow animate-pulse" />
-                            <span className="text-[10px] font-black text-accent-blue uppercase tracking-[0.2em]">Efficiency Analysis</span>
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#EC4186] shadow-[0_0_10px_rgba(236,65,134,0.6)] animate-pulse" />
+                            <span className="text-[10px] font-black text-[#EC4186] uppercase tracking-[0.2em]">Efficiency Analysis</span>
                         </div>
                         <p className="text-[11px] text-white/50 font-medium italic">
                             {currentProblem.algorithmType === 'two_pointers' ?
@@ -69,8 +69,8 @@ const VizPanel: React.FC = () => {
                     <div className="flex-1 flex divide-x divide-white/5 relative h-full">
                         {/* Brute/Naive Column */}
                         <div className="flex-1 flex flex-col h-full">
-                            <div className="h-10 border-b border-white/5 flex items-center justify-center bg-red-500/5 shrink-0">
-                                <span className="text-[10px] font-bold text-red-400/60 uppercase tracking-widest">Brute Force Exploration</span>
+                            <div className="h-10 border-b border-white/5 flex items-center justify-center bg-[#EE544A]/5 shrink-0">
+                                <span className="text-[10px] font-bold text-[#EE544A]/60 uppercase tracking-widest">Brute Force Exploration</span>
                             </div>
                             <div className="flex-1 relative overflow-hidden h-full">
                                 {renderEngine(true)}
@@ -78,8 +78,8 @@ const VizPanel: React.FC = () => {
                         </div>
                         {/* Optimal/Refined Column */}
                         <div className="flex-1 flex flex-col h-full">
-                            <div className="h-10 border-b border-white/5 flex items-center justify-center bg-accent-blue/5 shrink-0">
-                                <span className="text-[10px] font-bold text-accent-blue uppercase tracking-widest">Optimal Execution</span>
+                            <div className="h-10 border-b border-white/5 flex items-center justify-center bg-[#EC4186]/5 shrink-0">
+                                <span className="text-[10px] font-bold text-[#EC4186] uppercase tracking-widest">Optimal Execution</span>
                             </div>
                             <div className="flex-1 relative overflow-hidden h-full">
                                 {renderEngine(false)}

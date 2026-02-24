@@ -58,7 +58,7 @@ export const LinearSearchCanvas: React.FC<Props> = ({ state }) => {
                                                     ? 'rgba(255, 255, 255, 0.05)'
                                                     : 'rgba(59, 130, 246, 0.1)',
                                         borderColor: isFound
-                                            ? '#10b981'
+                                            ? '#FFFFFF'
                                             : isCurrent
                                                 ? '#ef4444'
                                                 : isChecked

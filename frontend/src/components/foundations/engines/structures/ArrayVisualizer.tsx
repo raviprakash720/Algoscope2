@@ -237,7 +237,7 @@ const ArrayVisualizer: React.FC = () => {
                                 backgroundColor: i < size
                                     ? (highlightedIndices.includes(i) ? 'rgba(59, 130, 246, 0.4)' : 'rgba(59, 130, 246, 0.1)')
                                     : 'rgba(255, 255, 255, 0.02)',
-                                borderColor: highlightedIndices.includes(i) ? '#3b82f6' : (i < size ? 'rgba(59, 130, 246, 0.3)' : 'rgba(255, 255, 255, 0.05)'),
+                                borderColor: highlightedIndices.includes(i) ? '#EE544A' : (i < size ? 'rgba(59, 130, 246, 0.3)' : 'rgba(255, 255, 255, 0.05)'),
                                 y: highlightedIndices.includes(i) ? -10 : 0
                             }}
                             className={`

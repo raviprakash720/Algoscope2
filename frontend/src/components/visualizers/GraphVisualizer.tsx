@@ -35,7 +35,7 @@ const GraphVisualizer = ({ nodes, edges }: GraphVisualizerProps) => {
                             y1={sourceNode.y}
                             x2={targetNode.x}
                             y2={targetNode.y}
-                            stroke={edge.visited ? "#10b981" : "rgba(255,255,255,0.2)"}
+                            stroke={edge.visited ? "#FFFFFF" : "rgba(255,255,255,0.2)"}
                             strokeWidth="2"
                             initial={{ pathLength: 0 }}
                             animate={{ pathLength: 1 }}
@@ -56,11 +56,11 @@ const GraphVisualizer = ({ nodes, edges }: GraphVisualizerProps) => {
                         x: '-50%',
                         y: '-50%'
                     }}
-                    className={`absolute w-10 h-10 rounded-full flex items-center justify-center border font-bold text-sm transition-colors
-                        ${node.status === 'visiting' ? 'bg-blue-500/20 border-blue-500 text-blue-400 shadow-glow-blue' :
-                            node.status === 'visited' ? 'bg-green-500/20 border-green-500 text-green-400' :
-                                node.status === 'target' ? 'bg-amber-500/20 border-amber-500 text-amber-400' :
-                                    'bg-black/40 border-white/20 text-white/40'}
+                    className={`absolute w-10 h-10 rounded-full flex items-center justify-center border font-bold text-sm transition-all duration-300
+                        ${node.status === 'visiting' ? 'bg-[#EC4186]/20 border-[#EC4186] text-[#EC4186] shadow-[0_0_15px_rgba(236,65,134,0.3)]' :
+                            node.status === 'visited' ? 'bg-[#EE544A]/20 border-[#EE544A] text-[#EE544A]' :
+                                node.status === 'target' ? 'bg-white/10 border-white text-white shadow-[0_0_15px_rgba(255,255,255,0.3)]' :
+                                    'bg-[#38124A]/40 border-white/5 text-white/30'}
                     `}
                 >
                     {node.label}

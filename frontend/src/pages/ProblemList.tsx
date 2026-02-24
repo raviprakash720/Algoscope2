@@ -1,393 +1,380 @@
-import React, { useState, useRef, useEffect } from 'react'
-import { Search, SlidersHorizontal, ArrowUpDown, ChevronDown, Check } from 'lucide-react'
+import { useState, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useSearchParams } from 'react-router-dom'
+import { Search, Bell, Filter, ChevronDown, X, Grid, List as ListIcon } from 'lucide-react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useStore } from '../store/useStore'
-import { getPatternInfo } from '../data/patternHierarchy'
-import ProblemCard from '../components/problem/ProblemCard'
+import { PATTERN_HIERARCHY } from '../data/patternHierarchy'
 
-// --- Custom Filter Dropdown ---
-interface FilterOption {
-    label: string
-    value: string
-}
-
-interface FilterDropdownProps {
-    value: string
-    options: FilterOption[]
-    onChange: (val: string) => void
-    icon: React.ElementType
-}
-
-const FilterDropdown: React.FC<FilterDropdownProps> = ({ value, options, onChange, icon: Icon }) => {
-    const [isOpen, setIsOpen] = useState(false)
-    const containerRef = useRef<HTMLDivElement>(null)
-
-    // Click outside handler
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-                setIsOpen(false)
-            }
-        }
-        document.addEventListener('mousedown', handleClickOutside)
-        return () => document.removeEventListener('mousedown', handleClickOutside)
-    }, [])
-
-    const selectedLabel = options.find(o => o.value === value)?.label || value
-
-    return (
-        <div className="relative" ref={containerRef}>
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className={`flex items-center gap-2 px-4 h-12 rounded-xl border transition-all ${isOpen ? 'bg-white/10 border-white/20' : 'bg-white/5 border-white/10 hover:bg-white/10'
-                    }`}
-            >
-                <Icon size={16} className="text-white/40" />
-                <span className="text-xs font-bold uppercase tracking-widest text-white/80 min-w-[60px] text-left">
-                    {selectedLabel}
-                </span>
-                <ChevronDown size={14} className={`text-white/40 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-            </button>
-
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 8, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                        transition={{ duration: 0.1 }}
-                        className="absolute top-full left-0 mt-2 w-48 bg-[#0a0a0a] border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden backdrop-blur-xl"
-                    >
-                        <div className="max-h-60 overflow-y-auto custom-scrollbar py-1">
-                            {options.map((option) => (
-                                <button
-                                    key={option.value}
-                                    onClick={() => {
-                                        onChange(option.value)
-                                        setIsOpen(false)
-                                    }}
-                                    className={`w-full flex items-center justify-between px-4 py-3 text-xs font-bold uppercase tracking-widest transition-colors ${value === option.value
-                                        ? 'bg-accent-blue/10 text-accent-blue'
-                                        : 'text-white/60 hover:bg-white/5 hover:text-white'
-                                        }`}
-                                >
-                                    <span>{option.label}</span>
-                                    {value === option.value && <Check size={14} />}
-                                </button>
-                            ))}
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
-    )
-}
-
-const ProblemList: React.FC = () => {
+export default function ProblemList() {
     const {
         problems,
         isLoading,
-        patternStats,
-        currentPage,
-        itemsPerPage,
-        setCurrentPage,
-        nextPage,
-        prevPage,
         fetchAllProblems
     } = useStore()
+
     const [searchParams] = useSearchParams()
-    const patternFilter = searchParams.get('pattern')
+    const urlPattern = searchParams.get('pattern')
 
-    const [searchQuery, setSearchQuery] = React.useState('')
-    const [difficulty, setDifficulty] = React.useState<string>('All')
-    const [type, setType] = React.useState<string>(patternFilter || 'All')
-    const [sortBy, setSortBy] = React.useState<'confidence' | 'difficulty' | 'recency' | 'id'>('id')
+    const [searchQuery, setSearchQuery] = useState('')
+    const [selectedTopics, setSelectedTopics] = useState<Set<string>>(new Set())
+    const [selectedLevels, setSelectedLevels] = useState<Set<string>>(new Set())
+    const [isFilterOpen, setIsFilterOpen] = useState(false)
+    const [viewMode, setViewMode] = useState<'list' | 'pattern'>(urlPattern ? 'pattern' : 'list')
 
-    React.useEffect(() => {
+    useEffect(() => {
         fetchAllProblems()
     }, [fetchAllProblems])
 
-    // Update filter if URL param changes
-    React.useEffect(() => {
-        if (patternFilter) {
-            setType(patternFilter)
+    useEffect(() => {
+        if (urlPattern) {
+            setViewMode('pattern')
         }
-    }, [patternFilter])
+    }, [urlPattern])
 
-    // Search debouncing
-    const [debouncedSearch, setDebouncedSearch] = React.useState(searchQuery)
+    const levels = ['Easy', 'Medium', 'Hard']
 
-    React.useEffect(() => {
-        const timer = setTimeout(() => {
-            setDebouncedSearch(searchQuery)
-        }, 300)
-        return () => clearTimeout(timer)
-    }, [searchQuery])
+    // Available topics from hierarchy
+    const availableTopics = useMemo(() => {
+        const topics: { key: string; title: string }[] = []
+        Object.values(PATTERN_HIERARCHY).forEach(group => {
+            Object.entries(group.patterns).forEach(([key, pattern]) => {
+                topics.push({ key, title: pattern.title })
+            })
+        })
+        return topics
+    }, [])
 
-    const subPatternFilter = searchParams.get('subPattern')
+    // Pattern View: Group patterns from hierarchy with dynamic counts
+    const allPatternGroups = useMemo(() =>
+        Object.entries(PATTERN_HIERARCHY).flatMap(([_, levelGroup]) =>
+            Object.entries(levelGroup.patterns).map(([patternKey, pattern]) => {
+                // Dynamic count for this pattern: check primary, algorithmType, tags, and secondaryPatterns
+                const count = problems.filter(p => {
+                    const topicTitle = pattern.title.toLowerCase()
+                    const prim = p.primaryPattern?.toLowerCase() || ''
+                    const algo = (p.algorithmType as string)?.toLowerCase() || ''
+                    const tags = p.tags.map(t => t.toLowerCase())
+                    const secondary = (p.secondaryPatterns || []).map(s => s.toLowerCase())
 
-    const filtered = problems.filter(p => {
-        const matchesSearch =
-            p.title.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-            p.primaryPattern?.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-            p.tags.some(t => t.toLowerCase().includes(debouncedSearch.toLowerCase()))
+                    return prim.includes(topicTitle) ||
+                        algo.includes(topicTitle) ||
+                        tags.some(tag => tag.includes(topicTitle)) ||
+                        secondary.some(sec => sec.includes(topicTitle))
+                }).length
 
-        const matchesDifficulty = difficulty === 'All' || p.difficulty === difficulty
+                return {
+                    key: patternKey,
+                    title: pattern.title,
+                    level: levelGroup.title,
+                    count,
+                    subPatterns: pattern.subPatterns || []
+                }
+            })
+        ), [problems])
 
-        let matchesType = type === 'All'
+    const filteredProblems = useMemo(() => {
+        return problems.filter(p => {
+            const matchesSearch =
+                p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                p.id.toString().includes(searchQuery) ||
+                (p.primaryPattern && p.primaryPattern.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                p.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()))
 
-        if (!matchesType) {
-            // Normalized check
-            const t = type.toLowerCase()
-            const prim = p.primaryPattern?.toLowerCase() || ''
-            const algo = (p.algorithmType as string)?.toLowerCase() || ''
+            const matchesTopic = selectedTopics.size === 0 || Array.from(selectedTopics).some(topicId => {
+                const topicTitle = availableTopics.find(t => t.key === topicId)?.title?.toLowerCase() || topicId.toLowerCase()
+                const prim = p.primaryPattern?.toLowerCase() || ''
+                const algo = (p.algorithmType as string)?.toLowerCase() || ''
+                const tags = p.tags.map(t => t.toLowerCase())
+                const secondary = (p.secondaryPatterns || []).map(s => s.toLowerCase())
 
-            matchesType = prim === t || algo === t ||
-                (t === 'two_pointers' && (algo === 'two pointers' || algo === 'two_pointer')) ||
-                (t === 'sliding_window' && (algo === 'sliding window')) ||
-                (t === 'binary_search' && (algo === 'binary search'))
-        }
+                return prim.includes(topicTitle) ||
+                    algo.includes(topicTitle) ||
+                    tags.some(tag => tag.includes(topicTitle)) ||
+                    secondary.some(sec => sec.includes(topicTitle)) ||
+                    (topicId === 'two_pointers' && (prim.includes('pointer') || algo.includes('pointer'))) ||
+                    (topicId === 'graph' && (prim.includes('graph') || algo.includes('graph') || tags.includes('graph')))
+            })
 
-        const matchesSubPattern = !subPatternFilter || p.subPattern === subPatternFilter
+            const matchesLevel = selectedLevels.size === 0 || selectedLevels.has(p.difficulty)
 
-        return matchesSearch && matchesDifficulty && matchesType && matchesSubPattern
-    })
+            return matchesSearch && matchesTopic && matchesLevel
+        })
+    }, [problems, searchQuery, selectedTopics, selectedLevels, availableTopics])
 
-    const sorted = [...filtered].sort((a, b) => {
-        const statsA = patternStats[a.slug]
-        const statsB = patternStats[b.slug]
+    const toggleTopic = (topicId: string) => {
+        const newTopics = new Set(selectedTopics)
+        if (newTopics.has(topicId)) newTopics.delete(topicId)
+        else newTopics.add(topicId)
+        setSelectedTopics(newTopics)
+    }
 
-        if (sortBy === 'confidence') {
-            return (statsB?.confidence || 0) - (statsA?.confidence || 0)
-        }
-        if (sortBy === 'difficulty') {
-            const weights = { 'Easy': 1, 'Medium': 2, 'Hard': 3 }
-            return (weights[b.difficulty as keyof typeof weights] || 0) - (weights[a.difficulty as keyof typeof weights] || 0)
-        }
-        if (sortBy === 'recency') {
-            return (statsB?.lastPracticed || 0) - (statsA?.lastPracticed || 0)
-        }
-        if (sortBy === 'id') {
-            return a.id - b.id
-        }
-        return 0
-    })
+    const toggleLevel = (level: string) => {
+        const newLevels = new Set(selectedLevels)
+        if (newLevels.has(level)) newLevels.delete(level)
+        else newLevels.add(level)
+        setSelectedLevels(newLevels)
+    }
 
-    // Pagination
-    const totalPages = Math.ceil(sorted.length / itemsPerPage)
-    const paginatedProblems = sorted.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+    const clearFilters = () => {
+        setSelectedTopics(new Set())
+        setSelectedLevels(new Set())
+        setSearchQuery('')
+    }
 
-    // Reset pagination on filter change
-    React.useEffect(() => {
-        setCurrentPage(1)
-    }, [searchQuery, difficulty, type, sortBy, setCurrentPage])
-
-    if (isLoading && problems.length === 0) {
+    if (isLoading) {
         return (
-            <div className="flex-1 flex items-center justify-center mesh-bg">
+            <div className="flex-1 flex items-center justify-center bg-[#21092b]">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 border-2 border-accent-blue/10 border-t-accent-blue rounded-full animate-spin" />
-                    <span className="text-[10px] font-bold text-white/20 uppercase tracking-[0.4em]">Synchronizing Registry...</span>
+                    <div className="w-12 h-12 border-2 border-[#EC4186]/20 border-t-[#EC4186] rounded-full animate-spin" />
+                    <span className="text-[10px] font-bold text-white/50 uppercase tracking-[0.4em]">Synchronizing Lab...</span>
                 </div>
             </div>
         )
     }
 
-    // Filter Options
-    const patternOptions = [
-        { label: 'All Patterns', value: 'All' },
-        { label: 'Array', value: 'Array' },
-        { label: 'Two Pointers', value: 'two_pointers' },
-        { label: 'Sliding Window', value: 'sliding_window' },
-        { label: 'Binary Search', value: 'binary_search' },
-        { label: 'Stack', value: 'stack' },
-        { label: 'Linked List', value: 'linked_list' },
-        { label: 'Graph', value: 'graph' },
-        { label: 'Recursion', value: 'recursion' }
-    ]
-
-    const difficultyOptions = [
-        { label: 'All Levels', value: 'All' },
-        { label: 'Easy', value: 'Easy' },
-        { label: 'Medium', value: 'Medium' },
-        { label: 'Hard', value: 'Hard' }
-    ]
-
-    const sortOptions = [
-        { label: 'Sort by ID', value: 'id' },
-        { label: 'Difficulty', value: 'difficulty' },
-        { label: 'Confidence', value: 'confidence' },
-        { label: 'Recency', value: 'recency' }
-    ]
-
     return (
-        <div className="flex-1 overflow-y-auto custom-scrollbar mesh-bg page-padding font-outfit">
-            <div className="max-w-7xl mx-auto">
-                <motion.header
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mb-12"
-                >
-                    <h1 className="text-4xl font-bold mb-3 tracking-tight">Code <span className="text-gradient">Explorer</span></h1>
-                    <p className="text-white/30 max-w-2xl font-light">
-                        The complete structured LeetCode 1–100 cognitive explorer. Focus on logic, not clutter.
-                    </p>
-                </motion.header>
+        <div className="flex-1 flex flex-col bg-[#21092b] overflow-hidden">
+            {/* Header Area */}
+            <div className="px-8 pt-8 pb-4">
+                <div className="flex justify-between items-center mb-6">
+                    <div>
+                        <h1 className="text-3xl font-bold text-white tracking-tight">Patterns Library</h1>
+                        <p className="text-white/40 text-sm mt-1">Foundational schemas for elite problem solving.</p>
+                    </div>
 
-                {/* Horizontal Filter Bar */}
-                <div className="flex flex-wrap items-center gap-4 mb-10 pb-10 border-b border-white/5 relative z-20">
-                    <div className="flex-1 min-w-[300px] relative group h-12">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-accent-blue transition-colors" size={18} />
+                    <div className="flex items-center gap-4">
+                        {/* View Toggle */}
+                        <div className="bg-white/5 p-1 rounded-xl flex border border-white/5">
+                            <button
+                                onClick={() => setViewMode('list')}
+                                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${viewMode === 'list' ? 'bg-[#EC4186] text-white' : 'text-white/40 hover:text-white'}`}
+                            >
+                                <ListIcon size={14} />
+                                List
+                            </button>
+                            <button
+                                onClick={() => setViewMode('pattern')}
+                                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${viewMode === 'pattern' ? 'bg-[#EE544A] text-white' : 'text-white/40 hover:text-white'}`}
+                            >
+                                <Grid size={14} />
+                                Patterns
+                            </button>
+                        </div>
+                        <button className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-all">
+                            <Bell size={18} />
+                        </button>
+                    </div>
+                </div>
+
+                <div className="flex gap-4">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
                         <input
                             type="text"
-                            placeholder="Search by title or keyword..."
+                            placeholder="Identify patterns (e.g., 'Sliding Window', 'In-Place')..."
+                            className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:border-[#EC4186]/50 focus:bg-white/[0.08] transition-all"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full h-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 focus:outline-none focus:border-accent-blue/40 transition-all text-sm font-medium"
                         />
                     </div>
+                    <button
+                        onClick={() => setIsFilterOpen(!isFilterOpen)}
+                        className={`px-6 rounded-2xl border flex items-center gap-3 font-bold transition-all ${isFilterOpen ? 'bg-[#EC4186] border-[#EC4186] text-white' : 'bg-white/5 border-white/10 text-white/60 hover:text-white hover:bg-white/10'}`}
+                    >
+                        <Filter size={18} />
+                        Filters
+                        {(selectedTopics.size > 0 || selectedLevels.size > 0) && (
+                            <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[10px]">
+                                {selectedTopics.size + selectedLevels.size}
+                            </span>
+                        )}
+                        <ChevronDown size={14} className={`transition-transform duration-300 ${isFilterOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                </div>
 
-                    <div className="flex items-center gap-3">
-                        <FilterDropdown
-                            icon={SlidersHorizontal}
-                            options={patternOptions}
-                            value={type}
-                            onChange={setType}
-                        />
-                        <FilterDropdown
-                            icon={SlidersHorizontal}
-                            options={difficultyOptions}
-                            value={difficulty}
-                            onChange={setDifficulty}
-                        />
-                        <FilterDropdown
-                            icon={ArrowUpDown}
-                            options={sortOptions}
-                            value={sortBy}
-                            onChange={(val) => setSortBy(val as any)}
-                        />
-                    </div>
-
-                    <div className="w-full">
-                        <AnimatePresence mode='popLayout'>
-                            {getPatternInfo(type) && getPatternInfo(type)!.subPatterns.length > 0 ? (
-                                <div className="space-y-12">
-                                    {getPatternInfo(type)!.subPatterns.map((subPattern: string) => {
-                                        const subProblems = sorted.filter(p => p.subPattern === subPattern)
-                                        if (subProblems.length === 0) return null
-
-                                        return (
-                                            <div key={subPattern} className="space-y-6">
-                                                <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-4 border-b border-white/5 flex items-center gap-3">
-                                                    <div className="w-1.5 h-1.5 rounded-full bg-accent-blue" />
-                                                    <h2 className="text-sm font-bold uppercase tracking-widest text-white/80">
-                                                        {subPattern.replace(/_/g, ' ')}
-                                                        <span className="ml-2 text-white/30 text-[10px] font-mono">({subProblems.length})</span>
-                                                    </h2>
-                                                </div>
-                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 gap-6">
-                                                    {subProblems.map((problem) => (
-                                                        <ProblemCard
-                                                            key={problem.id}
-                                                            problem={problem}
-                                                            stats={patternStats[problem.slug]}
-                                                        />
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )
-                                    })}
-
-                                    {/* Render uncategorized or non-matching sub-patterns if any */}
-                                    {sorted.filter(p => !p.subPattern || !getPatternInfo(type)!.subPatterns.includes(p.subPattern!)).length > 0 && (
-                                        <div className="space-y-6">
-                                            <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-4 border-b border-white/5 flex items-center gap-3">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
-                                                <h2 className="text-sm font-bold uppercase tracking-widest text-white/60">Other</h2>
-                                            </div>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 gap-6">
-                                                {sorted.filter(p => !p.subPattern || !getPatternInfo(type)!.subPatterns.includes(p.subPattern!)).map((problem) => (
-                                                    <ProblemCard
-                                                        key={problem.id}
-                                                        problem={problem}
-                                                        stats={patternStats[problem.slug]}
-                                                    />
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            ) : (
-                                <motion.div
-                                    layout
-                                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 gap-6"
-                                >
-                                    {paginatedProblems.map((problem) => (
-                                        <ProblemCard
-                                            key={problem.id}
-                                            problem={problem}
-                                            stats={patternStats[problem.slug]}
-                                        />
-                                    ))}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-
-                        {/* Hide pagination if grouped (simplification for now, or implement per-group pagination? No, just show all for grouped view since lists are small) */}
-                        {!getPatternInfo(type) && sorted.length > 0 && (
-                            <div className="flex items-center justify-between pt-10 border-t border-white/5">
-                                <span className="text-[10px] font-bold text-white/10 uppercase tracking-widest">
-                                    Page {currentPage} of {totalPages}
-                                </span>
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={prevPage}
-                                        disabled={currentPage === 1}
-                                        className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-widest disabled:opacity-20 hover:bg-white/10 transition-colors"
-                                    >
-                                        Prev
-                                    </button>
-                                    <div className="flex gap-1">
-                                        {[...Array(totalPages)].map((_, i) => (
+                {/* Collapsible Filter Menu */}
+                <AnimatePresence>
+                    {isFilterOpen && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden"
+                        >
+                            <div className="mt-4 p-6 bg-white/[0.03] border border-white/5 rounded-2xl grid grid-cols-2 gap-8">
+                                {/* Levels */}
+                                <div>
+                                    <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-4">Levels</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {levels.map(l => (
                                             <button
-                                                key={i}
-                                                onClick={() => setCurrentPage(i + 1)}
-                                                className={`w-8 h-8 rounded-lg border text-[10px] font-bold transition-all ${currentPage === i + 1
-                                                    ? 'bg-accent-blue/20 border-accent-blue/40 text-accent-blue'
-                                                    : 'bg-white/5 border-white/10 text-white/20 hover:border-white/20'
-                                                    }`}
+                                                key={l}
+                                                onClick={() => toggleLevel(l)}
+                                                className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all ${selectedLevels.has(l) ? 'bg-[#EC4186]/20 border-[#EC4186] text-[#EC4186]' : 'bg-white/5 border-white/5 text-white/40 hover:text-white hover:bg-white/10'}`}
                                             >
-                                                {i + 1}
+                                                {l}
                                             </button>
                                         ))}
                                     </div>
-                                    <button
-                                        onClick={nextPage}
-                                        disabled={currentPage === totalPages}
-                                        className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-widest disabled:opacity-20 hover:bg-white/10 transition-colors"
-                                    >
-                                        Next
-                                    </button>
+                                </div>
+
+                                {/* Topics */}
+                                <div>
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h4 className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Algorithm Topics</h4>
+                                        {(selectedTopics.size > 0 || selectedLevels.size > 0) && (
+                                            <button
+                                                onClick={clearFilters}
+                                                className="text-[10px] font-bold text-[#EE544A] hover:underline"
+                                            >
+                                                Clear All
+                                            </button>
+                                        )}
+                                    </div>
+                                    <div className="flex flex-wrap gap-2 pr-2">
+                                        {availableTopics.map(t => (
+                                            <button
+                                                key={t.key}
+                                                onClick={() => toggleTopic(t.key)}
+                                                className={`px-4 py-2 rounded-xl text-[11px] font-bold border transition-all ${selectedTopics.has(t.key) ? 'bg-[#EE544A]/20 border-[#EE544A] text-[#EE544A]' : 'bg-white/5 border-white/5 text-white/40 hover:text-white hover:bg-white/10'}`}
+                                            >
+                                                {t.title}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
-                        )}
-
-                        {sorted.length === 0 && (
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="text-center py-24 rounded-3xl border border-dashed border-white/10 bg-white/[0.01]"
-                            >
-                                <h3 className="mb-2 text-xl font-bold text-white/40">No problem localized</h3>
-                                <p className="text-white/10 text-xs uppercase tracking-widest">Adjust filters to re-scan registry</p>
-                            </motion.div>
-                        )}
-                    </div>
-                </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
-        </div >
+
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto px-8 pb-8 custom-scrollbar">
+                {viewMode === 'list' ? (
+                    <motion.div
+                        layout
+                        className="space-y-4"
+                    >
+                        {filteredProblems.map((problem, index) => {
+                            const difficultyColor = problem.difficulty === 'Easy' ? '#EE544A' : problem.difficulty === 'Medium' ? '#EC4186' : '#FF6B6B'
+                            const primaryPattern = problem.primaryPattern || problem.algorithmType.replace(/_/g, ' ') || 'GENERAL'
+
+                            return (
+                                <motion.div
+                                    key={problem.id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.02 }}
+                                    className="group relative"
+                                >
+                                    <Link to={`/problems/${problem.slug}`}>
+                                        <div className="flex items-center justify-between p-5 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/[0.06] hover:border-white/20 transition-all group">
+                                            {/* Name Section */}
+                                            <div className="flex-1 min-w-0 pr-8">
+                                                <h3 className="text-xl font-bold text-white group-hover:text-[#EC4186] transition-colors truncate">
+                                                    {problem.title}
+                                                </h3>
+                                                <div className="flex gap-3 mt-1.5">
+                                                    {problem.tags.slice(0, 3).map(tag => (
+                                                        <span key={tag} className="text-[10px] text-white/20 uppercase tracking-[0.2em] font-medium">
+                                                            {tag}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            {/* Metadata Section: Topic and Level */}
+                                            <div className="flex items-center gap-8 shrink-0">
+                                                <div className="flex items-center gap-3">
+                                                    <span className="text-[10px] font-bold text-[#EE544A] bg-[#EE544A]/10 px-3 py-1 rounded-lg border border-[#EE544A]/20 uppercase tracking-tighter">
+                                                        {primaryPattern}
+                                                    </span>
+                                                </div>
+
+                                                <div className="flex items-center gap-3 w-32 justify-end border-l border-white/5 pl-8">
+                                                    <span
+                                                        className="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-lg"
+                                                        style={{ color: difficultyColor, backgroundColor: `${difficultyColor}11`, border: `1px solid ${difficultyColor}33` }}
+                                                    >
+                                                        {problem.difficulty}
+                                                    </span>
+                                                </div>
+
+                                                {/* Action Button */}
+                                                <div className="w-10 h-10 rounded-xl bg-[#EC4186]/10 border border-[#EC4186]/20 flex items-center justify-center group-hover:bg-[#EC4186] group-hover:shadow-[0_0_20px_rgba(236,65,134,0.4)] transition-all ml-4">
+                                                    <ChevronDown className="-rotate-90 text-[#EC4186] group-hover:text-white group-hover:scale-110 transition-all" size={20} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                </motion.div>
+                            )
+                        })}
+                    </motion.div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {allPatternGroups.map((pattern, index) => (
+                            <motion.div
+                                key={pattern.key}
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: index * 0.05 }}
+                                whileHover={{ y: -5 }}
+                                className="group bg-white/[0.02] border border-white/5 rounded-3xl p-6 hover:bg-white/[0.06] hover:border-[#EC4186]/30 transition-all cursor-pointer relative overflow-hidden"
+                                onClick={() => {
+                                    setSelectedTopics(new Set([pattern.key]))
+                                    setViewMode('list')
+                                }}
+                            >
+                                {/* Background Decorative Elements */}
+                                <div className="absolute -right-4 -top-4 w-24 h-24 bg-[#EC4186]/5 rounded-full blur-3xl group-hover:bg-[#EC4186]/10 transition-colors" />
+
+                                <div className="relative z-10">
+                                    <div className="flex justify-between items-start mb-6">
+                                        <div className="w-12 h-12 rounded-2xl bg-[#EC4186]/10 border border-[#EC4186]/20 flex items-center justify-center text-[#EC4186] group-hover:scale-110 transition-transform">
+                                            {pattern.title.includes('Pointer') ? '👉' : pattern.title.includes('Window') ? '🗔' : '🧪'}
+                                        </div>
+                                        <div className="flex flex-col items-end">
+                                            <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-1">{pattern.level}</span>
+                                            <span className="text-xl font-bold text-[#EE544A] font-mono">{pattern.count}</span>
+                                        </div>
+                                    </div>
+
+                                    <h3 className="text-lg font-bold text-white mb-2 group-hover:text-[#EC4186] transition-colors">{pattern.title}</h3>
+
+                                    <div className="space-y-3">
+                                        <div className="flex flex-wrap gap-2">
+                                            {pattern.subPatterns.slice(0, 3).map(sub => (
+                                                <span key={sub} className="text-[10px] px-2 py-0.5 bg-white/5 border border-white/5 rounded-md text-white/40">{sub}</span>
+                                            ))}
+                                            {pattern.subPatterns.length > 3 && (
+                                                <span className="text-[10px] text-white/20">+{pattern.subPatterns.length - 3} more</span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                )}
+
+                {filteredProblems.length === 0 && (
+                    <div className="p-20 text-center">
+                        <div className="w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6 text-white/20">
+                            <X size={32} />
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-2">No patterns found matching your search</h3>
+                        <p className="text-white/40 text-sm mb-8">Try adjusting your filters or expanding your search criteria.</p>
+                        <button
+                            onClick={clearFilters}
+                            className="bg-[#EC4186] text-white px-8 py-3 rounded-2xl font-bold hover:shadow-glow transition-all"
+                        >
+                            Reset Logic
+                        </button>
+                    </div>
+                )}
+            </div>
+        </div>
     )
 }
-
-export default ProblemList

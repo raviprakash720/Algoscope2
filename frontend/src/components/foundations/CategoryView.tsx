@@ -1,7 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
-import { Layers, ArrowRight, Star } from 'lucide-react' // Extended icons
+import { Layers, ArrowRight, Star } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import { FoundationCategory, FoundationModule } from '../../types/foundation'
 import { getPatternInfo } from '../../data/patternHierarchy'
@@ -15,9 +15,9 @@ const CategoryView: React.FC<CategoryViewProps> = ({ category }) => {
     const patternStats = useStore(state => state.patternStats)
 
     const getMasteryColor = (confidence: number) => {
-        if (confidence >= 80) return 'text-purple-400 bg-purple-400/10 border-purple-400/20'
-        if (confidence >= 50) return 'text-blue-400 bg-blue-400/10 border-blue-400/20'
-        if (confidence >= 20) return 'text-green-400 bg-green-400/10 border-green-400/20'
+        if (confidence >= 80) return 'text-[#EC4186] bg-[#EC4186]/10 border-[#EC4186]/20'
+        if (confidence >= 50) return 'text-[#EE544A] bg-[#EE544A]/10 border-[#EE544A]/20'
+        if (confidence >= 20) return 'text-white/40 bg-white/5 border-white/10'
         return 'text-white/20 bg-white/5 border-white/10'
     }
 
@@ -46,7 +46,7 @@ const CategoryView: React.FC<CategoryViewProps> = ({ category }) => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: idx * 0.05 }}
                             whileHover={{ scale: 1.02, y: -5 }}
-                            className="glass-card p-6 rounded-2xl border border-white/5 hover:border-white/10 transition-all cursor-pointer group flex flex-col h-full bg-white/[0.02]"
+                            className="glass-card p-6 rounded-2xl border border-white/5 hover:border-[#EC4186]/20 transition-all cursor-pointer group flex flex-col h-full bg-white/[0.02]"
                             onClick={() => navigate(`/foundations/${category.id}/${module.id}`)}
                         >
                             <div className="flex justify-between items-start mb-6">
@@ -62,7 +62,7 @@ const CategoryView: React.FC<CategoryViewProps> = ({ category }) => {
                             </div>
 
                             <div className="flex-1">
-                                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-accent-blue transition-colors tracking-tight">
+                                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[#EC4186] transition-colors tracking-tight">
                                     {module.title}
                                 </h3>
                                 <p className="text-sm text-white/40 mb-6 line-clamp-3 font-light leading-relaxed">
@@ -75,18 +75,18 @@ const CategoryView: React.FC<CategoryViewProps> = ({ category }) => {
                                 <div className="space-y-1.5">
                                     <div className="flex justify-between text-[10px] font-mono uppercase text-white/20">
                                         <span>Mastery</span>
-                                        <span className={confidence > 0 ? "text-accent-blue" : ""}>{confidence}%</span>
+                                        <span className={confidence > 0 ? "text-[#EC4186]" : ""}>{confidence}%</span>
                                     </div>
                                     <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
                                         <div
-                                            className={`h-full rounded-full transition-all duration-1000 ${confidence > 0 ? 'bg-accent-blue shadow-glow-blue' : 'bg-transparent'}`}
+                                            className={`h-full rounded-full transition-all duration-1000 ${confidence > 0 ? 'bg-[#EC4186]' : 'bg-transparent'}`}
                                             style={{ width: `${confidence}%` }}
                                         />
                                     </div>
 
                                     {/* Breakdown (Visible on Hover) */}
                                     <div className="absolute top-full left-0 w-full pt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
-                                        <div className="bg-[#0f1115] border border-white/10 rounded-xl p-3 shadow-2xl">
+                                        <div className="bg-[#21092b] border border-[#EC4186]/20 rounded-xl p-3 shadow-[0_10px_40px_-10px_rgba(236,65,134,0.3)]">
                                             <div className="grid grid-cols-2 gap-2 text-[10px] uppercase tracking-widest text-white/40">
                                                 <div className="flex justify-between">
                                                     <span>Drills</span>
@@ -111,7 +111,7 @@ const CategoryView: React.FC<CategoryViewProps> = ({ category }) => {
 
                                 <div className="flex items-center justify-between text-white/20 group-hover:text-white/40 transition-colors">
                                     <div className="flex items-center gap-2">
-                                        <Star size={12} className={confidence >= 100 ? "text-yellow-400 fill-yellow-400" : ""} />
+                                        <Star size={12} className={confidence >= 100 ? "text-[#EE544A] fill-[#EE544A]" : ""} />
                                     </div>
                                     <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                                 </div>

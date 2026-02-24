@@ -26,7 +26,7 @@ const SlidingWindowCanvas: React.FC<SlidingWindowCanvasProps> = ({
 
 
     // Distinct Color Mapping for AtMostK/ExactK
-    const distinctColors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'] // Red, Blue, Green, Amber, Purple, Pink
+    const distinctColors = ['#ef4444', '#EE544A', '#FFFFFF', '#f59e0b', '#8b5cf6', '#ec4899'] // Red, Blue, Green, Amber, Purple, Pink
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center p-12 relative overflow-hidden bg-background/50">
@@ -113,7 +113,7 @@ const SlidingWindowCanvas: React.FC<SlidingWindowCanvasProps> = ({
 
                         // Distinct Mode Visuals
                         const isDistinctMode = mode === 'at_most_k' || mode === 'exact_k'
-                        const color = isDistinctMode ? distinctColors[(val - 1) % distinctColors.length] : '#3b82f6'
+                        const color = isDistinctMode ? distinctColors[(val - 1) % distinctColors.length] : '#EE544A'
 
                         return (
                             <div key={idx} className="w-12 flex flex-col items-center gap-4">
@@ -125,7 +125,7 @@ const SlidingWindowCanvas: React.FC<SlidingWindowCanvasProps> = ({
                                             ? (state.conditionMet ? (isDistinctMode ? color : 'rgba(59, 130, 246, 0.4)') : (isDistinctMode ? color : 'rgba(239, 68, 68, 0.4)'))
                                             : isLeaving ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255, 255, 255, 0.05)',
                                         borderColor: isInWindow
-                                            ? (state.conditionMet ? (isDistinctMode ? color : '#3b82f6') : '#ef4444')
+                                            ? (state.conditionMet ? (isDistinctMode ? color : '#EE544A') : '#ef4444')
                                             : isLeaving ? '#ef4444' : 'rgba(255, 255, 255, 0.1)',
                                         scale: isInWindow ? 1 : 0.95
                                     }}

@@ -101,7 +101,7 @@ export const FoundationVisualizer: React.FC<Props> = ({ type, moduleId }) => {
     };
 
     return (
-        <div className="relative w-full aspect-video rounded-3xl bg-[#0a0118] border border-white/10 overflow-hidden shadow-2xl flex flex-col">
+        <div className="relative w-full aspect-video rounded-3xl bg-[#2b0d38] border border-white/10 overflow-hidden shadow-2xl flex flex-col">
             {/* Visualizer Canvas Placeholder */}
             <div className="flex-1 relative flex items-center justify-center bg-grid-white/[0.02]">
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0a0118]/80" />

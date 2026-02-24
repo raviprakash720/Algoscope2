@@ -104,7 +104,7 @@ const TwoPointerCanvas: React.FC<Props> = ({ state, mode, stats, array, currentS
                         let color = 'rgba(255, 255, 255, 0.05)'
                         let borderColor = 'rgba(255, 255, 255, 0.1)'
 
-                        if (isLeft) { color = 'rgba(59, 130, 246, 0.2)'; borderColor = '#3b82f6'; }
+                        if (isLeft) { color = 'rgba(59, 130, 246, 0.2)'; borderColor = '#EE544A'; }
                         if (isRight) { color = 'rgba(236, 72, 153, 0.2)'; borderColor = '#ec4899'; }
                         if (isComparison) { color = 'rgba(250, 204, 21, 0.2)'; borderColor = '#facc15'; }
 
@@ -115,7 +115,7 @@ const TwoPointerCanvas: React.FC<Props> = ({ state, mode, stats, array, currentS
                                     animate={{
                                         height: `${(val / maxVal) * 80 + 20}%`,
                                         backgroundColor: isSwap ? 'rgba(168, 85, 247, 0.4)' : color,
-                                        borderColor: isSwap ? '#a855f7' : borderColor,
+                                        borderColor: isSwap ? '#EC4186' : borderColor,
                                         scale: (isLeft || isRight) ? 1.05 : 1,
                                         y: isSwap ? -10 : 0
                                     }}

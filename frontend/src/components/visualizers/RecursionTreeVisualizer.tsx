@@ -20,13 +20,13 @@ const TreeNodeComponent = ({ node, depth = 0 }: { node: TreeNode, depth?: number
                 animate={{
                     scale: node.status === 'active' ? 1.2 : 1,
                     opacity: 1,
-                    backgroundColor: node.status === 'active' ? 'rgba(59, 130, 246, 0.5)' :
-                        node.status === 'completed' ? 'rgba(16, 185, 129, 0.5)' :
-                            'rgba(255, 255, 255, 0.1)'
+                    backgroundColor: node.status === 'active' ? 'rgba(236, 65, 134, 0.4)' :
+                        node.status === 'completed' ? 'rgba(238, 84, 74, 0.4)' :
+                            'rgba(255, 255, 255, 0.05)'
                 }}
-                className={`w-12 h-12 rounded-full flex items-center justify-center border border-white/10 text-white font-mono text-sm relative z-10
-                    ${node.status === 'active' ? 'border-blue-500 shadow-glow-blue' : ''}
-                    ${node.status === 'completed' ? 'border-green-500 shadow-glow-green' : ''}
+                className={`w-12 h-12 rounded-full flex items-center justify-center border text-white font-mono text-sm relative z-10 transition-colors
+                    ${node.status === 'active' ? 'border-[#EC4186] shadow-[0_0_15px_rgba(236,65,134,0.4)]' : ''}
+                    ${node.status === 'completed' ? 'border-[#EE544A] shadow-[0_0_15px_rgba(238,84,74,0.4)]' : 'border-white/10'}
                 `}
             >
                 {node.value}

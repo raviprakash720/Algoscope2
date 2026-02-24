@@ -1,7 +1,6 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import {
-    LayoutDashboard,
     Play,
     Menu,
     Boxes,
@@ -38,7 +37,7 @@ const Sidebar: React.FC = () => {
     const isExpanded = !isSidebarCollapsed || isHovered
 
     const NavItem = ({ to, icon: Icon, label, badge }: { to: string, icon: any, label: string, badge?: string }) => {
-        const isActive = to === '/' ? location.pathname === '/' : location.pathname.startsWith(to)
+        const isActive = location.pathname.startsWith(to) && to !== '/' || (to === '/' && location.pathname === '/')
 
         return (
             <Link
@@ -46,25 +45,25 @@ const Sidebar: React.FC = () => {
                 className={cn(
                     "flex items-center gap-3 px-4 py-3 rounded-xl transition-all group relative overflow-hidden shrink-0",
                     isActive
-                        ? "bg-white/5 text-accent-blue shadow-inner"
-                        : "text-white/30 hover:text-white hover:bg-white/[0.03]"
+                        ? "bg-[#EC4186]/20 text-[#EC4186] shadow-inner"
+                        : "text-white/50 hover:text-white hover:bg-white/[0.03]"
                 )}
                 onClick={() => setIsMobileOpen(false)}
             >
-                <Icon size={20} className={cn("shrink-0", isActive ? "text-accent-blue" : "text-inherit")} />
+                <Icon size={20} className={cn("shrink-0", isActive ? "text-[#EC4186]" : "text-inherit")} />
                 <div className={cn(
                     "flex-1 flex items-center justify-between overflow-hidden transition-all duration-300",
                     isExpanded ? "w-auto opacity-100" : "w-0 opacity-0"
                 )}>
                     <span className="text-sm font-semibold truncate whitespace-nowrap">{label}</span>
                     {badge && (
-                        <span className="text-[9px] font-bold bg-accent-blue/20 text-accent-blue px-1.5 py-0.5 rounded uppercase tracking-widest">
+                        <span className="text-[9px] font-bold bg-[#EC4186] text-white px-1.5 py-0.5 rounded uppercase tracking-widest">
                             {badge}
                         </span>
                     )}
                 </div>
                 {isActive && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-accent-blue rounded-r-full shadow-glow" />
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#EC4186] rounded-r-full shadow-[0_0_10px_rgba(236,65,134,0.5)]" />
                 )}
             </Link>
         )
@@ -73,12 +72,12 @@ const Sidebar: React.FC = () => {
     return (
         <>
             {/* Mobile Header Toggle */}
-            <div className="lg:hidden fixed top-0 left-0 w-full h-20 px-8 flex items-center justify-between z-40 bg-background/80 backdrop-blur-xl border-b border-white/5">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-accent-blue/10 flex items-center justify-center">
-                        <Play size={20} className="text-accent-blue" />
+            <div className="lg:hidden fixed top-0 left-0 w-full h-20 px-8 flex items-center justify-between z-40 bg-[#38124A]/80 backdrop-blur-xl border-b border-white/5">
+                <div className="flex items-center gap-3 group">
+                    <div className="w-10 h-10 rounded-xl bg-[#EC4186]/20 flex items-center justify-center">
+                        <Play size={20} className="text-[#EC4186]" />
                     </div>
-                    <span className="font-bold tracking-tight text-lg uppercase tracking-widest">AlgoScope</span>
+                    <span className="font-bold tracking-tight text-lg text-white uppercase tracking-widest">Algoscope</span>
                 </div>
                 <button
                     onClick={() => setIsMobileOpen(true)}
@@ -91,7 +90,7 @@ const Sidebar: React.FC = () => {
             {/* Backdrop for mobile */}
             {isMobileOpen && (
                 <div
-                    className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 lg:hidden"
+                    className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 lg:hidden"
                     onClick={() => setIsMobileOpen(false)}
                 />
             )}
@@ -104,33 +103,32 @@ const Sidebar: React.FC = () => {
                     setIsHovered(false)
                 }}
                 className={cn(
-                    "fixed inset-y-0 left-0 z-50 bg-background/50 backdrop-blur-2xl border-r border-white/5 flex flex-col transition-all duration-300 ease-in-out font-outfit",
+                    "fixed inset-y-0 left-0 z-50 bg-[#38124A]/50 backdrop-blur-2xl border-r border-white/5 flex flex-col transition-all duration-300 ease-in-out font-outfit",
                     "lg:relative lg:translate-x-0 h-screen overflow-hidden",
                     isExpanded ? "w-[240px]" : "w-[72px]", // User specified 72px and 240px
                     isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
-                    isHovered && isSidebarCollapsed && "bg-background/95 shadow-2xl"
+                    isHovered && isSidebarCollapsed && "bg-[#38124A]/95 shadow-2xl"
                 )}
             >
                 {/* Header */}
                 <div className="h-24 px-6 flex items-center justify-between border-b border-white/5 shrink-0 overflow-hidden">
-                    <div className="flex items-center gap-4 group">
-                        <div className="w-10 h-10 shrink-0 rounded-xl bg-accent-blue/10 flex items-center justify-center group-hover:shadow-glow transition-all duration-500">
-                            <Play size={20} className="text-accent-blue" />
+                    <Link to="/" className="flex items-center gap-4 group">
+                        <div className="w-10 h-10 shrink-0 rounded-xl bg-[#EC4186]/20 flex items-center justify-center group-hover:shadow-[0_0_15px_rgba(236,65,134,0.3)] transition-all duration-500">
+                            <Play size={20} className="text-[#EC4186] fill-current" />
                         </div>
                         <div className={cn(
                             "flex flex-col transition-all duration-300",
                             isExpanded ? "opacity-100 w-auto" : "opacity-0 w-0"
                         )}>
-                            <span className="font-bold tracking-tight text-sm leading-tight uppercase tracking-widest whitespace-nowrap">AlgoScope</span>
-                            <span className="text-[9px] text-accent-blue/40 font-bold tracking-[0.2em] uppercase whitespace-nowrap">Intelligence</span>
+                            <span className="font-bold tracking-tight text-sm leading-tight text-white uppercase tracking-widest whitespace-nowrap">Algoscope</span>
+                            <span className="text-[9px] text-[#EC4186] font-bold tracking-[0.2em] uppercase whitespace-nowrap">Intelligence</span>
                         </div>
-                    </div>
+                    </Link>
                 </div>
 
                 {/* Content */}
                 <div className="flex-1 overflow-y-auto overflow-x-hidden px-3 py-8 custom-scrollbar flex flex-col gap-10">
                     <div className="flex flex-col gap-1.5">
-                        <NavItem to="/" icon={LayoutDashboard} label="Neural Hub" badge="Live" />
                         <NavItem to="/problems" icon={Boxes} label="Pattern Library" />
                         <NavItem to="/pattern-profile" icon={Brain} label="Pattern Profile" />
                         <NavItem to="/foundations" icon={Layers} label="Foundations Lab" />
@@ -140,20 +138,20 @@ const Sidebar: React.FC = () => {
                 {/* Footer / Profile */}
                 <div className="p-4 border-t border-white/5 shrink-0 overflow-hidden">
                     <div className={cn(
-                        "flex items-center gap-3 p-3 rounded-2xl bg-white/[0.02] border border-white/5 shadow-inner group cursor-pointer hover:bg-white/[0.05] transition-all",
+                        "flex items-center gap-3 p-3 rounded-2xl bg-white/[0.02] border border-white/5 group cursor-pointer hover:bg-white/[0.04] transition-all",
                         !isExpanded && "justify-center px-0 bg-transparent border-none shadow-none"
                     )}>
-                        <div className="w-8 h-8 shrink-0 rounded-lg bg-gradient-to-tr from-accent-blue to-accent-purple p-[1px]">
-                            <div className="w-full h-full rounded-lg bg-background flex items-center justify-center p-0.5 overflow-hidden">
-                                <div className="w-full h-full rounded-md bg-gradient-to-tr from-accent-blue to-accent-purple opacity-80" />
+                        <div className="w-8 h-8 shrink-0 rounded-lg bg-gradient-to-tr from-[#EC4186] to-[#EE544A] p-[1px]">
+                            <div className="w-full h-full rounded-lg bg-[#38124A] flex items-center justify-center p-0.5 overflow-hidden">
+                                <div className="w-full h-full rounded-md bg-gradient-to-tr from-[#EC4186] to-[#EE544A] opacity-80" />
                             </div>
                         </div>
                         <div className={cn(
                             "flex flex-col transition-all duration-300",
                             isExpanded ? "opacity-100 w-auto" : "opacity-0 w-0"
                         )}>
-                            <span className="text-[10px] font-bold text-white/90 whitespace-nowrap">Jaswanth R.</span>
-                            <span className="text-[9px] text-white/30 font-medium whitespace-nowrap">Architect</span>
+                            <span className="text-[10px] font-bold text-white whitespace-nowrap">Jaswanth R.</span>
+                            <span className="text-[9px] text-white/50 font-medium whitespace-nowrap">Architect</span>
                         </div>
                     </div>
                 </div>

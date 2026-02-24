@@ -96,8 +96,8 @@ const TwoPointerEngine: React.FC<Props> = ({ mode: initialMode }) => {
                         <button
                             onClick={() => setIsPlaying(!isPlaying)}
                             className={`px-6 py-3 rounded-xl font-bold uppercase tracking-wider text-xs flex items-center gap-2 transition-all ${isPlaying
-                                ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20'
-                                : 'bg-accent-blue text-black shadow-glow-blue hover:scale-105'
+                                ? 'bg-[#EE544A]/20 text-[#EE544A] border border-[#EE544A]/30'
+                                : 'bg-[#EC4186] text-white shadow-[0_5px_15px_rgba(236,65,134,0.4)] hover:scale-105'
                                 }`}
                         >
                             {isPlaying ? <><Pause size={16} /> Pause</> : <><Play size={16} /> Auto Play</>}
@@ -108,7 +108,7 @@ const TwoPointerEngine: React.FC<Props> = ({ mode: initialMode }) => {
                     <div className="flex-1 mx-8">
                         <div className="h-1 bg-white/10 rounded-full overflow-hidden">
                             <motion.div
-                                className="h-full bg-accent-blue"
+                                className="h-full bg-gradient-to-r from-[#EC4186] to-[#EE544A]"
                                 animate={{ width: `${((currentIndex + 1) / states.length) * 100}%` }}
                             />
                         </div>
@@ -128,7 +128,7 @@ const TwoPointerEngine: React.FC<Props> = ({ mode: initialMode }) => {
                             step="100"
                             value={2100 - speed}
                             onChange={(e) => setSpeed(2100 - parseInt(e.target.value))}
-                            className="w-24 accent-accent-blue cursor-pointer"
+                            className="w-24 accent-[#EC4186] cursor-pointer"
                         />
                     </div>
 
@@ -137,7 +137,7 @@ const TwoPointerEngine: React.FC<Props> = ({ mode: initialMode }) => {
                         <span className="text-[8px] font-bold text-white/20 uppercase tracking-widest">Presets</span>
                         <div className="flex gap-1">
                             <button onClick={() => { setArray([2, 7, 11, 15, 18, 22]); handleReset() }} className="text-[10px] px-2 py-1 bg-white/5 hover:bg-white/10 rounded text-white/60">Std</button>
-                            <button onClick={() => { setArray([0]); handleReset() }} className="text-[10px] px-2 py-1 bg-red-500/10 hover:bg-red-500/20 rounded text-red-400 font-bold">1</button>
+                            <button onClick={() => { setArray([0]); handleReset() }} className="text-[10px] px-2 py-1 bg-[#EE544A]/10 hover:bg-[#EE544A]/20 rounded text-[#EE544A] font-bold">1</button>
                             <button onClick={() => { setArray([5, 5, 5, 5]); handleReset() }} className="text-[10px] px-2 py-1 bg-white/5 hover:bg-white/10 rounded text-white/60">Dup</button>
                         </div>
                     </div>

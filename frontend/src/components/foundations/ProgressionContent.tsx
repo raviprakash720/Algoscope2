@@ -27,7 +27,7 @@ export const ProgressionContent: React.FC<Props> = ({ module, level, onVisualize
             {/* Visualizer Trigger Card */}
             <div className="relative group overflow-hidden rounded-3xl bg-gradient-to-r from-accent-blue/20 to-purple-500/20 border border-white/10 p-1">
                 <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:20px_20px]" />
-                <div className="relative bg-[#0a0118]/80 backdrop-blur-3xl rounded-[22px] p-8 flex flex-col md:flex-row items-center justify-between gap-8">
+                <div className="relative bg-[#2b0d38]/80 backdrop-blur-3xl rounded-[22px] p-8 flex flex-col md:flex-row items-center justify-between gap-8">
                     <div className="space-y-2">
                         <h2 className="text-3xl font-bold italic">Interactive Playground</h2>
                         <p className="text-white/50 max-w-md">

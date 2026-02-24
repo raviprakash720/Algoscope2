@@ -204,7 +204,7 @@ const HeapVisualizer: React.FC = () => {
                                             ? 'rgba(16, 185, 129, 0.5)'
                                             : (compareIndex === i ? 'rgba(236, 72, 153, 0.4)' : 'rgba(0,0,0, 0.8)'),
                                         borderColor: highlightIndex === i
-                                            ? '#10b981'
+                                            ? '#FFFFFF'
                                             : (compareIndex === i ? '#ec4899' : 'rgba(255,255,255,0.2)'),
                                         zIndex: highlightIndex === i ? 10 : 0
                                     }}

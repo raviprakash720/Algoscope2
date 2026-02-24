@@ -19,7 +19,7 @@ const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({ problem, onReset,
         <motion.div
             initial={{ scale: 0.95, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            className="w-full max-w-3xl glass-card border border-purple-500/30 p-10 relative overflow-hidden shadow-2xl bg-[#080808]/90 backdrop-blur-2xl rounded-[32px] mx-auto"
+            className="w-full max-w-3xl glass-card border border-purple-500/30 p-10 relative overflow-hidden shadow-2xl bg-[#240b33]/90 backdrop-blur-2xl rounded-[32px] mx-auto"
         >
             {/* Close Button */}
             <button

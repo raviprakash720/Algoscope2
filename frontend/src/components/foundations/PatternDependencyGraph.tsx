@@ -27,10 +27,10 @@ export const PatternDependencyGraph: React.FC<Props> = ({ graph, moduleId }) => 
     };
 
     return (
-        <div className="relative w-full aspect-video rounded-3xl bg-[#0a0118] border border-white/10 overflow-hidden shadow-2xl flex flex-col">
+        <div className="relative w-full aspect-video rounded-3xl bg-[#21092b] border border-white/10 overflow-hidden shadow-2xl flex flex-col">
             <div className="p-6 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-accent-blue/20 text-accent-blue">
+                    <div className="p-2 rounded-lg bg-[#EC4186]/20 text-[#EC4186]">
                         <Network size={20} />
                     </div>
                     <div>
@@ -39,13 +39,13 @@ export const PatternDependencyGraph: React.FC<Props> = ({ graph, moduleId }) => 
                     </div>
                 </div>
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] text-white/60 font-mono">
-                    <Zap size={12} className="text-yellow-400" />
+                    <Zap size={12} className="text-[#EE544A]" />
                     FORCE-DIRECTED LAYOUT ACTIVE
                 </div>
             </div>
 
             <div className="flex-1 relative overflow-hidden bg-grid-white/[0.02]">
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0a0118]/80 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#14051e]/80 pointer-events-none" />
 
                 <svg viewBox="0 0 100 100" className="w-full h-full p-12">
                     {/* Animated Edges */}
@@ -69,7 +69,7 @@ export const PatternDependencyGraph: React.FC<Props> = ({ graph, moduleId }) => 
                                     y1={startPos.y}
                                     x2={endPos.x}
                                     y2={endPos.y}
-                                    stroke={isHovered ? "rgba(59, 130, 246, 0.5)" : "rgba(255, 255, 255, 0.1)"}
+                                    stroke={isHovered ? "rgba(236, 65, 134, 0.5)" : "rgba(255, 255, 255, 0.1)"}
                                     strokeWidth={0.5}
                                     initial={{ pathLength: 0 }}
                                     animate={{ pathLength: 1 }}
@@ -78,7 +78,7 @@ export const PatternDependencyGraph: React.FC<Props> = ({ graph, moduleId }) => 
                                 {isHovered && (
                                     <motion.circle
                                         r={0.4}
-                                        fill="#3b82f6"
+                                        fill="#EE544A"
                                         initial={{ offsetDistance: "0%" }}
                                         animate={{ offsetDistance: "100%" }}
                                         transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
@@ -122,7 +122,7 @@ export const PatternDependencyGraph: React.FC<Props> = ({ graph, moduleId }) => 
                                     cx={pos.x}
                                     cy={pos.y}
                                     r={node.type === 'root' ? 6 : 4.5}
-                                    fill={node.type === 'root' ? "rgba(59, 130, 246, 0.2)" : "rgba(168, 85, 247, 0.2)"}
+                                    fill={node.type === 'root' ? "rgba(238, 84, 74, 0.2)" : "rgba(236, 65, 134, 0.2)"}
                                     animate={{
                                         scale: isHovered ? 1.2 : 1,
                                         opacity: isHovered ? 0.8 : 0.4
@@ -134,8 +134,8 @@ export const PatternDependencyGraph: React.FC<Props> = ({ graph, moduleId }) => 
                                     cx={pos.x}
                                     cy={pos.y}
                                     r={node.type === 'root' ? 4 : 3}
-                                    fill={node.type === 'root' ? "#3b82f6" : "#0a0118"}
-                                    stroke={node.type === 'root' ? "none" : "#a855f7"}
+                                    fill={node.type === 'root' ? "#EE544A" : "#14051e"}
+                                    stroke={node.type === 'root' ? "none" : "#EC4186"}
                                     strokeWidth={0.5}
                                 />
 
@@ -146,7 +146,7 @@ export const PatternDependencyGraph: React.FC<Props> = ({ graph, moduleId }) => 
                                         cy={pos.y}
                                         r={node.type === 'root' ? 5 : 4}
                                         fill="none"
-                                        stroke={node.type === 'root' ? "#3b82f6" : "#a855f7"}
+                                        stroke={node.type === 'root' ? "#EE544A" : "#EC4186"}
                                         strokeWidth={0.2}
                                         className="animate-ping"
                                     />
@@ -175,11 +175,11 @@ export const PatternDependencyGraph: React.FC<Props> = ({ graph, moduleId }) => 
                             initial={{ opacity: 0, y: 20, scale: 0.9 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 20, scale: 0.9 }}
-                            className="absolute bottom-6 left-6 right-6 p-6 rounded-2xl bg-white/[0.05] border border-white/10 backdrop-blur-2xl z-30 flex items-start justify-between"
+                            className="absolute bottom-6 left-6 right-6 p-6 rounded-2xl bg-white/[0.05] border border-[#EC4186]/20 backdrop-blur-2xl z-30 flex items-start justify-between shadow-[0_10px_40px_-10px_rgba(236,65,134,0.3)]"
                         >
                             <div className="space-y-2">
                                 <div className="flex items-center gap-2">
-                                    <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-widest ${selectedNode.type === 'root' ? 'bg-accent-blue/20 text-accent-blue' : 'bg-purple-500/20 text-purple-400'}`}>
+                                    <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-widest ${selectedNode.type === 'root' ? 'bg-[#EE544A]/20 text-[#EE544A]' : 'bg-[#EC4186]/20 text-[#EC4186]'}`}>
                                         {selectedNode.type} node
                                     </span>
                                     <h4 className="text-xl font-bold text-white uppercase italic">{selectedNode.label}</h4>
@@ -189,7 +189,7 @@ export const PatternDependencyGraph: React.FC<Props> = ({ graph, moduleId }) => 
                                         ? `The foundational structure for the ${moduleId} module. Click on patterns to see how it transforms.`
                                         : `This pattern leverages the internal memory layout of ${moduleId} to achieve optimal time complexity.`}
                                 </p>
-                                <button className="flex items-center gap-2 text-accent-blue text-xs font-bold uppercase tracking-widest hover:underline pt-2">
+                                <button className="flex items-center gap-2 text-[#EC4186] text-xs font-bold uppercase tracking-widest hover:underline pt-2">
                                     Learn Pattern Strategy <ArrowRight size={14} />
                                 </button>
                             </div>
@@ -211,11 +211,11 @@ export const PatternDependencyGraph: React.FC<Props> = ({ graph, moduleId }) => 
                 </div>
                 <div className="flex items-center gap-4 text-[10px] whitespace-nowrap">
                     <div className="flex items-center gap-1.5">
-                        <div className="w-2 h-2 rounded-full bg-accent-blue" />
+                        <div className="w-2 h-2 rounded-full bg-[#EE544A]" />
                         <span className="text-white/60 uppercase">Foundational Unit</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                        <div className="w-2 h-2 rounded-full border border-purple-500" />
+                        <div className="w-2 h-2 rounded-full border border-[#EC4186]" />
                         <span className="text-white/60 uppercase">Derived Algorithmic Pattern</span>
                     </div>
                     <div className="flex items-center gap-1.5">

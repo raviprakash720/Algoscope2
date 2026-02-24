@@ -53,7 +53,7 @@ const DataStructureEngineLegacy: React.FC<{ type: 'stack' | 'queue' | 'array' | 
                                 y: 0,
                                 x: 0,
                                 backgroundColor: highlightedIndex === i ? 'rgba(59, 130, 246, 0.5)' : 'rgba(255, 255, 255, 0.05)',
-                                borderColor: highlightedIndex === i ? '#3b82f6' : 'rgba(255, 255, 255, 0.1)'
+                                borderColor: highlightedIndex === i ? '#EE544A' : 'rgba(255, 255, 255, 0.1)'
                             }}
                             exit={{ opacity: 0, scale: 0, y: type === 'stack' ? 50 : 0, x: type === 'queue' ? 50 : 0 }}
                             className="w-16 h-16 rounded-2xl border flex items-center justify-center font-mono text-xl text-white relative shadow-lg bg-white/[0.02]"

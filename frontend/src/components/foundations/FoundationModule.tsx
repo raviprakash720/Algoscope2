@@ -79,7 +79,7 @@ const FoundationModule = () => {
 
     if (!module) {
         return (
-            <div className="min-h-screen bg-[#0a0118] flex items-center justify-center p-6">
+            <div className="min-h-screen bg-[#2b0d38] flex items-center justify-center p-6">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -135,7 +135,7 @@ const FoundationModule = () => {
 
 
     return (
-        <div className="min-h-screen bg-[#0a0118] text-white">
+        <div className="min-h-screen bg-[#2b0d38] text-white">
             <div className="max-w-7xl mx-auto px-6 py-12">
                 {/* Header / Breadcrumbs */}
                 <div className="mb-12">

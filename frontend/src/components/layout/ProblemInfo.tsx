@@ -42,9 +42,9 @@ const ProblemInfo: React.FC = () => {
                 <div className="flex items-center justify-between">
                     <h3 className="text-[10px] uppercase tracking-[0.2em] text-white/30 font-black">Problem Context</h3>
                     <span className={`badge-premium font-bold tracking-[0.2em] py-1 px-3 text-[8px]
-                        ${currentProblem.difficulty === 'Easy' ? 'text-green-400 border-green-500/20 bg-green-500/10' :
-                            currentProblem.difficulty === 'Medium' ? 'text-orange-400 border-orange-500/20 bg-orange-500/10' :
-                                'text-red-400 border-red-500/20 bg-red-500/10'}
+                        ${currentProblem.difficulty === 'Easy' ? 'text-[#EE544A] border-[#EE544A]/20 bg-[#EE544A]/10' :
+                            currentProblem.difficulty === 'Medium' ? 'text-[#EC4186] border-[#EC4186]/20 bg-[#EC4186]/10' :
+                                'text-[#FF6B6B] border-[#FF6B6B]/20 bg-[#FF6B6B]/10'}
                     `}>
                         {currentProblem.difficulty}
                     </span>
@@ -100,7 +100,7 @@ const ProblemInfo: React.FC = () => {
                         onClick={() => setSimulationMode('brute')}
                         className={cn(
                             "flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                            isBruteForce && !compareMode ? "bg-red-500 text-white shadow-glow" : "text-white/30 hover:text-white/60"
+                            isBruteForce && !compareMode ? "bg-[#EE544A] text-white shadow-[0_0_15px_rgba(238,84,74,0.4)]" : "text-white/30 hover:text-white/60"
                         )}
                     >
                         Brute Force
@@ -109,7 +109,7 @@ const ProblemInfo: React.FC = () => {
                         onClick={() => setSimulationMode('optimal')}
                         className={cn(
                             "flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                            !isBruteForce && !compareMode ? "bg-accent-blue text-black shadow-glow" : "text-white/30 hover:text-white/60"
+                            !isBruteForce && !compareMode ? "bg-[#EC4186] text-white shadow-[0_0_15px_rgba(236,65,134,0.4)]" : "text-white/30 hover:text-white/60"
                         )}
                     >
                         Optimal
@@ -118,7 +118,7 @@ const ProblemInfo: React.FC = () => {
                         onClick={() => setSimulationMode('compare')}
                         className={cn(
                             "flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                            compareMode ? "bg-purple-500 text-white shadow-glow" : "text-white/30 hover:text-white/60"
+                            compareMode ? "bg-white text-black font-black" : "text-white/30 hover:text-white/60"
                         )}
                     >
                         Compare
@@ -139,10 +139,10 @@ const ProblemInfo: React.FC = () => {
                         )}
                     >
                         <div className="flex items-center gap-2 mb-3">
-                            <Zap size={12} className={compareMode ? "text-purple-400" : isBruteForce ? "text-red-400" : "text-accent-blue"} />
+                            <Zap size={12} className={compareMode ? "text-white" : isBruteForce ? "text-[#EE544A]" : "text-[#EC4186]"} />
                             <span className={cn(
                                 "text-[10px] uppercase font-black tracking-widest",
-                                compareMode ? "text-purple-400" : isBruteForce ? "text-red-400" : "text-accent-blue"
+                                compareMode ? "text-white" : isBruteForce ? "text-[#EE544A]" : "text-[#EC4186]"
                             )}>
                                 {compareMode ? "Efficiency Gain Engine" : isBruteForce ? "Naive Analysis" : "Optimal Strategy"}
                             </span>
@@ -168,8 +168,8 @@ const ProblemInfo: React.FC = () => {
                 <div className="space-y-4">
                     {(isBruteForce || compareMode) && brutePseudocode && (
                         <div className="space-y-2">
-                            <span className="text-[8px] font-black text-red-400/60 uppercase tracking-widest pl-1">Brute-Force Ops</span>
-                            <pre className="p-4 rounded-xl bg-black/60 border border-white/10 font-mono text-[10px] leading-relaxed text-white/60 overflow-x-auto">
+                            <span className="text-[8px] font-black text-[#EE544A]/60 uppercase tracking-widest pl-1">Brute-Force Ops</span>
+                            <pre className="p-4 rounded-xl bg-black/60 border border-white/10 font-mono text-[10px] leading-relaxed text-white/40 overflow-x-auto">
                                 {brutePseudocode}
                             </pre>
                         </div>
@@ -220,7 +220,7 @@ const ProblemInfo: React.FC = () => {
                     </div>
                     <button
                         onClick={refreshSteps}
-                        className="w-full py-4 bg-accent-blue text-black rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-glow hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                        className="w-full py-4 bg-[#EC4186] text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-[0_5px_15px_rgba(236,65,134,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
                     >
                         <RefreshCw size={14} />
                         Sync Lab Parameters
@@ -252,8 +252,8 @@ const ProblemInfo: React.FC = () => {
                     <div className="rounded-2xl bg-white/[0.02] border border-white/10 overflow-hidden shadow-2xl">
                         <div className="grid grid-cols-3 gap-2 px-5 py-4 bg-white/[0.05] text-[9px] font-black text-white/40 uppercase tracking-[0.2em] border-b border-white/10">
                             <span>Complexity</span>
-                            <span className="text-red-400/60">Brute Force</span>
-                            <span className="text-accent-blue/60">Optimal</span>
+                            <span className="text-[#EE544A]/60">Brute Force</span>
+                            <span className="text-[#EC4186]/60">Optimal</span>
                         </div>
                         <div className="p-6 space-y-5">
                             <div className="grid grid-cols-3 gap-2 text-[12px] items-center">
@@ -261,8 +261,8 @@ const ProblemInfo: React.FC = () => {
                                     <Clock size={12} className="text-white/20" />
                                     <span className="font-bold">Time</span>
                                 </div>
-                                <span className="text-red-400 font-mono font-black">{currentProblem.complexity?.brute?.time || ''}</span>
-                                <span className="text-accent-blue font-mono font-black">{currentProblem.complexity?.optimal?.time || ''}</span>
+                                <span className="text-[#EE544A] font-mono font-black">{currentProblem.complexity?.brute?.time || ''}</span>
+                                <span className="text-[#EC4186] font-mono font-black">{currentProblem.complexity?.optimal?.time || ''}</span>
                             </div>
                             <div className="grid grid-cols-3 gap-2 text-[12px] items-center">
                                 <div className="flex items-center gap-2 text-white/60">
@@ -275,10 +275,10 @@ const ProblemInfo: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="p-6 rounded-2xl bg-gradient-to-br from-accent-blue/10 to-transparent border border-accent-blue/20 shadow-glow-sm">
+                    <div className="p-6 rounded-2xl bg-gradient-to-br from-[#EC4186]/10 to-transparent border border-[#EC4186]/20 shadow-[0_10px_30px_rgba(236,65,134,0.1)]">
                         <div className="flex items-center gap-2 mb-3">
-                            <Zap size={14} className="text-accent-blue" />
-                            <h4 className="text-[10px] font-black text-accent-blue uppercase tracking-[0.2em]">Platform Insight</h4>
+                            <Zap size={14} className="text-[#EC4186]" />
+                            <h4 className="text-[10px] font-black text-[#EC4186] uppercase tracking-[0.2em]">Platform Insight</h4>
                         </div>
                         <p className="text-[12px] text-white/80 leading-relaxed font-medium">
                             {currentProblem.efficiencyGain || ""}
