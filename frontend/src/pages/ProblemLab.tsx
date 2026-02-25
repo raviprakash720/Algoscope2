@@ -1,76 +1,111 @@
-import React, { useEffect, Suspense, lazy } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useParams, Navigate, Link } from 'react-router-dom'
 import { useStore } from '../store/useStore'
-import ProblemInfo from '../components/layout/ProblemInfo'
-import ErrorBoundary from '../components/common/ErrorBoundary'
 import LabSkeleton from '../components/layout/LabSkeleton'
-import { motion, AnimatePresence } from 'framer-motion'
-import {
-    ChevronLeft,
-    Play,
-    Pause,
-    SkipBack,
-    SkipForward,
-    RefreshCw,
-} from 'lucide-react'
-import { cn } from '../utils/cn'
-
-// Lazy loaded heavy components
-const VizPanel = lazy(() => import('../components/layout/VizPanel'))
-const StateTracker = lazy(() => import('../components/problem/StateTracker'))
-const SuccessSummary = lazy(() => import('../components/problem/SuccessSummary'))
-const ComparisonSummary = lazy(() => import('../components/problem/ComparisonSummary'))
+import CodeEditor from '../components/problem/CodeEditor'
+import OutputPanel from '../components/problem/OutputPanel'
+import VisualizationPanel from '../components/problem/VisualizationPanel'
+import { ChevronLeft, Eye } from 'lucide-react'
 
 const ProblemLab: React.FC = () => {
     const { slug } = useParams<{ slug: string }>()
     const currentProblem = useStore(state => state.currentProblem)
     const fetchProblemBySlug = useStore(state => state.fetchProblemBySlug)
-    const isBruteForce = useStore(state => state.isBruteForce)
-    const compareMode = useStore(state => state.compareMode)
-    const isPlaying = useStore(state => state.isPlaying)
-    const setPlaying = useStore(state => state.setPlaying)
     const isEngineInitialized = useStore(state => state.isEngineInitialized)
-    const refreshSteps = useStore(state => state.refreshSteps)
-    const currentStepIndex = useStore(state => state.currentStepIndex)
-    const nextStep = useStore(state => state.nextStep)
-    const prevStep = useStore(state => state.prevStep)
-    const setStep = useStore(state => state.setStep)
     const resetState = useStore(state => state.resetState)
     const error = useStore(state => state.error)
+    const executeCode = useStore(state => state.executeCode)
+    const resetCodeExecution = useStore(state => state.resetCodeExecution)
+    const [showVisualizer, setShowVisualizer] = useState(false)
+    
+    // Animation playback state
+    const isPlaying = useStore(state => state.isPlaying)
+    const currentStepIndex = useStore(state => state.currentStepIndex)
+    const setStep = useStore(state => state.setStep)
+    const setPlaying = useStore(state => state.setPlaying)
     const playbackSpeed = useStore(state => state.playbackSpeed)
-    const setSpeed = useStore(state => state.setSpeed)
-    const [showSummary, setShowSummary] = React.useState(false)
-
-    useEffect(() => {
-        if (slug) {
-            fetchProblemBySlug(slug)
-            setShowSummary(false)
-        }
-        return () => resetState()
-    }, [slug, fetchProblemBySlug, resetState])
-
-    const steps = isBruteForce ? currentProblem?.brute_force_steps : currentProblem?.optimal_steps
+    const isBruteForce = useStore(state => state.isBruteForce)
+    
+    const steps = isBruteForce 
+        ? currentProblem?.brute_force_steps 
+        : currentProblem?.optimal_steps
     const totalSteps = steps?.length || 0
-    const isSuccess = steps && currentStepIndex === steps.length - 1 && steps[currentStepIndex]?.state?.found
-
-    // PLAYBACK LOGIC
+    
+    // Animation playback effect
     useEffect(() => {
         if (!isPlaying) return
         const interval = setInterval(() => {
-            setStep(Math.min(currentStepIndex + 1, totalSteps - 1))
-            if (currentStepIndex >= totalSteps - 1) {
+            if (currentStepIndex < totalSteps - 1) {
+                setStep(currentStepIndex + 1)
+            } else {
                 setPlaying(false)
             }
         }, playbackSpeed)
         return () => clearInterval(interval)
     }, [isPlaying, playbackSpeed, currentStepIndex, totalSteps, setStep, setPlaying])
 
-    // Trigger summary on success
     useEffect(() => {
-        if (isSuccess) {
-            setShowSummary(true)
+        if (slug) {
+            fetchProblemBySlug(slug)
+            resetCodeExecution()
         }
-    }, [isSuccess])
+        return () => resetState()
+    }, [slug, fetchProblemBySlug, resetState, resetCodeExecution])
+
+    // Generate test cases based on problem examples
+    const testCases = useMemo(() => {
+        if (!currentProblem?.examples) return []
+        
+        return currentProblem.examples.map(example => {
+            const inputStr = example.input
+            
+            // Two Sum pattern: nums = [...], target = N
+            const twoSumMatch = inputStr.match(/nums\s*=\s*(\[.+?\])\s*,\s*target\s*=\s*(-?\d+)/)
+            if (twoSumMatch) {
+                return {
+                    input: [JSON.parse(twoSumMatch[1]), parseInt(twoSumMatch[2])],
+                    expected: JSON.parse(example.output)
+                }
+            }
+            
+            // Array + target pattern: [...], target
+            const arrayTargetMatch = inputStr.match(/^\s*(\[.+?\])\s*,\s*(\d+)\s*$/)
+            if (arrayTargetMatch) {
+                return {
+                    input: [JSON.parse(arrayTargetMatch[1]), parseInt(arrayTargetMatch[2])],
+                    expected: JSON.parse(example.output)
+                }
+            }
+            
+            // Single array input
+            const arrayMatch = inputStr.match(/^\s*(\[.+?\])\s*$/)
+            if (arrayMatch) {
+                return {
+                    input: JSON.parse(arrayMatch[1]),
+                    expected: JSON.parse(example.output)
+                }
+            }
+            
+            // String input
+            const stringMatch = inputStr.match(/["'](.+?)["']/)
+            if (stringMatch) {
+                return {
+                    input: stringMatch[1],
+                    expected: JSON.parse(example.output)
+                }
+            }
+            
+            return { input: inputStr, expected: example.output }
+        })
+    }, [currentProblem])
+    
+    const isCorrect = useStore(state => state.codeExecution.isCorrect)
+
+    const handleRunCode = () => {
+        if (testCases.length > 0) {
+            executeCode(testCases)
+        }
+    }
 
     if (error) return <Navigate to="/problems" replace />
     if (!currentProblem || !isEngineInitialized) return <LabSkeleton />
@@ -78,177 +113,202 @@ const ProblemLab: React.FC = () => {
     const formattedId = String(currentProblem.id).padStart(3, '0')
 
     return (
-        <div className="h-screen flex flex-col bg-background text-white font-outfit overflow-hidden">
-            {/* 1️⃣ HEADER */}
-            <header className="h-20 border-b border-white/5 flex items-center justify-between px-10 shrink-0 bg-background/50 backdrop-blur-md z-20">
+        <div className="h-screen flex flex-col bg-[#21092b] text-white font-outfit overflow-hidden">
+            {/* Header */}
+            <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 shrink-0 bg-[#21092b]/80 backdrop-blur-md z-20">
                 <div className="flex items-center gap-4">
                     <Link
                         to="/problems"
-                        className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:border-white/20 transition-all"
+                        className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:border-white/20 transition-all"
                     >
-                        <ChevronLeft size={20} />
+                        <ChevronLeft size={18} />
                     </Link>
                     <div className="flex flex-col">
-                        <div className="flex items-center gap-2 mb-0.5">
-                            <span className="text-[10px] font-mono font-black text-[#EC4186] px-1.5 py-0.5 bg-[#EC4186]/10 rounded">#{formattedId}</span>
-                            <h1 className="text-sm font-bold text-white uppercase tracking-tight">{currentProblem.title}</h1>
-                        </div>
                         <div className="flex items-center gap-2">
-                            <div className={cn(
-                                "flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[8px] font-black uppercase tracking-widest transition-all duration-300",
-                                compareMode ? "bg-white/20 border-white/30 text-white shadow-[0_0_15px_rgba(255,255,255,0.2)]" :
-                                    isBruteForce ? "bg-[#EE544A]/20 border-[#EE544A]/30 text-[#EE544A] shadow-[0_0_15px_rgba(238,84,74,0.2)]" :
-                                        "bg-[#EC4186]/20 border-[#EC4186]/30 text-[#EC4186] shadow-[0_0_15px_rgba(236,65,134,0.2)]"
-                            )}>
-                                <div className={cn("w-1 h-1 rounded-full animate-pulse",
-                                    compareMode ? "bg-white" :
-                                        isBruteForce ? "bg-[#EE544A]" : "bg-[#EC4186]"
-                                )} />
-                                {compareMode ? 'Mode: Compare' : isBruteForce ? 'Mode: Brute' : 'Mode: Optimal'}
-                            </div>
+                            <span className="text-[10px] font-mono font-black text-[#EC4186] px-1.5 py-0.5 bg-[#EC4186]/10 rounded">
+                                #{formattedId}
+                            </span>
+                            <h1 className="text-sm font-bold text-white">{currentProblem.title}</h1>
                         </div>
+                        <span className="text-[10px] text-white/40">{currentProblem.difficulty} • {currentProblem.primaryPattern}</span>
                     </div>
-                </div>
-
-                <div className="flex items-center gap-8 bg-white/[0.03] px-6 py-2 rounded-2xl border border-white/10 hover:border-white/20 transition-all shadow-glow-sm">
-                    <div className="flex items-center gap-4">
-                        <button onClick={prevStep} disabled={currentStepIndex === 0} className="p-2 text-white/40 hover:text-white disabled:opacity-5 transition-all">
-                            <SkipBack size={16} />
-                        </button>
-                        <button
-                            onClick={() => setPlaying(!isPlaying)}
-                            className="w-11 h-11 bg-gradient-to-br from-[#EC4186] to-[#EE544A] text-white rounded-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-[0_5px_15px_rgba(236,65,134,0.4)] border border-white/20"
-                        >
-                            {isPlaying ? <Pause size={18} fill="white" /> : <Play size={18} fill="white" className="ml-0.5" />}
-                        </button>
-                        <button onClick={nextStep} disabled={currentStepIndex === totalSteps - 1} className="p-2 text-white/40 hover:text-white disabled:opacity-5 transition-all">
-                            <SkipForward size={16} />
-                        </button>
-                    </div>
-                    <div className="h-4 w-px bg-white/10" />
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => {
-                                setStep(0)
-                                setPlaying(false)
-                            }}
-                            className="p-2 text-white/40 hover:text-white transition-all flex items-center gap-2 group"
-                            title="Restart Simulation"
-                        >
-                            <RefreshCw size={14} className="group-hover:rotate-180 transition-transform duration-500" />
-                            <span className="text-[9px] font-black uppercase tracking-widest">Restart</span>
-                        </button>
-                    </div>
-                    <div className="h-4 w-px bg-white/10" />
-                    <div className="flex items-center gap-4">
-                        <span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.1em] min-w-[70px]">Step {currentStepIndex + 1} / {totalSteps}</span>
-                        <div className="flex items-center gap-2 bg-black/40 rounded-lg p-1 border border-white/10">
-                            {[2000, 1000, 500, 250].map(s => (
-                                <button
-                                    key={s}
-                                    onClick={() => setSpeed(s)}
-                                    className={cn(
-                                        "px-3 py-1 rounded text-[9px] font-black transition-all uppercase tracking-tighter",
-                                        playbackSpeed === s ? "bg-[#EC4186] text-white shadow-[0_0_10px_rgba(236,65,134,0.4)]" : "text-white/40 hover:text-white/60"
-                                    )}
-                                >
-                                    {s === 2000 ? '0.25x' : s === 1000 ? '0.5x' : s === 500 ? '1x' : '2x'}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                <div className="flex items-center gap-3 invisible">
-                    {/* Metrics removed per user request */}
                 </div>
             </header>
 
-            {/* 🧱 GLOBAL LAYOUT (Middle Section) */}
-            <div className={cn(
-                "flex-1 overflow-hidden grid min-h-0",
-                compareMode ? "grid-cols-[30%_70%]" : "grid-cols-[35%_50%_15%]"
-            )}>
-                {/* 2️⃣ LEFT PANEL (Shown only in non-compare mode) */}
-                <aside className="flex flex-col h-full bg-[#240b33] border-r border-white/5 overflow-y-auto custom-scrollbar shadow-2xl z-10">
-                    <div className="p-8 space-y-10">
-                        <ErrorBoundary>
-                            <Suspense fallback={<div className="h-full flex items-center justify-center"><span className="text-white/20 animate-pulse font-black uppercase tracking-widest text-xs">Accessing Data...</span></div>}>
-                                <ProblemInfo />
-                            </Suspense>
-                        </ErrorBoundary>
-
-                        <div className="pt-6 border-t border-white/5">
-                            <button
-                                onClick={refreshSteps}
-                                className="w-full py-5 bg-[#EC4186]/5 hover:bg-[#EC4186]/10 text-[#EC4186] border border-[#EC4186]/20 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all shadow-[0_5px_15px_rgba(236,65,134,0.05)] flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98]"
-                            >
-                                <RefreshCw size={16} className={isPlaying ? "animate-spin" : ""} />
-                                Reset Simulation
-                            </button>
+            {/* Main Layout: 30% - 70% */}
+            <div className="flex-1 grid grid-cols-[30%_70%] min-h-0">
+                {/* Left Panel: Problem Statement */}
+                <aside className="h-full bg-[#240b33] border-r border-white/5 overflow-y-auto custom-scrollbar">
+                    <div className="p-6">
+                        <h2 className="text-xs font-bold uppercase tracking-wider text-white/40 mb-4">
+                            Problem Statement
+                        </h2>
+                        <div className="prose prose-invert prose-sm max-w-none">
+                            <p className="text-white/80 text-sm leading-relaxed whitespace-pre-wrap">
+                                {currentProblem.problem_statement}
+                            </p>
                         </div>
+
+                        {/* Constraints */}
+                        {currentProblem.constraints && currentProblem.constraints.length > 0 && (
+                            <div className="mt-6">
+                                <h3 className="text-xs font-bold uppercase tracking-wider text-white/40 mb-3">
+                                    Constraints
+                                </h3>
+                                <ul className="space-y-2">
+                                    {currentProblem.constraints.map((constraint, idx) => (
+                                        <li key={idx} className="text-white/60 text-xs flex items-start gap-2">
+                                            <span className="text-[#EC4186] mt-1">•</span>
+                                            <code className="bg-white/5 px-1.5 py-0.5 rounded">{constraint}</code>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+
+                        {/* Complexity - Only shows when solved */}
+                        {isCorrect && currentProblem.complexity && (
+                            <div className="mt-6">
+                                <h3 className="text-xs font-bold uppercase tracking-wider text-white/40 mb-3">
+                                    Complexity
+                                </h3>
+                                <div className="rounded-lg p-3 border bg-green-500/10 border-green-500/30 transition-all duration-500">
+                                    <div className="space-y-2">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-xs text-white/50">Time</span>
+                                            <code className="text-xs font-mono text-green-400">
+                                                {currentProblem.time_complexity || currentProblem.complexity?.optimal?.time || 'O(n)'}
+                                            </code>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-xs text-white/50">Space</span>
+                                            <code className="text-xs font-mono text-green-400">
+                                                {currentProblem.space_complexity || currentProblem.complexity?.optimal?.space || 'O(n)'}
+                                            </code>
+                                        </div>
+                                    </div>
+                                    <div className="mt-2 pt-2 border-t border-green-500/20 text-[10px] text-green-400 text-center">
+                                        ✓ Solution Accepted
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Custom Input */}
+                        <div className="mt-6">
+                            <h3 className="text-xs font-bold uppercase tracking-wider text-white/40 mb-3">
+                                Custom Input
+                            </h3>
+                            <div className="space-y-3">
+                                <div>
+                                    <label className="text-[10px] text-white/50 block mb-1">
+                                        {currentProblem.input_settings?.input1.label || 'Input'}
+                                    </label>
+                                    <input
+                                        type="text"
+                                        defaultValue={currentProblem.input_settings?.input1.placeholder || ''}
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-[#EC4186]/50"
+                                        placeholder={currentProblem.input_settings?.input1.placeholder || 'Enter input...'}
+                                    />
+                                </div>
+                                {currentProblem.input_settings?.input2 && (
+                                    <div>
+                                        <label className="text-[10px] text-white/50 block mb-1">
+                                            {currentProblem.input_settings.input2.label}
+                                        </label>
+                                        <input
+                                            type="text"
+                                            defaultValue={currentProblem.input_settings.input2.placeholder}
+                                            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-[#EC4186]/50"
+                                            placeholder={currentProblem.input_settings.input2.placeholder}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Examples */}
+                        {currentProblem.examples && currentProblem.examples.length > 0 && (
+                            <div className="mt-6">
+                                <h3 className="text-xs font-bold uppercase tracking-wider text-white/40 mb-3">
+                                    Examples
+                                </h3>
+                                <div className="space-y-3">
+                                    {currentProblem.examples.map((example, idx) => (
+                                        <div key={idx} className="bg-white/5 rounded-lg p-3 border border-white/5">
+                                            <div className="text-[10px] text-white/30 mb-2">Example {idx + 1}</div>
+                                            <div className="text-xs text-white/70 space-y-1">
+                                                <div><span className="text-white/40">Input:</span> {example.input}</div>
+                                                <div><span className="text-white/40">Output:</span> {example.output}</div>
+                                                {example.explanation && (
+                                                    <div className="text-white/50 mt-2">{example.explanation}</div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </aside>
 
-                {/* 3️⃣ CENTER PANEL – VISUALIZATION CANVAS */}
-                <main className={cn(
-                    "flex flex-col bg-[#1b062b] relative border-r border-white/5 pattern-grid overflow-hidden",
-                    compareMode ? "col-span-1" : ""
-                )}>
-                    <Suspense fallback={<LabSkeleton />}>
-                        <ErrorBoundary>
-                            <VizPanel />
-                        </ErrorBoundary>
-                    </Suspense>
-
-                    {/* Full Screen Summary Overlay */}
-                    <AnimatePresence>
-                        {isSuccess && showSummary && (
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                className="absolute inset-0 z-50 flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm"
-                            >
-                                <div className="w-full max-w-2xl relative">
-                                    <Suspense fallback={<div className="text-white/20 animate-pulse font-black uppercase tracking-widest text-xs text-center">Finalizing Results...</div>}>
-                                        {compareMode ? (
-                                            <ComparisonSummary
-                                                problem={currentProblem}
-                                                onReset={() => {
-                                                    refreshSteps()
-                                                    setShowSummary(false)
-                                                }}
-                                                onClose={() => setShowSummary(false)}
-                                            />
-                                        ) : (
-                                            <SuccessSummary
-                                                problem={currentProblem}
-                                                step={steps[currentStepIndex]}
-                                                onReset={() => {
-                                                    refreshSteps()
-                                                    setShowSummary(false)
-                                                }}
-                                                onClose={() => setShowSummary(false)}
-                                            />
-                                        )}
-                                    </Suspense>
+                {/* Center Panel: Code Editor OR Visualization */}
+                <main className="h-full flex flex-col bg-[#1b062b] border-r border-white/5 relative">
+                    {!showVisualizer ? (
+                        // Show Code Editor
+                        <>
+                            <div className="flex-1 min-h-0 p-4">
+                                <div className="h-full flex flex-col">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <h2 className="text-xs font-bold uppercase tracking-wider text-white/40">
+                                            Code Editor
+                                        </h2>
+                                        <span className="text-[10px] text-white/30">JavaScript</span>
+                                    </div>
+                                    <div className="flex-1 min-h-0">
+                                        <CodeEditor height="100%" />
+                                    </div>
                                 </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </main>
+                            </div>
 
-                {/* 4️⃣ RIGHT PANEL – STATE TRACKER */}
-                {!compareMode && (
-                    <aside className="h-full flex flex-col bg-[#240b33] shadow-2xl z-10">
-                        <Suspense fallback={null}>
-                            <ErrorBoundary>
-                                <StateTracker />
-                            </ErrorBoundary>
-                        </Suspense>
-                    </aside>
-                )}
+                            {/* Output Panel */}
+                            <div className="h-auto max-h-[35%] border-t border-white/5 bg-[#240b33] p-4 overflow-y-auto custom-scrollbar">
+                                <OutputPanel onRunCode={handleRunCode} />
+                            </div>
+
+                            {/* Visualizer Toggle Button - Bottom Right */}
+                            <button
+                                onClick={() => setShowVisualizer(true)}
+                                className="absolute bottom-6 right-6 px-4 py-3 rounded-xl font-bold text-sm uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg bg-gradient-to-r from-[#EC4186] to-[#EE544A] text-white hover:shadow-[0_0_20px_rgba(236,65,134,0.4)] hover:scale-105 z-20"
+                            >
+                                <Eye size={18} />
+                                Show Visualizer
+                            </button>
+                        </>
+                    ) : (
+                        // Show Visualization
+                        <div className="h-full flex flex-col">
+                            {/* Back Button Header */}
+                            <div className="h-14 border-b border-white/5 flex items-center px-4 bg-white/5">
+                                <button
+                                    onClick={() => setShowVisualizer(false)}
+                                    className="flex items-center gap-2 text-white/60 hover:text-white transition-colors"
+                                >
+                                    <ChevronLeft size={18} />
+                                    <span className="text-sm font-medium">Back to Editor</span>
+                                </button>
+                                <span className="ml-auto text-xs font-bold uppercase tracking-wider text-white/40">
+                                    Visualization
+                                </span>
+                            </div>
+                            
+                            {/* Visualization Content */}
+                            <div className="flex-1 overflow-hidden">
+                                <VisualizationPanel />
+                            </div>
+                        </div>
+                    )}
+                </main>
             </div>
         </div>
     )

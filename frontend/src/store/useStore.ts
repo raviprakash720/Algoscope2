@@ -45,6 +45,23 @@ interface PatternStats {
     drillScore?: number      // "Drills"
 }
 
+interface CodeExecutionState {
+    userCode: string
+    output: string
+    isError: boolean
+    isCorrect: boolean
+    isVisualizationUnlocked: boolean
+    isExecuting: boolean
+    testResults: TestResult[]
+}
+
+interface TestResult {
+    input: any
+    expected: any
+    actual: any
+    passed: boolean
+}
+
 interface AlgoScopeState {
     currentProblem: Problem | null
     currentStepIndex: number
@@ -70,6 +87,8 @@ interface AlgoScopeState {
             accuracy: number
         }
     }>
+    // Code execution state
+    codeExecution: CodeExecutionState
 
     setProblem: (problem: Problem) => void
     fetchAllProblems: () => Promise<void>
@@ -89,6 +108,11 @@ interface AlgoScopeState {
     trackActivity: (pattern: string, metric: keyof Omit<PatternStats, 'confidence'>, value?: number) => void
     finalizeThinkingTime: (slug: string) => void
     setCurrentPage: (page: number) => void
+    // Code execution actions
+    setUserCode: (code: string) => void
+    executeCode: (testCases: { input: any; expected: any }[]) => void
+    resetCodeExecution: () => void
+    unlockVisualization: () => void
     nextPage: () => void
     prevPage: () => void
     generatePatternInsight: (slug: string) => string
@@ -140,6 +164,15 @@ export const useStore = create<AlgoScopeState>((set, get) => ({
     currentPage: 1,
     itemsPerPage: 12,
     drillProgress: JSON.parse(localStorage.getItem('algoScope_drillProgress') || '{}'),
+    codeExecution: {
+        userCode: '',
+        output: '',
+        isError: false,
+        isCorrect: false,
+        isVisualizationUnlocked: false,
+        isExecuting: false,
+        testResults: []
+    },
 
     trackActivity: (pattern: string, metric: keyof Omit<PatternStats, 'confidence'>, value = 1) => {
         set((state) => {
@@ -928,5 +961,101 @@ export const useStore = create<AlgoScopeState>((set, get) => ({
             localStorage.setItem('algoScope_drillProgress', JSON.stringify(updatedProgress))
             return { drillProgress: updatedProgress }
         })
+    },
+
+    // Code Execution Actions
+    setUserCode: (code: string) => {
+        set((state) => ({
+            codeExecution: { ...state.codeExecution, userCode: code }
+        }))
+    },
+
+    executeCode: (testCases: { input: any; expected: any }[]) => {
+        const { codeExecution } = get()
+        const userCode = codeExecution.userCode
+
+        set((state) => ({
+            codeExecution: { ...state.codeExecution, isExecuting: true, output: '', isError: false, isCorrect: false }
+        }))
+
+        try {
+            // Create a safe function from user code
+            // eslint-disable-next-line no-new-func
+            const solveFunction = new Function('return ' + userCode)()
+            
+            // Verify solve function exists
+            if (typeof solveFunction !== 'function') {
+                throw new Error('You must define a function named "solve"')
+            }
+
+            const results: TestResult[] = []
+            let allPassed = true
+
+            for (const testCase of testCases) {
+                try {
+                    const actual = solveFunction(testCase.input)
+                    const passed = JSON.stringify(actual) === JSON.stringify(testCase.expected)
+                    results.push({
+                        input: testCase.input,
+                        expected: testCase.expected,
+                        actual,
+                        passed
+                    })
+                    if (!passed) allPassed = false
+                } catch (err: any) {
+                    results.push({
+                        input: testCase.input,
+                        expected: testCase.expected,
+                        actual: err.message,
+                        passed: false
+                    })
+                    allPassed = false
+                }
+            }
+
+            set((state) => ({
+                codeExecution: {
+                    ...state.codeExecution,
+                    isExecuting: false,
+                    testResults: results,
+                    isCorrect: allPassed,
+                    isError: !allPassed,
+                    output: allPassed ? '✓ All test cases passed!' : `✗ ${results.filter(r => !r.passed).length} test case(s) failed.`,
+                    isVisualizationUnlocked: allPassed
+                }
+            }))
+        } catch (err: any) {
+            set((state) => ({
+                codeExecution: {
+                    ...state.codeExecution,
+                    isExecuting: false,
+                    isError: true,
+                    isCorrect: false,
+                    output: `Error: ${err.message}`,
+                    testResults: [],
+                    isVisualizationUnlocked: false
+                }
+            }))
+        }
+    },
+
+    resetCodeExecution: () => {
+        set((state) => ({
+            codeExecution: {
+                ...state.codeExecution,
+                output: '',
+                isError: false,
+                isCorrect: false,
+                isVisualizationUnlocked: false,
+                isExecuting: false,
+                testResults: []
+            }
+        }))
+    },
+
+    unlockVisualization: () => {
+        set((state) => ({
+            codeExecution: { ...state.codeExecution, isVisualizationUnlocked: true }
+        }))
     }
 }))
