@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronLeft } from 'lucide-react'
+import { API_BASE } from '../config/api'
 
 interface Mistake {
     _id: string
@@ -21,7 +22,7 @@ const MistakeDashboard: React.FC = () => {
             try {
                 const userId = localStorage.getItem('algoScope_userId') || 'test_user_1'
                 const response = await fetch(
-                    `${(import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:5000'}/api/mistakes/${userId}`
+                    `${API_BASE}/api/mistakes/${userId}`
                 )
                 
                 if (!response.ok) {

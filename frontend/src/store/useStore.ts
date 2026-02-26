@@ -3,6 +3,7 @@ import { Problem, AlgorithmType } from '../types'
 import { generateFallbackSteps } from '../utils/algoGenerators'
 import { getStrategyForProblem } from '../registry/problemStrategyRegistry'
 import fallbackProblems from '../data/problems.json'
+import { API_BASE } from '../config/api'
 
 
 interface PatternStats {
@@ -370,7 +371,7 @@ export const useStore = create<AlgoScopeState>((set, get) => ({
             const userId = localStorage.getItem('algoScope_userId') || 'guest_' + Date.now()
             if (!localStorage.getItem('algoScope_userId')) localStorage.setItem('algoScope_userId', userId)
 
-            fetch(`${(import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:5000'}/api/progress/update`, {
+            fetch(`${API_BASE}/api/progress/update`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -599,7 +600,7 @@ export const useStore = create<AlgoScopeState>((set, get) => ({
     fetchAllProblems: async () => {
         if (get().problems.length > 0) return
         try {
-            const response = await fetch(`${(import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:5000'}/api/problems`)
+            const response = await fetch(`${API_BASE}/api/problems`)
             if (!response.ok) throw new Error('API Unavailable')
             let data: Problem[] = await response.json()
 
@@ -652,7 +653,7 @@ export const useStore = create<AlgoScopeState>((set, get) => ({
 
         try {
             // Fetch User Progress
-            const response = await fetch(`${(import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:5000'}/api/progress/${userId}`)
+            const response = await fetch(`${API_BASE}/api/progress/${userId}`)
             if (response.ok) {
                 const progressData = await response.json()
                 const newPatternStats = { ...get().patternStats }
@@ -696,7 +697,7 @@ export const useStore = create<AlgoScopeState>((set, get) => ({
             let data = problems.find(p => p.slug === slug)
 
             if (!data) {
-                const response = await fetch(`${(import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:5000'}/api/problems/${slug}`)
+                const response = await fetch(`${API_BASE}/api/problems/${slug}`)
                 if (!response.ok) throw new Error('Problem not found')
                 data = await response.json()
             }
@@ -837,7 +838,7 @@ export const useStore = create<AlgoScopeState>((set, get) => ({
 
             // Priority 2: Backend Attempt (if local returned nothing or dummy)
             set({ isLoading: true })
-            const response = await fetch(`${(import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:5000'}/api/problems/${currentProblem.id}/steps`, {
+            const response = await fetch(`${API_BASE}/api/problems/${currentProblem.id}/steps`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ input: customInput, target: customTarget })
@@ -1020,7 +1021,7 @@ export const useStore = create<AlgoScopeState>((set, get) => ({
                 const userId = localStorage.getItem('algoScope_userId') || 'test_user_1'
                 const mistakeType = hasRuntimeError ? 'runtime_error' : 'wrong_output'
                 
-                fetch(`${(import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:5000'}/api/mistakes`, {
+                fetch(`${API_BASE}/api/mistakes`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -1048,7 +1049,7 @@ export const useStore = create<AlgoScopeState>((set, get) => ({
             const { currentProblem } = get()
             const userId = localStorage.getItem('algoScope_userId') || 'test_user_1'
             
-            fetch(`${(import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:5000'}/api/mistakes`, {
+            fetch(`${API_BASE}/api/mistakes`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
