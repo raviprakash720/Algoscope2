@@ -124,9 +124,30 @@ const ProblemLab: React.FC = () => {
         }
     }, [currentProblem, setCustomInput, setCustomTarget])
 
+    // Reset code execution state when problem changes
+    useEffect(() => {
+        resetCodeExecution();
+    }, [currentProblem, resetCodeExecution]);
+
     const handleRunCode = () => {
+        console.log('Run button clicked');
+        console.log('Test cases:', testCases);
+        console.log('Current problem:', currentProblem?.slug);
+        
         if (testCases.length > 0) {
-            executeCode(testCases)
+            console.log('Executing code with test cases');
+            executeCode(testCases);
+        } else {
+            console.log('No test cases available');
+            // For Median of Two Sorted Arrays, use hardcoded test cases
+            if (currentProblem?.slug === 'median-of-two-sorted-arrays') {
+                const medianTestCases = [
+                    { input: [[1, 3], [2]], expected: 2 },
+                    { input: [[1, 2], [3, 4]], expected: 2.5 }
+                ];
+                console.log('Using hardcoded test cases for median problem');
+                executeCode(medianTestCases);
+            }
         }
     }
     

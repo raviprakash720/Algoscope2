@@ -50,7 +50,7 @@ interface CodeExecutionState {
     userCode: string
     output: string
     isError: boolean
-    isCorrect: boolean
+    isCorrect: boolean | null
     isVisualizationUnlocked: boolean
     isExecuting: boolean
     testResults: TestResult[]
@@ -169,7 +169,7 @@ export const useStore = create<AlgoScopeState>((set, get) => ({
         userCode: '',
         output: '',
         isError: false,
-        isCorrect: false,
+        isCorrect: null,
         isVisualizationUnlocked: false,
         isExecuting: false,
         testResults: []
@@ -976,7 +976,7 @@ export const useStore = create<AlgoScopeState>((set, get) => ({
         const userCode = codeExecution.userCode
 
         set((state) => ({
-            codeExecution: { ...state.codeExecution, isExecuting: true, output: '', isError: false, isCorrect: false }
+            codeExecution: { ...state.codeExecution, isExecuting: true, output: '', isError: false, isCorrect: null }
         }))
 
         try {
@@ -989,6 +989,74 @@ export const useStore = create<AlgoScopeState>((set, get) => ({
                 throw new Error('You must define a function named "solve"')
             }
 
+            // Special handling for Median of Two Sorted Arrays - Use exact test cases
+            if (currentProblem?.slug === 'median-of-two-sorted-arrays') {
+                const medianTestCases = [
+                    { input: [[1, 3], [2]], expected: 2 },
+                    { input: [[1, 2], [3, 4]], expected: 2.5 }
+                ];
+                
+                const results: TestResult[] = []
+                let allPassed = true
+                let hasRuntimeError = false
+
+                for (const testCase of medianTestCases) {
+                    try {
+                        const actual = solveFunction(testCase.input)
+                        const passed = Math.abs(actual - testCase.expected) < 0.0001 // Handle floating point comparison
+                        results.push({
+                            input: testCase.input,
+                            expected: testCase.expected,
+                            actual,
+                            passed
+                        })
+                        if (!passed) allPassed = false
+                    } catch (err: any) {
+                        results.push({
+                            input: testCase.input,
+                            expected: testCase.expected,
+                            actual: err.message,
+                            passed: false
+                        })
+                        allPassed = false
+                        hasRuntimeError = true
+                    }
+                }
+
+                // Log mistake if solution is incorrect
+                if (!allPassed) {
+                    const userId = localStorage.getItem('algoScope_userId') || 'test_user_1'
+                    const mistakeType = hasRuntimeError ? 'runtime_error' : 'wrong_output'
+                    
+                    fetch(`${API_BASE}/api/mistakes`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            userId,
+                            problemId: currentProblem?.id,
+                            pattern: currentProblem?.primaryPattern,
+                            mistakeType,
+                            expectedOutput: results.map(r => r.expected),
+                            receivedOutput: results.map(r => r.actual)
+                        })
+                    }).catch(err => console.warn('Failed to log mistake:', err))
+                }
+
+                set((state) => ({
+                    codeExecution: {
+                        ...state.codeExecution,
+                        isExecuting: false,
+                        testResults: results,
+                        isCorrect: allPassed,
+                        isError: !allPassed,
+                        output: allPassed ? '✓ All test cases passed!' : `✗ ${results.filter(r => !r.passed).length} test case(s) failed.`,
+                        isVisualizationUnlocked: allPassed
+                    }
+                }))
+                return
+            }
+
+            // Standard test case handling for other problems
             const results: TestResult[] = []
             let allPassed = true
             let hasRuntimeError = false
@@ -1080,7 +1148,7 @@ export const useStore = create<AlgoScopeState>((set, get) => ({
                 ...state.codeExecution,
                 output: '',
                 isError: false,
-                isCorrect: false,
+                isCorrect: null,
                 isVisualizationUnlocked: false,
                 isExecuting: false,
                 testResults: []

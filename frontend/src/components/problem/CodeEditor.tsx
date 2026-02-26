@@ -13,52 +13,16 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ height = '400px' }) => {
 
     // Generate default code template based on problem
     const getDefaultCode = () => {
-        if (!currentProblem) return '// Write your solution here\nfunction solve(input) {\n  // Your code here\n}'
-        
-        const problemSlug = currentProblem.slug
-        
-        // Two Sum template
-        if (problemSlug === 'two-sum') {
-            return `// Two Sum Solution
-// Input: [nums, target] where nums is an array and target is a number
-// Output: indices of the two numbers that add up to target
-
-function solve(input) {
-  const [nums, target] = input;
-  
-  // Write your solution here
-  const map = new Map();
-  
-  for (let i = 0; i < nums.length; i++) {
-    const complement = target - nums[i];
-    
-    if (map.has(complement)) {
-      return [map.get(complement), i];
-    }
-    
-    map.set(nums[i], i);
-  }
-  
-  return [];
-}`
-        }
-        
-        // Default template
-        return `// ${currentProblem.title}
-// Difficulty: ${currentProblem.difficulty}
-
-function solve(input) {
-  // Write your solution here
-  
-}`
+        // Always return empty string - no predefined templates
+        return "";
     }
 
     // Set default code when problem changes
     React.useEffect(() => {
-        if (currentProblem && !userCode) {
-            setUserCode(getDefaultCode())
+        if (currentProblem) {
+            setUserCode("") // Always set to empty string when problem changes
         }
-    }, [currentProblem])
+    }, [currentProblem, setUserCode])
 
     const handleEditorChange = (value: string | undefined) => {
         if (value !== undefined) {

@@ -37,6 +37,18 @@ const OutputPanel: React.FC<OutputPanelProps> = ({ onRunCode }) => {
                 )}
             </button>
 
+            {/* Status Badge - Hackathon Demo */}
+            {isCorrect !== null && (
+                <div className={cn(
+                    "w-full py-3 px-4 rounded-xl font-bold text-center text-sm uppercase tracking-wider transition-all",
+                    isCorrect
+                        ? "bg-green-500/20 border border-green-500/40 text-green-300"
+                        : "bg-red-500/20 border border-red-500/40 text-red-300"
+                )}>
+                    {isCorrect ? "✔ Correct Solution" : "✘ Wrong Solution"}
+                </div>
+            )}
+
             {/* Output Display */}
             {output && (
                 <div
