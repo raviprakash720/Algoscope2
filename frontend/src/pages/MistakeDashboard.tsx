@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeft, ChevronDown, ChevronUp } from 'lucide-react'
 import { API_BASE } from '../config/api'
 
 interface Mistake {
@@ -16,6 +16,93 @@ const MistakeDashboard: React.FC = () => {
     const [mistakes, setMistakes] = useState<Mistake[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const [expandedId, setExpandedId] = useState<string | null>(null)
+
+    // Generate explanation based on problem ID
+    const getExplanation = (problemId: number) => {
+        if (problemId === 4) { // Median of Two Sorted Arrays
+            return {
+                title: "Correct Approach Explanation",
+                content: (
+                    <div className="space-y-4">
+                        <div>
+                            <h4 className="font-bold text-white mb-2">Why Your Solution Was Wrong</h4>
+                            <p className="text-white/70 text-sm">
+                                Your solution likely failed to properly merge and sort the two arrays, 
+                                or incorrectly calculated the median position. The key issue is understanding 
+                                that the median requires finding the middle element(s) of the combined sorted array.
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h4 className="font-bold text-white mb-2">Correct Thinking Process</h4>
+                            <ul className="text-white/70 text-sm space-y-1 ml-4">
+                                <li className="list-disc">Merge both input arrays into a single array</li>
+                                <li className="list-disc">Sort the combined array in ascending order</li>
+                                <li className="list-disc">Calculate the middle index based on array length</li>
+                                <li className="list-disc">For even length: average of two middle elements</li>
+                                <li className="list-disc">For odd length: the middle element</li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h4 className="font-bold text-white mb-2">Step-by-Step Implementation</h4>
+                            <ol className="text-white/70 text-sm space-y-1 ml-4">
+                                <li className="list-decimal">Combine arrays: [...nums1, ...nums2]</li>
+                                <li className="list-decimal">Sort: .sort((a, b) {"=>"} a - b)</li>
+                                <li className="list-decimal">Find length: const n = merged.length</li>
+                                <li className="list-decimal">Check if even or odd: n % 2 === 0</li>
+                                <li className="list-decimal">Calculate median accordingly</li>
+                            </ol>
+                        </div>
+                        
+                        <div>
+                            <h4 className="font-bold text-white mb-2">Time Complexity</h4>
+                            <p className="text-white/70 text-sm">
+                                <span className="font-mono">O((m+n) log(m+n))</span> where m and n are the lengths of the two arrays. 
+                                This is due to the sorting operation on the merged array of size (m+n).
+                            </p>
+                        </div>
+                        
+                        <div className="bg-white/5 rounded-lg p-3 mt-2">
+                            <h4 className="font-bold text-white mb-2">Correct Implementation Logic</h4>
+                            <pre className="text-xs text-white/80 bg-black/20 p-2 rounded overflow-x-auto">
+{`function solve(input) {
+  const [nums1, nums2] = input;
+  const merged = [...nums1, ...nums2].sort((a, b) => a - b);
+  const n = merged.length;
+  
+  if (n % 2 === 0) {
+    return (merged[n/2 - 1] + merged[n/2]) / 2;
+  } else {
+    return merged[Math.floor(n/2)];
+  }
+}`}</pre>
+                        </div>
+                    </div>
+                )
+            };
+        }
+        
+        // Default explanation for other problems
+        return {
+            title: "General Problem-Solving Approach",
+            content: (
+                <div className="space-y-3">
+                    <p className="text-white/70 text-sm">
+                        Review the problem requirements carefully and ensure your solution handles all edge cases.
+                    </p>
+                    <p className="text-white/70 text-sm">
+                        Common issues include incorrect logic, boundary conditions, or misunderstanding the expected output format.
+                    </p>
+                </div>
+            )
+        };
+    };
+
+    const toggleExpand = (mistakeId: string) => {
+        setExpandedId(expandedId === mistakeId ? null : mistakeId);
+    };
 
     useEffect(() => {
         const fetchMistakes = async () => {
@@ -152,30 +239,64 @@ const MistakeDashboard: React.FC = () => {
                                 {mistakes.slice(0, 10).map((mistake) => (
                                     <div 
                                         key={mistake._id} 
-                                        className="bg-white/5 rounded-lg p-4 border border-white/5"
+                                        className="bg-white/5 rounded-lg border border-white/5 overflow-hidden transition-all duration-200"
                                     >
-                                        <div className="flex justify-between items-start">
-                                            <div>
-                                                <div className="font-medium text-white">
-                                                    Problem #{mistake.problemId}
+                                        <div className="p-4">
+                                            <div className="flex justify-between items-start">
+                                                <div>
+                                                    <div className="font-medium text-white">
+                                                        Problem #{mistake.problemId}
+                                                    </div>
+                                                    <div className="text-sm text-white/60 mt-1">
+                                                        Pattern: {mistake.pattern}
+                                                    </div>
                                                 </div>
-                                                <div className="text-sm text-white/60 mt-1">
-                                                    Pattern: {mistake.pattern}
-                                                </div>
-                                            </div>
-                                            <div className="text-right">
-                                                <span className={`inline-flex px-2 py-1 rounded-full text-xs font-bold ${
-                                                    mistake.mistakeType === 'wrong_output' 
-                                                        ? 'bg-yellow-500/20 text-yellow-400' 
-                                                        : 'bg-red-500/20 text-red-400'
-                                                }`}>
-                                                    {mistake.mistakeType === 'wrong_output' ? 'Wrong Output' : 'Runtime Error'}
-                                                </span>
-                                                <div className="text-xs text-white/40 mt-1">
-                                                    {new Date(mistake.createdAt).toLocaleDateString()}
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        onClick={() => toggleExpand(mistake._id)}
+                                                        className="flex items-center gap-1 px-3 py-1.5 bg-[#EC4186]/20 hover:bg-[#EC4186]/30 text-[#EC4186] text-xs font-bold rounded-lg transition-all"
+                                                    >
+                                                        {expandedId === mistake._id ? (
+                                                            <>
+                                                                <ChevronUp size={14} />
+                                                                Collapse
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <ChevronDown size={14} />
+                                                                Analyze
+                                                            </>
+                                                        )}
+                                                    </button>
+                                                    <div className="text-right">
+                                                        <span className={`inline-flex px-2 py-1 rounded-full text-xs font-bold ${
+                                                            mistake.mistakeType === 'wrong_output' 
+                                                                ? 'bg-yellow-500/20 text-yellow-400' 
+                                                                : 'bg-red-500/20 text-red-400'
+                                                        }`}>
+                                                            {mistake.mistakeType === 'wrong_output' ? 'Wrong Output' : 'Runtime Error'}
+                                                        </span>
+                                                        <div className="text-xs text-white/40 mt-1">
+                                                            {new Date(mistake.createdAt).toLocaleDateString()}
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+                                        
+                                        {/* Expandable Explanation Section */}
+                                        {expandedId === mistake._id && (
+                                            <div className="border-t border-white/10 bg-black/20 p-4 animate-fadeIn">
+                                                <div className="max-w-3xl">
+                                                    <h3 className="font-bold text-white mb-3 text-sm uppercase tracking-wider">
+                                                        {getExplanation(mistake.problemId).title}
+                                                    </h3>
+                                                    <div className="text-sm">
+                                                        {getExplanation(mistake.problemId).content}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                             </div>

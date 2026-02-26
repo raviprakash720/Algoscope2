@@ -179,7 +179,7 @@ const ProblemLab: React.FC = () => {
     const formattedId = String(currentProblem.id).padStart(3, '0')
 
     return (
-        <div className="h-screen flex flex-col bg-[#21092b] text-white font-outfit overflow-hidden">
+        <div className="min-h-screen flex flex-col bg-[#21092b] text-white font-outfit">
             {/* Header */}
             <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 shrink-0 bg-[#21092b]/80 backdrop-blur-md z-20">
                 <div className="flex items-center gap-4">
@@ -328,7 +328,7 @@ const ProblemLab: React.FC = () => {
                 </aside>
 
                 {/* Center Panel: Code Editor OR Visualization */}
-                <main className="h-full flex flex-col bg-[#1b062b] border-r border-white/5 relative">
+                <main className="flex-1 flex flex-col bg-[#1b062b] border-r border-white/5 relative">
                     {!showVisualizer ? (
                         // Show Code Editor
                         <>
@@ -347,7 +347,7 @@ const ProblemLab: React.FC = () => {
                             </div>
 
                             {/* Output Panel */}
-                            <div className="h-auto max-h-[35%] border-t border-white/5 bg-[#240b33] p-4 overflow-y-auto custom-scrollbar">
+                            <div className="flex-1 min-h-0 border-t border-white/5 bg-[#240b33] p-4 overflow-y-auto custom-scrollbar">
                                 <OutputPanel onRunCode={handleRunCode} />
                             </div>
 
