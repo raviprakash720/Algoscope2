@@ -49,41 +49,68 @@ const parseInput = (input) => {
 const problemsPath = path.join(__dirname, 'data', 'problems.json');
 const mongoose = require('mongoose');
 
-// MongoDB Connection with better error handling
+// MongoDB Connection - Production Ready Configuration
 console.log('🔄 Attempting MongoDB connection...');
-const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/algoscope';
-console.log(`🔗 MongoDB URI: ${mongoUri}`);
+const mongoUri = process.env.MONGO_URI;
+
+// Validate MongoDB URI is provided
+if (!mongoUri) {
+  console.error('❌ MONGO_URI environment variable is required');
+  console.error('💡 Please set MONGO_URI in your environment variables');
+  console.error('💡 For local development: MONGO_URI=mongodb://localhost:27017/algoscope');
+  console.error('💡 For production: Use MongoDB Atlas connection string');
+  process.exit(1);
+}
+
+console.log('🔗 MongoDB URI configured from environment variables');
+console.log('🔐 Connection string length:', mongoUri.length, 'characters');
 
 let dbConnected = false;
 
+// Production-ready MongoDB connection with proper options
 mongoose.connect(mongoUri, {
-  serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds
+  serverSelectionTimeoutMS: 10000, // 10 second timeout for production
   socketTimeoutMS: 45000,
+  maxPoolSize: 10, // Maintain up to 10 socket connections
 })
 .then(() => {
   console.log('✅ MongoDB Connected Successfully');
+  console.log('📡 Database ready for operations');
   dbConnected = true;
 })
 .catch(err => {
   console.error('❌ MongoDB Connection Failed:', err.message);
+  console.error('🔧 Error details:', err);
   console.log('⚠️  Backend will run in offline mode - database features disabled');
-  console.log('💡 To enable database features, start MongoDB server on localhost:27017');
+  console.log('💡 Ensure MONGO_URI is correctly configured in environment variables');
+  dbConnected = false;
 });
 
-// Connection status monitoring
+// Connection status monitoring with production logging
 mongoose.connection.on('error', (err) => {
   console.error('❌ MongoDB Connection Error:', err);
+  console.error('🔧 Error code:', err.name);
   dbConnected = false;
 });
 
 mongoose.connection.on('disconnected', () => {
   console.log('🔌 MongoDB Disconnected');
+  console.log('💡 Attempting to reconnect...');
   dbConnected = false;
 });
 
 mongoose.connection.on('reconnected', () => {
-  console.log('🔁 MongoDB Reconnected');
-  dbConnected = false;
+  console.log('🔁 MongoDB Reconnected Successfully');
+  console.log('📡 Database operations resumed');
+  dbConnected = true;
+});
+
+mongoose.connection.on('connecting', () => {
+  console.log('🔄 MongoDB Connecting...');
+});
+
+mongoose.connection.on('connected', () => {
+  console.log('🔗 MongoDB Connected to database');
 });
 
 app.get("/api/health", (req, res) => {
@@ -220,9 +247,11 @@ app.listen(PORT, () => {
   // Check MongoDB status after startup
   setTimeout(() => {
     if (dbConnected) {
-      console.log('✅ Database: Connected and ready');
+      console.log('✅ Database: Connected and ready for production');
+      console.log('🔐 MongoDB Atlas integration active');
     } else {
       console.log('⚠️  Database: Offline mode (some features limited)');
+      console.log('🔧 Please check MONGO_URI environment variable');
     }
     console.log('=====================================');
   }, 1000);
