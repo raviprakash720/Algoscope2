@@ -1,11 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState, useRef } from 'react'
 import { useParams, Navigate, Link } from 'react-router-dom'
 import { useStore } from '../store/useStore'
 import LabSkeleton from '../components/layout/LabSkeleton'
 import CodeEditor from '../components/problem/CodeEditor'
 import OutputPanel from '../components/problem/OutputPanel'
 import VisualizationPanel from '../components/problem/VisualizationPanel'
-import { ChevronLeft, Eye } from 'lucide-react'
+import { ChevronLeft, Eye, RotateCcw } from 'lucide-react'
 
 const ProblemLab: React.FC = () => {
     const { slug } = useParams<{ slug: string }>()
@@ -16,7 +16,14 @@ const ProblemLab: React.FC = () => {
     const error = useStore(state => state.error)
     const executeCode = useStore(state => state.executeCode)
     const resetCodeExecution = useStore(state => state.resetCodeExecution)
+    const refreshSteps = useStore(state => state.refreshSteps)
+    const setCustomInput = useStore(state => state.setCustomInput)
+    const setCustomTarget = useStore(state => state.setCustomTarget)
     const [showVisualizer, setShowVisualizer] = useState(false)
+    
+    // Custom input refs for stable access
+    const input1Ref = useRef<HTMLInputElement>(null)
+    const input2Ref = useRef<HTMLInputElement>(null)
     
     // Animation playback state
     const isPlaying = useStore(state => state.isPlaying)
@@ -43,6 +50,8 @@ const ProblemLab: React.FC = () => {
         }, playbackSpeed)
         return () => clearInterval(interval)
     }, [isPlaying, playbackSpeed, currentStepIndex, totalSteps, setStep, setPlaying])
+    
+    // Visualizer is always enabled - no state needed
 
     useEffect(() => {
         if (slug) {
@@ -100,11 +109,47 @@ const ProblemLab: React.FC = () => {
     }, [currentProblem])
     
     const isCorrect = useStore(state => state.codeExecution.isCorrect)
+    
+    // Initialize custom input values when problem loads
+    useEffect(() => {
+        if (currentProblem) {
+            setCustomInput(currentProblem.input_settings?.input1.placeholder || '')
+            setCustomTarget(currentProblem.input_settings?.input2?.placeholder || '')
+            if (input1Ref.current) {
+                input1Ref.current.value = currentProblem.input_settings?.input1.placeholder || ''
+            }
+            if (input2Ref.current) {
+                input2Ref.current.value = currentProblem.input_settings?.input2?.placeholder || ''
+            }
+        }
+    }, [currentProblem, setCustomInput, setCustomTarget])
 
     const handleRunCode = () => {
         if (testCases.length > 0) {
             executeCode(testCases)
         }
+    }
+    
+    const handleApplyChanges = () => {
+        // Update store with custom input values
+        if (input1Ref.current) {
+            setCustomInput(input1Ref.current.value)
+        }
+        if (input2Ref.current) {
+            setCustomTarget(input2Ref.current.value)
+        }
+        
+        // Re-run validation with new inputs
+        if (testCases.length > 0) {
+            executeCode(testCases)
+        }
+        
+        // Refresh visualization steps to use new input data
+        refreshSteps()
+        
+        // Reset animation state
+        setStep(0)
+        setPlaying(false)
     }
 
     if (error) return <Navigate to="/problems" replace />
@@ -205,6 +250,7 @@ const ProblemLab: React.FC = () => {
                                         {currentProblem.input_settings?.input1.label || 'Input'}
                                     </label>
                                     <input
+                                        ref={input1Ref}
                                         type="text"
                                         defaultValue={currentProblem.input_settings?.input1.placeholder || ''}
                                         className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-[#EC4186]/50"
@@ -217,6 +263,7 @@ const ProblemLab: React.FC = () => {
                                             {currentProblem.input_settings.input2.label}
                                         </label>
                                         <input
+                                            ref={input2Ref}
                                             type="text"
                                             defaultValue={currentProblem.input_settings.input2.placeholder}
                                             className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-[#EC4186]/50"
@@ -224,6 +271,13 @@ const ProblemLab: React.FC = () => {
                                         />
                                     </div>
                                 )}
+                                <button
+                                    onClick={handleApplyChanges}
+                                    className="w-full mt-2 px-3 py-2 bg-gradient-to-r from-[#EC4186] to-[#EE544A] text-white text-xs font-bold rounded-lg hover:shadow-[0_0_15px_rgba(236,65,134,0.4)] transition-all flex items-center justify-center gap-2"
+                                >
+                                    <RotateCcw size={14} />
+                                    Apply Changes
+                                </button>
                             </div>
                         </div>
 
@@ -276,7 +330,7 @@ const ProblemLab: React.FC = () => {
                                 <OutputPanel onRunCode={handleRunCode} />
                             </div>
 
-                            {/* Visualizer Toggle Button - Bottom Right */}
+                            {/* Visualizer Toggle Button - Always Enabled and Visible */}
                             <button
                                 onClick={() => setShowVisualizer(true)}
                                 className="absolute bottom-6 right-6 px-4 py-3 rounded-xl font-bold text-sm uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg bg-gradient-to-r from-[#EC4186] to-[#EE544A] text-white hover:shadow-[0_0_20px_rgba(236,65,134,0.4)] hover:scale-105 z-20"
@@ -304,7 +358,9 @@ const ProblemLab: React.FC = () => {
                             
                             {/* Visualization Content */}
                             <div className="flex-1 overflow-hidden">
-                                <VisualizationPanel />
+                                <VisualizationPanel 
+                                    key={`${currentProblem?.slug}-${isBruteForce ? 'brute' : 'optimal'}-${currentStepIndex}`}
+                                />
                             </div>
                         </div>
                     )}
