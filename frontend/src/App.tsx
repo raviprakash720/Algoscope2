@@ -14,6 +14,7 @@ const PatternMastery = lazy(() => import('./pages/PatternMastery'))
 const FoundationsLayout = lazy(() => import('./pages/FoundationsLayout'))
 const FoundationModule = lazy(() => import('./components/foundations/FoundationModule'))
 const NotFound = lazy(() => import('./pages/NotFound'))
+const MistakeDashboard = lazy(() => import('./pages/MistakeDashboard'))
 
 const PageLoader = () => (
     <div className="flex-1 flex items-center justify-center mesh-bg">
@@ -32,6 +33,7 @@ const AnimatedRoutes = () => {
                     <Route path="/problems/:slug" element={<ProblemLab />} />
                     <Route path="/pattern-profile" element={<PatternProfile />} />
                     <Route path="/mastery/:pattern" element={<PatternMastery />} />
+                    <Route path="/mistakes" element={<MistakeDashboard />} />
 
                     {/* Foundations - Standard Redirect */}
                     <Route path="/foundations" element={<FoundationsLayout />} />

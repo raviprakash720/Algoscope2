@@ -20,8 +20,14 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Middleware
 app.use(cors());
 app.use(express.json());
+
+console.log('🚀 Starting Algoscope Backend Server...');
+console.log(`🔧 Port: ${PORT}`);
+console.log(`🌐 CORS: Enabled`);
+console.log(`📄 JSON Parser: Enabled`);
 
 const parseInput = (input) => {
   if (!input) return [];
@@ -43,10 +49,42 @@ const parseInput = (input) => {
 const problemsPath = path.join(__dirname, 'data', 'problems.json');
 const mongoose = require('mongoose');
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/algoscope')
-  .then(() => console.log('MongoDB Connected'))
-  .catch(err => console.error('MongoDB Connection Error:', err));
+// MongoDB Connection with better error handling
+console.log('🔄 Attempting MongoDB connection...');
+const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/algoscope';
+console.log(`🔗 MongoDB URI: ${mongoUri}`);
+
+let dbConnected = false;
+
+mongoose.connect(mongoUri, {
+  serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds
+  socketTimeoutMS: 45000,
+})
+.then(() => {
+  console.log('✅ MongoDB Connected Successfully');
+  dbConnected = true;
+})
+.catch(err => {
+  console.error('❌ MongoDB Connection Failed:', err.message);
+  console.log('⚠️  Backend will run in offline mode - database features disabled');
+  console.log('💡 To enable database features, start MongoDB server on localhost:27017');
+});
+
+// Connection status monitoring
+mongoose.connection.on('error', (err) => {
+  console.error('❌ MongoDB Connection Error:', err);
+  dbConnected = false;
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('🔌 MongoDB Disconnected');
+  dbConnected = false;
+});
+
+mongoose.connection.on('reconnected', () => {
+  console.log('🔁 MongoDB Reconnected');
+  dbConnected = false;
+});
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "Backend working 🚀" });
@@ -54,7 +92,9 @@ app.get("/api/health", (req, res) => {
 
 // Routes
 const progressRoutes = require('./routes/progress');
+const mistakeRoutes = require('./routes/mistakes');
 app.use('/api/progress', progressRoutes);
+app.use('/api/mistakes', mistakeRoutes);
 
 app.get('/api/problems', (req, res) => {
   fs.readFile(problemsPath, 'utf8', (err, data) => {
@@ -166,5 +206,24 @@ app.post('/api/problems/:id/steps', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log('=====================================');
+  console.log('🚀 ALGOSCOPE BACKEND SERVER STARTED');
+  console.log('=====================================');
+  console.log(`📡 Server running on port: ${PORT}`);
+  console.log(`🔗 Base URL: http://localhost:${PORT}`);
+  console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
+  console.log(`🔗 Problems API: http://localhost:${PORT}/api/problems`);
+  console.log(`🔗 Mistakes API: http://localhost:${PORT}/api/mistakes/test_user_1`);
+  console.log(`🔗 Progress API: http://localhost:${PORT}/api/progress/test_user_1`);
+  console.log('=====================================');
+  
+  // Check MongoDB status after startup
+  setTimeout(() => {
+    if (dbConnected) {
+      console.log('✅ Database: Connected and ready');
+    } else {
+      console.log('⚠️  Database: Offline mode (some features limited)');
+    }
+    console.log('=====================================');
+  }, 1000);
 });

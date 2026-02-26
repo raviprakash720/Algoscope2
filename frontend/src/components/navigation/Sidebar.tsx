@@ -5,7 +5,8 @@ import {
     Menu,
     Boxes,
     Brain,
-    Layers
+    Layers,
+    AlertTriangle
 } from 'lucide-react'
 import { cn } from '../../utils/cn'
 import { useStore } from '../../store/useStore'
@@ -132,6 +133,7 @@ const Sidebar: React.FC = () => {
                         <NavItem to="/problems" icon={Boxes} label="Pattern Library" />
                         <NavItem to="/pattern-profile" icon={Brain} label="Pattern Profile" />
                         <NavItem to="/foundations" icon={Layers} label="Foundations Lab" />
+                        <NavItem to="/mistakes" icon={AlertTriangle} label="My Mistakes" />
                     </div>
                 </div>
 

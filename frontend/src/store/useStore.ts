@@ -971,7 +971,7 @@ export const useStore = create<AlgoScopeState>((set, get) => ({
     },
 
     executeCode: (testCases: { input: any; expected: any }[]) => {
-        const { codeExecution } = get()
+        const { codeExecution, currentProblem } = get()
         const userCode = codeExecution.userCode
 
         set((state) => ({
@@ -990,6 +990,7 @@ export const useStore = create<AlgoScopeState>((set, get) => ({
 
             const results: TestResult[] = []
             let allPassed = true
+            let hasRuntimeError = false
 
             for (const testCase of testCases) {
                 try {
@@ -1010,7 +1011,25 @@ export const useStore = create<AlgoScopeState>((set, get) => ({
                         passed: false
                     })
                     allPassed = false
+                    hasRuntimeError = true
                 }
+            }
+
+            // Log mistake if solution is incorrect
+            if (!allPassed) {
+                const userId = localStorage.getItem('algoScope_userId') || 'test_user_1'
+                const mistakeType = hasRuntimeError ? 'runtime_error' : 'wrong_output'
+                
+                fetch(`${(import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:5000'}/api/mistakes`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId,
+                        problemId: currentProblem?.id,
+                        pattern: currentProblem?.primaryPattern,
+                        mistakeType
+                    })
+                }).catch(err => console.warn('Failed to log mistake:', err))
             }
 
             set((state) => ({
@@ -1025,6 +1044,21 @@ export const useStore = create<AlgoScopeState>((set, get) => ({
                 }
             }))
         } catch (err: any) {
+            // Log runtime error mistake
+            const { currentProblem } = get()
+            const userId = localStorage.getItem('algoScope_userId') || 'test_user_1'
+            
+            fetch(`${(import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:5000'}/api/mistakes`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId,
+                    problemId: currentProblem?.id,
+                    pattern: currentProblem?.primaryPattern,
+                    mistakeType: 'runtime_error'
+                })
+            }).catch(err => console.warn('Failed to log mistake:', err))
+
             set((state) => ({
                 codeExecution: {
                     ...state.codeExecution,
